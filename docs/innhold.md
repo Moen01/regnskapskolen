@@ -210,3 +210,7 @@ Kortene vises under *Regler* og legges ved systemprompten når Claude forklarer 
 ## Sandkassecaser
 
 `Innhold/sandkasse/<id>.json`: `id`, `tittel`, `selskap`, `beskrivelse`, `vanskelighet`, `lov`, `hendelser` (`dato`, `tekst`, `hint`), `fasitSaldobalanse` (konto → saldo, debet pluss og kredit minus) og `fasitJournal` (bilagene som gir fasiten). `SandboxCaseTests` sjekker at journalen stemmer med saldobalansen og at mva-linjene følger kodene.
+
+To valgfrie felt gjør casen avstembar: `kontoutskrift` (`konto` 1920, `utgaaende`, `linjer` med `id`, `dato`, `tekst`, `belop` signert sett fra kontoen og `bilag`: 1-baserte numre på bilagene i `fasitJournal` som linjen gjør opp) og `valutakurser` (valuta → liste av `dato` og `kurs`; casens egne tall, aldri fra `satser.json`). Bare bilag med en 1920-linje pekes på. `SandboxCaseValidator` krever at hver gruppe av linjer og bilag summerer likt, at hvert bilag med bankbevegelse har en linje, og at summen av linjene er lik `utgaaende` og 1920 i `fasitSaldobalanse`.
+
+Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnløser betaler ut flere dagers salg samlet); (3) flere linjer ↔ ett bilag (ett lønnsbilag, én utbetaling per ansatt); (4) gebyr og renter som føres fra banklinjen; (5) åpen post uten banklinje; (6) valuta med kursdifferanse på 8060/8160. `bank-001` har alle seks.

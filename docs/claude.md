@@ -9,7 +9,7 @@ Appen bruker [Claude Code](https://claude.com/claude-code) som en kommandolinje 
 | **Forklar** (etter feil svar) | `veileder` + oppgaven, fasiten, svaret og appens tilbakemelding | tekst | Maks 180 ord, vises under oppgaven |
 | **Spør** | `veileder` + oppgaven + spørsmålet; oppfølging gjenbruker økten (`--resume`) | tekst | Maks 120 ord |
 | **Vanskeligere oppgave** | `forfatter` + oppgaven; ber om samme type og tema, ett nivå opp | JSON-skjema for typen | Valideres som alt annet innhold, lagres som utkast og åpnes |
-| **Lag en case med Claude** (sandkassen) | `sandkasse` + temaet | JSON-skjema for en case | Journalen må stemme med saldobalansen, ellers avvises den |
+| **Lag en case med Claude** (sandkassen) | `sandkasse` + temaet | JSON-skjema for en case | Journalen må stemme med saldobalansen og kontoutskriften med journalen, ellers avvises den. Eksempelet Claude får er den håndskrevne casen med flest banklinjer; kortene for bank og valuta legges alltid ved. |
 
 Systempromptene ligger i `Innhold/prompter/` og kan redigeres uten ny bygging. Til prompten legges regelkortene for temaet (`Innhold/regler/`, `tema:` i front matter) og satsene fra `Innhold/satser.json`, så Claude aldri trenger å huske en sats.
 

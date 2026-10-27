@@ -9,7 +9,7 @@ Treningsapp for norske regnskapsførere: macOS-app i menylinjen (`Sources/Regnsk
 | `Innhold/oppgaver/<tema>/*.json` | Én oppgave per fil. Formatet: `docs/innhold.md`. |
 | `Innhold/regler/*.md` | Regelkort med front matter (`tittel`, `lov`, `paragrafer`, `tema`, `kilde`). |
 | `Innhold/satser.json` | Satser og frister. Den eneste kilden til tall. |
-| `Innhold/sandkasse/*.json` | Caser til sandkassen, med `fasitJournal` som må stemme med `fasitSaldobalanse`. |
+| `Innhold/sandkasse/*.json` | Caser til sandkassen, med `fasitJournal` som må stemme med `fasitSaldobalanse`, og `kontoutskrift` som må stemme med journalen. |
 | `Innhold/prompter/*.md` | Systemprompter (`veileder`, `forfatter`, `sandkasse`). |
 | `Sources/RegnskapKit` | Innhold, validator, sjekkere, Leitner-planlegger, sandkasse, Claude-kjører. Importerer aldri SwiftUI/AppKit. |
 | `Sources/Regnskapsskolen` | AppDelegate (statusikon, popover, vindu), AppStore, skjermene. |
@@ -25,7 +25,7 @@ Treningsapp for norske regnskapsførere: macOS-app i menylinjen (`Sources/Regnsk
 
 ## Regler for arbeid i dette repoet
 
-1. **Gjett aldri en sats eller en frist.** Les `Innhold/satser.json`. Står tallet ikke der, skriv ikke oppgaven.
+1. **Gjett aldri en sats eller en frist.** Les `Innhold/satser.json`. Står tallet ikke der, skriv ikke oppgaven. Valutakurser i en case er casens egne tall og står i casefilen (`valutakurser`), ikke i `satser.json`.
 2. **Hver oppgave trenger `lov`.** Bruk paragrafer fra regelkortene i `Innhold/regler/` eller fra en oppgave du bygger videre på. Er du usikker på paragrafen, velg en annen vinkling.
 3. **Kjør `swift test --filter Content` etter at du har skrevet innhold.** Rød validator betyr at filen ikke er ferdig.
 4. **Kit importerer aldri UI.** Logikk som kan testes, ligger i `RegnskapKit`.
