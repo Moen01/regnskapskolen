@@ -41,7 +41,13 @@ public enum SandboxCaseValidator {
             if line.bilag.isEmpty { out.append("banklinje \(line.id) peker ikke på noe bilag"); continue }
             let bad = line.bilag.filter { $0 < 1 || $0 > journal.entries.count }
             for index in bad { out.append("banklinje \(line.id) peker på bilag \(index), journalen har \(journal.entries.count)") }
-            if bad.isEmpty { valid.append(line) }
+            if bad.isEmpty {
+                // A voucher with no net bank movement is not a bank voucher, so a line must not point at it.
+                for index in line.bilag where journal.entries[index - 1].bankMovement(konto: bank) == 0 {
+                    out.append("banklinje \(line.id) peker på bilag \(index) som ikke har bankbevegelse")
+                }
+                valid.append(line)
+            }
         }
 
         let referenced = Set(valid.flatMap(\.bilag))

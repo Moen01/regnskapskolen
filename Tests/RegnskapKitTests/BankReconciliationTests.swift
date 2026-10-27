@@ -48,6 +48,14 @@ final class BankReconciliationTests: XCTestCase {
         XCTAssertEqual(MatchError.difference(7000).message, "Differanse 7\u{202F}000,00.")
     }
 
+    func testSumsGiveEachSideOnceAndNilForUnknownIds() {
+        let s1 = Reconciliation.sums(bankLineIds: ["b02"], entryIds: [sale1.id], statement: statement, journal: journal)
+        XCTAssertEqual(s1?.bank, 12000); XCTAssertEqual(s1?.journal, 5000)
+        let s2 = Reconciliation.sums(bankLineIds: ["b03", "b03"], entryIds: [], statement: statement, journal: journal)
+        XCTAssertEqual(s2?.bank, -21000); XCTAssertEqual(s2?.journal, 0)
+        XCTAssertNil(Reconciliation.sums(bankLineIds: ["zzz"], entryIds: [], statement: statement, journal: journal))
+    }
+
     func testPruneDropsMatchesThatNoLongerHold() {
         var r = Reconciliation()
         r.match(bankLineIds: ["b01"], entryIds: [opening.id], statement: statement, journal: journal)

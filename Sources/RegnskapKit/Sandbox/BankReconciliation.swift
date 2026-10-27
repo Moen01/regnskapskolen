@@ -37,8 +37,8 @@ public struct Reconciliation: Codable, Hashable, Sendable {
     public func isMatched(bankLine id: String) -> Bool { matches.contains { $0.bankLineIds.contains(id) } }
     public func isMatched(entry id: UUID) -> Bool { matches.contains { $0.entryIds.contains(id) } }
 
-    /// Bank sum minus journal bank movement for a selection; nil when an id is unknown.
-    public static func difference(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> Decimal? {
+    /// The selected bank lines' sum and the selected vouchers' bank movement, with repeated ids counted once; nil when an id is unknown.
+    public static func sums(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> (bank: Decimal, journal: Decimal)? {
         var bank: Decimal = 0, books: Decimal = 0
         for id in bankLineIds.unique {
             guard let line = statement.line(id: id) else { return nil }
@@ -48,7 +48,12 @@ public struct Reconciliation: Codable, Hashable, Sendable {
             guard let entry = journal.entries.first(where: { $0.id == id }) else { return nil }
             books += entry.bankMovement(konto: statement.konto)
         }
-        return bank - books
+        return (bank, books)
+    }
+
+    /// Bank sum minus journal bank movement for a selection; nil when an id is unknown.
+    public static func difference(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> Decimal? {
+        sums(bankLineIds: bankLineIds, entryIds: entryIds, statement: statement, journal: journal).map { $0.bank - $0.journal }
     }
 
     public func check(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> MatchError? {

@@ -11,7 +11,7 @@ struct DateField: View {
     @State private var text = ""
     @State private var showCalendar = false
 
-    private var invalid: Bool { !text.isEmpty && day == nil }
+    private var invalid: Bool { !text.isEmpty && NorwegianFormat.parseDay(text) == nil }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {

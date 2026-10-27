@@ -19,8 +19,10 @@ struct BankView: View {
     private func content(_ statement: BankStatement) -> some View {
         let reconciliation = store.reconciliation
         let openLines = statement.linjer.filter { !reconciliation.isMatched(bankLine: $0.id) }
+            .sorted { ($0.dato, $0.id) < ($1.dato, $1.id) }
         let openEntries = store.sandbox.entries.filter { $0.bankMovement(konto: statement.konto) != 0 && !reconciliation.isMatched(entry: $0.id) }
-        let difference = Reconciliation.difference(bankLineIds: Array(selectedLines), entryIds: Array(selectedEntries), statement: statement, journal: store.sandbox)
+        let sums = Reconciliation.sums(bankLineIds: Array(selectedLines), entryIds: Array(selectedEntries), statement: statement, journal: store.sandbox)
+        let difference = sums.map { $0.bank - $0.journal }
         let canMatch = difference == 0 && !selectedLines.isEmpty && !selectedEntries.isEmpty
         return VStack(alignment: .leading, spacing: 12) {
             if let check = store.bankCheck {
@@ -46,7 +48,7 @@ struct BankView: View {
             if !reconciliation.matches.isEmpty { matched(statement) }
             Divider()
             HStack {
-                Text("Valgt: bank \(selectedLines.count) · bilag \(selectedEntries.count) · differanse \(difference.map { NorwegianFormat.kroner($0) } ?? "–")")
+                Text("Valgt: bank \(sums.map { NorwegianFormat.kroner($0.bank) } ?? "–") · bilag \(sums.map { NorwegianFormat.kroner($0.journal) } ?? "–") · differanse \(difference.map { NorwegianFormat.kroner($0) } ?? "–")")
                     .font(.callout.monospacedDigit())
                 Spacer()
                 Button("Avstem") { match() }

@@ -82,6 +82,11 @@ final class SandboxCaseValidatorTests: XCTestCase {
         XCTAssertTrue(p.contains { $0.contains("b03") && $0.contains("bilag 9") }, p.joined(separator: "; "))
     }
 
+    func testLineMayNotPointAtAVoucherWithoutBankMovement() {
+        let p = problems(simple { lines, _ in lines[1] = BankLine(id: "b02", dato: self.mars(15), tekst: "Nettgiro", belop: -10000, bilag: [3, 2]) })
+        XCTAssertTrue(p.contains { $0.contains("b02") && $0.contains("bilag 2") && $0.contains("ikke har bankbevegelse") }, p.joined(separator: "; "))
+    }
+
     func testLineIdsMustBeUniqueAndPointAtSomething() {
         let p = problems(simple { lines, _ in lines[1] = BankLine(id: "b01", dato: self.mars(15), tekst: "Nettgiro", belop: -10000, bilag: []) })
         XCTAssertTrue(p.contains { $0.contains("«b01»") && $0.contains("flere ganger") }, p.joined(separator: "; "))
