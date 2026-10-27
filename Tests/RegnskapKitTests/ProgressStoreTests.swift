@@ -54,4 +54,17 @@ final class ProgressStoreTests: XCTestCase {
         try store.save(progress)
         XCTAssertEqual(store.load().game, progress.game)
     }
+
+    func testLoadReportsWhetherTheFileHadGameProgress() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("fremdrift-\(UUID().uuidString).json")
+        let store = ProgressStore(url: url)
+        _ = store.load()
+        XCTAssertTrue(store.fileHadGame, "a missing file needs no seeding")
+        try Data(#"{"puzzles":{},"days":{}}"#.utf8).write(to: url)
+        _ = store.load()
+        XCTAssertFalse(store.fileHadGame)
+        try store.save(LearnerProgress())
+        _ = store.load()
+        XCTAssertTrue(store.fileHadGame)
+    }
 }

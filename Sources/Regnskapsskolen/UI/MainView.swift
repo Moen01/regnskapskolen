@@ -38,6 +38,7 @@ struct MainView: View {
                     switch navigation.section {
                     case .today: TodayView()
                     case .practice: TopicsView()
+                    case .game: Text("Spill")
                     case .sandbox: SandboxView()
                     case .rules: RulesView()
                     case .stats: StatsView()

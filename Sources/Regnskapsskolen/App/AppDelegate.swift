@@ -3,13 +3,14 @@ import RegnskapKit
 import SwiftUI
 
 enum AppSection: String, CaseIterable, Identifiable {
-    case today, practice, sandbox, rules, stats, settings
+    case today, practice, game, sandbox, rules, stats, settings
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .today: "I dag"
         case .practice: "Øv"
+        case .game: "Spill"
         case .sandbox: "Sandkasse"
         case .rules: "Regler"
         case .stats: "Statistikk"
@@ -21,6 +22,7 @@ enum AppSection: String, CaseIterable, Identifiable {
         switch self {
         case .today: "sun.max"
         case .practice: "list.bullet.rectangle"
+        case .game: "gamecontroller"
         case .sandbox: "tray.2"
         case .rules: "book.closed"
         case .stats: "chart.bar"

@@ -62,6 +62,20 @@ extension AppStore {
         try? encoder.encode(sandbox).write(to: Self.sandboxURL, options: .atomic)
         try? encoder.encode(reconciliation).write(to: Self.reconciliationURL, options: .atomic)
         validateSandbox()
+        awardSandboxBadges()
+    }
+
+    /// A case whose balance matches, or whose bank is reconciled, earns its badge once.
+    func awardSandboxBadges() {
+        guard let library, let activeCase, !sandbox.entries.isEmpty else { return }
+        var earned: [Badge] = []
+        if activeCase.compare(journal: sandbox, chart: library.chart).isEmpty {
+            earned += Badges.award(.caseMatched, on: todayKey, progress: &progress)
+        }
+        if bankCheck?.done == true {
+            earned += Badges.award(.bankReconciled, on: todayKey, progress: &progress)
+        }
+        if !earned.isEmpty { newBadges += earned; saveProgress() }
     }
 
     func validateSandbox() {

@@ -36,6 +36,17 @@ final class AppStore {
     var sandboxPane: SandboxPane = .journal
     var sandboxProblems: [JournalProblem] = []
 
+    /// The round in progress, if any; at most one of the two.
+    var lightning: LightningRound?
+    var drill: DebitCreditDrill?
+    var lastSummary: RoundSummary?
+    var lastWasRecord = false
+    /// Badges earned since the hub last showed them.
+    var newBadges: [Badge] = []
+    /// The hub's topic choice for the lightning round; nil is all topics.
+    var lynrundeTema: String?
+    @ObservationIgnored var clock: Task<Void, Never>?
+
     var remainingToday: Int { progress.days[todayKey.string]?.remaining ?? today.count }
     var streak: Int { progress.streak(today: todayKey) }
     var pool: [Puzzle] { library?.pool(includeDrafts: settings.showDrafts) ?? [] }
@@ -44,6 +55,11 @@ final class AppStore {
         loadContent()
         progress = progressStore.load()
         if let error = progressStore.lastError { contentNotice = error }
+        if !progressStore.fileHadGame {
+            // A learner with history should not start as Lærling: score the past once.
+            progress.game.xp = XP.seed(from: progress)
+            saveProgress()
+        }
         rollDay()
         loadSandbox()
         Task { await checkClaude() }
