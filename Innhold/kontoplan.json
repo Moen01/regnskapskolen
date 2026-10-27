@@ -326,7 +326,8 @@
       "gruppe": "20",
       "type": "egenkapital",
       "okerPa": "D",
-      "rapport": "balanse"
+      "rapport": "balanse",
+      "merknad": "Negativ egenkapital: tap som ikke er dekket av annen egenkapital."
     },
     {
       "nr": "2099",
