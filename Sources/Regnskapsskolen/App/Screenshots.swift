@@ -35,6 +35,10 @@ enum Screenshots {
         store.endRound()
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-oppsummering.png"))
         store.lastSummary = nil
+        store.startDrill()
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-debet-kredit.png"))
+        store.endRound()
+        store.lastSummary = nil
         navigation.section = .today
         for kind in PuzzleKind.allCases {
             guard let puzzle = store.pool.first(where: { $0.kind == kind }) else { continue }

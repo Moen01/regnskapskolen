@@ -13,6 +13,8 @@ struct GameHubView: View {
     var body: some View {
         if store.lightning != nil {
             LightningRoundView()
+        } else if store.drill != nil {
+            DebitCreditView()
         } else if let summary = store.lastSummary {
             RoundSummaryView(summary: summary, newBadges: store.newBadges, isRecord: store.lastWasRecord,
                              onAgain: { summary.game == .lynrunde ? store.startLightning() : store.startDrill() },
