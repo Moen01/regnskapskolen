@@ -119,6 +119,8 @@ struct BankView: View {
 
     private func match() {
         error = store.matchBank(lineIds: Array(selectedLines), entryIds: Array(selectedEntries))
+        // Keep the selection on failure so the user can adjust it.
+        guard error == nil else { return }
         selectedLines = []
         selectedEntries = []
     }
