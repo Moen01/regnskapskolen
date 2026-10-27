@@ -9,6 +9,8 @@ enum Screenshots {
     static func capture(to dir: String, store: AppStore) async {
         let folder = URL(fileURLWithPath: dir, isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        // Anything the screens save (a finished round saves progress) lands beside the PNGs, never in Application Support.
+        store.progressStore = ProgressStore(url: folder.appendingPathComponent("fremdrift-demo.json"))
         store.settings.contentFolder = ProcessInfo.processInfo.environment["REGNSKAP_INNHOLD"] ?? ContentLocator.repoContent.path
         store.loadContent()
         store.progress = demoProgress(pool: store.pool)
@@ -29,7 +31,7 @@ enum Screenshots {
         store.sandboxPane = .journal
         // The games: a round just started, then its summary. No clock runs in screenshot mode.
         navigation.section = .game
-        store.lynrundeTema = nil
+        store.lynrundeTema = "mva"  // every puzzle in the round is mva, so the shot shows the two-step input
         store.startLightning()
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-lynrunde.png"))
         store.endRound()

@@ -10,6 +10,7 @@ extension AppStore {
     func startLightning() {
         drill = nil
         lastSummary = nil
+        newBadges = []
         lightning = LightningRound(pool: pool, tema: lynrundeTema, progress: progress, today: todayKey, seed: seed, startedAt: now)
         startClock()
     }
@@ -18,6 +19,7 @@ extension AppStore {
         guard let library else { return }
         lightning = nil
         lastSummary = nil
+        newBadges = []
         drill = DebitCreditDrill(chart: library.chart, seed: seed, startedAt: now)
         startClock()
     }
@@ -67,7 +69,7 @@ extension AppStore {
         lastWasRecord = summary.answered > 0 && summary.score > (progress.game.bestScores[key] ?? 0)
         if lastWasRecord { progress.game.bestScores[key] = summary.score }
         progress.game.xp += summary.xp
-        newBadges += Badges.award(.roundFinished(game: summary.game, score: summary.score, correct: summary.correct), on: todayKey, progress: &progress)
+        newBadges += Badges.award(.roundFinished(game: summary.game, tema: summary.tema, score: summary.score, correct: summary.correct), on: todayKey, progress: &progress)
         lastSummary = summary
         saveProgress()
     }

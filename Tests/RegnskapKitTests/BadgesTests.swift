@@ -36,10 +36,11 @@ final class BadgesTests: XCTestCase {
     }
 
     func testRoundBadges() {
-        XCTAssertEqual(award(.roundFinished(game: .lynrunde, score: 1499, correct: 10)), [])
-        XCTAssertEqual(award(.roundFinished(game: .lynrunde, score: 1500, correct: 10)), ["lynrask"])
-        XCTAssertEqual(award(.roundFinished(game: .debetKredit, score: 1500, correct: 29)), [], "a drill score never gives lynrask")
-        XCTAssertEqual(award(.roundFinished(game: .debetKredit, score: 0, correct: 30)), ["reflekser"])
+        XCTAssertEqual(award(.roundFinished(game: .lynrunde, tema: nil, score: 1499, correct: 10)), [])
+        XCTAssertEqual(award(.roundFinished(game: .lynrunde, tema: "mva", score: 1500, correct: 10)), [], "a topic round never gives lynrask")
+        XCTAssertEqual(award(.roundFinished(game: .lynrunde, tema: nil, score: 1500, correct: 10)), ["lynrask"])
+        XCTAssertEqual(award(.roundFinished(game: .debetKredit, tema: nil, score: 1500, correct: 29)), [], "a drill score never gives lynrask")
+        XCTAssertEqual(award(.roundFinished(game: .debetKredit, tema: nil, score: 0, correct: 30)), ["reflekser"])
     }
 
     func testStreakAndSandboxBadges() {

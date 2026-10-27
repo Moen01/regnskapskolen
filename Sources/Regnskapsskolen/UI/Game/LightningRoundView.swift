@@ -117,11 +117,19 @@ private struct LightningVATView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(vat.transaksjon)
             Text("Behandling").font(.caption).foregroundStyle(.secondary)
-            HStack(spacing: 8) {
+            // One full-width row per code: the names must be readable on a 90-second clock.
+            VStack(alignment: .leading, spacing: 6) {
                 ForEach(rates, id: \.kode) { rate in
-                    Button("\(rate.kode) · \(rate.navn)") { pick(rate.kode) }
-                        .buttonStyle(.bordered)
-                        .tint(behandling == rate.kode ? .skole : nil)
+                    Button { pick(rate.kode) } label: {
+                        HStack {
+                            Text(rate.kode).font(.body.weight(.semibold).monospacedDigit()).frame(width: 72, alignment: .leading)
+                            Text(rate.navn).lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(behandling == rate.kode ? .skole : nil)
                 }
             }
             .disabled(locked || behandling != nil)

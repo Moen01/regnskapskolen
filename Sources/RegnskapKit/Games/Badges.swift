@@ -22,7 +22,8 @@ public struct Badge: Hashable, Sendable, Identifiable {
 /// What the app tells the badge rules about; each event is one call to `Badges.award`.
 public enum GameEvent: Hashable, Sendable {
     case puzzleAnswered(kind: PuzzleKind, correctFirstTry: Bool)
-    case roundFinished(game: GameKind, score: Int, correct: Int)
+    /// `tema` is the lightning round's topic filter; nil is all topics, the only kind that can earn «Lynrask».
+    case roundFinished(game: GameKind, tema: String?, score: Int, correct: Int)
     case caseMatched
     case bankReconciled
     case dayCompleted(streak: Int)
@@ -64,8 +65,8 @@ public enum Badges {
                 progress.game.counters[fristCount] = count
                 if count >= fristNeeded { earned.append("fristfri") }
             }
-        case .roundFinished(let game, let score, let correct):
-            if game == .lynrunde, score >= lynraskScore { earned.append("lynrask") }
+        case .roundFinished(let game, let tema, let score, let correct):
+            if game == .lynrunde, tema == nil, score >= lynraskScore { earned.append("lynrask") }
             if game == .debetKredit, correct >= reflekserCorrect { earned.append("reflekser") }
         case .caseMatched:
             earned.append("null-differanse")

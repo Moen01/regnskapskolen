@@ -7,7 +7,8 @@ import RegnskapKit
 @Observable
 final class AppStore {
     let settings = AppSettings()
-    let progressStore = ProgressStore(url: ProgressStore.defaultURL)
+    /// Swapped for a throwaway file in screenshot mode, so a verification run never touches the learner's progress.
+    @ObservationIgnored var progressStore = ProgressStore(url: ProgressStore.defaultURL)
 
     var library: ContentLibrary?
     var contentRoot: URL?
