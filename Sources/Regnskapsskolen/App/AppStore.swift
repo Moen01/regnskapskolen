@@ -48,6 +48,14 @@ final class AppStore {
     var lynrundeTema: String?
     @ObservationIgnored var clock: Task<Void, Never>?
 
+    /// A newer release on GitHub, once a check has found one.
+    var availableUpdate: AppRelease?
+    /// One line about the last check or install, for Settings.
+    var updateState: String?
+    var isUpdating = false
+    var lastUpdateCheck = Date.distantPast
+    @ObservationIgnored var updateLoop: Task<Void, Never>?
+
     var remainingToday: Int { progress.days[todayKey.string]?.remaining ?? today.count }
     var streak: Int { progress.streak(today: todayKey) }
     var pool: [Puzzle] { library?.pool(includeDrafts: settings.showDrafts) ?? [] }

@@ -7,6 +7,9 @@ import UserNotifications
 final class Reminder: NSObject, UNUserNotificationCenterDelegate {
     static let shared = Reminder()
     var onOpen: (() -> Void)?
+    /// Tapping an update notification opens Settings instead of the day's puzzles.
+    var onOpenUpdate: (() -> Void)?
+    nonisolated static let updatePrefix = "oppdatering-"
 
     private var available: Bool { Bundle.main.bundleURL.pathExtension == "app" && Bundle.main.bundleIdentifier != nil }
     private var center: UNUserNotificationCenter? { available ? .current() : nil }
@@ -47,8 +50,18 @@ final class Reminder: NSObject, UNUserNotificationCenterDelegate {
         center.add(UNNotificationRequest(identifier: "test", content: content, trigger: UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)))
     }
 
+    /// "Versjon 0.2.0 er klar", once per version.
+    func notifyUpdate(version: String) {
+        guard let center else { return }
+        let content = UNMutableNotificationContent()
+        content.title = "Regnskapsskolen"
+        content.body = "Versjon \(version) er klar"
+        center.add(UNNotificationRequest(identifier: Self.updatePrefix + version, content: content, trigger: nil))
+    }
+
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        await MainActor.run { self.onOpen?() }
+        let isUpdate = response.notification.request.identifier.hasPrefix(Self.updatePrefix)
+        await MainActor.run { isUpdate ? self.onOpenUpdate?() : self.onOpen?() }
     }
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {

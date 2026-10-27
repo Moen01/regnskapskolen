@@ -62,6 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         setUpPopover()
         Reminder.shared.requestAuthorization()
         Reminder.shared.onOpen = { [weak self] in self?.showMainWindow(section: .today) }
+        Reminder.shared.onOpenUpdate = { [weak self] in self?.showMainWindow(section: .settings) }
+        store.startUpdateLoop()
         // A menu-bar app is rarely "activated": the day must also roll over at midnight and when the popover opens.
         for name in [NSApplication.didBecomeActiveNotification, .NSCalendarDayChanged] {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
@@ -118,6 +120,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     @objc private func openMain() { showMainWindow() }
+
+    /// After an update is installed: close the popover, start the new bundle once this process has quit.
+    func relaunch() {
+        popover?.performClose(nil)
+        AppUpdater.relaunch(Bundle.main.bundlePath)
+    }
     @objc private func openSettings() { showMainWindow(section: .settings) }
 
     private func setUpPopover() {

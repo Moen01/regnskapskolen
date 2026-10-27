@@ -19,6 +19,9 @@ final class AppSettings {
     var onboardingDone: Bool { didSet { defaults.set(onboardingDone, forKey: "onboarding.v1") } }
     /// The sandbox case the journal belongs to, so "Sjekk mot fasit" survives a relaunch.
     var sandboxCaseId: String { didSet { defaults.set(sandboxCaseId, forKey: "sandkasse.case") } }
+    var checkForUpdates: Bool { didSet { defaults.set(checkForUpdates, forKey: "oppdateringer.sjekk") } }
+    /// The tag last announced with a notification, so one version is announced once.
+    var lastNotifiedUpdate: String { didSet { defaults.set(lastNotifiedUpdate, forKey: "oppdateringer.varslet") } }
 
     init() {
         reminderMinutes = defaults.object(forKey: "paaminnelse.tid") as? Int ?? 8 * 60 + 30
@@ -30,6 +33,8 @@ final class AppSettings {
         showDrafts = defaults.bool(forKey: "visUtkast")
         onboardingDone = defaults.bool(forKey: "onboarding.v1")
         sandboxCaseId = defaults.string(forKey: "sandkasse.case") ?? ""
+        checkForUpdates = defaults.object(forKey: "oppdateringer.sjekk") as? Bool ?? true
+        lastNotifiedUpdate = defaults.string(forKey: "oppdateringer.varslet") ?? ""
     }
 
     var reminderTimeText: String { String(format: "%02d:%02d", reminderMinutes / 60, reminderMinutes % 60) }
