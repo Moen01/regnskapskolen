@@ -50,6 +50,11 @@ public struct JournalEntry: Codable, Hashable, Sendable, Identifiable {
     public var sumDebet: Decimal { linjer.reduce(0) { $0 + $1.debet } }
     public var sumKredit: Decimal { linjer.reduce(0) { $0 + $1.kredit } }
     public var balanced: Bool { sumDebet == sumKredit }
+
+    /// Net effect on the bank account: debet minus kredit over the lines on `konto`.
+    public func bankMovement(konto: String = JournalValidator.bank) -> Decimal {
+        linjer.filter { $0.konto == konto }.reduce(0) { $0 + $1.debet - $1.kredit }
+    }
 }
 
 /// The sandbox's scratch ledger: a list of entries, saved as JSON.
@@ -75,6 +80,7 @@ public struct JournalProblem: Hashable, Sendable {
 /// 2710, a kredit base expects utgående mva on 2700, and "omvendt" expects both.
 public enum JournalValidator {
     static let utgaaende = "2700", inngaaende = "2710"
+    public static let bank = "1920"
 
     public static func problems(_ journal: Journal, chart: ChartOfAccounts, rates: Rates) -> [JournalProblem] {
         var out: [JournalProblem] = []

@@ -26,12 +26,16 @@ public struct SandboxCase: Codable, Hashable, Sendable, Identifiable {
     public let hendelser: [CaseEvent]
     public let fasitSaldobalanse: [String: Decimal]
     public let fasitJournal: Journal?
+    public let kontoutskrift: BankStatement?
+    /// Dated rates per currency code, for cases with foreign-currency events.
+    public let valutakurser: [String: [ExchangeRate]]?
 
-    enum CodingKeys: String, CodingKey { case id, tittel, selskap, beskrivelse, vanskelighet, lov, hendelser, fasitSaldobalanse, fasitJournal }
+    enum CodingKeys: String, CodingKey { case id, tittel, selskap, beskrivelse, vanskelighet, lov, hendelser, fasitSaldobalanse, fasitJournal, kontoutskrift, valutakurser }
 
-    public init(id: String, tittel: String, selskap: String, beskrivelse: String, vanskelighet: Int, lov: [LawReference], hendelser: [CaseEvent], fasitSaldobalanse: [String: Decimal], fasitJournal: Journal?) {
+    public init(id: String, tittel: String, selskap: String, beskrivelse: String, vanskelighet: Int, lov: [LawReference], hendelser: [CaseEvent], fasitSaldobalanse: [String: Decimal], fasitJournal: Journal?, kontoutskrift: BankStatement? = nil, valutakurser: [String: [ExchangeRate]]? = nil) {
         self.id = id; self.tittel = tittel; self.selskap = selskap; self.beskrivelse = beskrivelse; self.vanskelighet = vanskelighet
         self.lov = lov; self.hendelser = hendelser; self.fasitSaldobalanse = fasitSaldobalanse; self.fasitJournal = fasitJournal
+        self.kontoutskrift = kontoutskrift; self.valutakurser = valutakurser
     }
 
     public init(from decoder: Decoder) throws {
@@ -45,6 +49,8 @@ public struct SandboxCase: Codable, Hashable, Sendable, Identifiable {
         hendelser = try c.decode([CaseEvent].self, forKey: .hendelser)
         fasitSaldobalanse = try c.decode([String: Double].self, forKey: .fasitSaldobalanse).mapValues { Decimal(lossless: $0) }
         fasitJournal = try c.decodeIfPresent(Journal.self, forKey: .fasitJournal)
+        kontoutskrift = try c.decodeIfPresent(BankStatement.self, forKey: .kontoutskrift)
+        valutakurser = try c.decodeIfPresent([String: [ExchangeRate]].self, forKey: .valutakurser)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -54,6 +60,7 @@ public struct SandboxCase: Codable, Hashable, Sendable, Identifiable {
         try c.encode(hendelser, forKey: .hendelser)
         try c.encode(fasitSaldobalanse.mapValues { NSDecimalNumber(decimal: $0).doubleValue }, forKey: .fasitSaldobalanse)
         try c.encodeIfPresent(fasitJournal, forKey: .fasitJournal)
+        try c.encodeIfPresent(kontoutskrift, forKey: .kontoutskrift); try c.encodeIfPresent(valutakurser, forKey: .valutakurser)
     }
 
     public static func load(folder: URL) -> [SandboxCase] {
