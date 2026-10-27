@@ -138,4 +138,64 @@ final class ClaudeTests: XCTestCase {
         XCTAssertTrue(url.path.hasPrefix(fallback.path), url.path)
         XCTAssertFalse(FileManager.default.fileExists(atPath: inBundle.appendingPathComponent("oppgaver/generert").path), "nothing is created inside the bundle")
     }
+
+    func testSandboxSchemaRequiresTheStatement() {
+        let schema = PuzzleSchema.sandboxCase
+        XCTAssertTrue(schema["required"]?.array?.contains(.string("kontoutskrift")) ?? false)
+        XCTAssertNotNil(schema["properties"]?["valutakurser"])
+        XCTAssertFalse(schema["required"]?.array?.contains(.string("valutakurser")) ?? true)
+    }
+
+    func testPromptMentionsTheStatement() throws {
+        let prompt = try XCTUnwrap(Tutor.prompt(named: "sandkasse", root: ContentLocator.repoContent))
+        XCTAssertTrue(prompt.contains("kontoutskrift"))
+        XCTAssertTrue(prompt.contains("valutakurser"))
+    }
+
+    func kafeEnvelope(edit: (inout [String: JSONValue]) -> Void = { _ in }) throws -> Data {
+        let kafe = try XCTUnwrap(SandboxCase.load(folder: ContentLocator.repoContent.appendingPathComponent("sandkasse")).first { $0.id == "kafe-001" })
+        var object = try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(kafe)).object!
+        edit(&object)
+        return JSONValue.object(["type": .string("result"), "is_error": .bool(false), "result": .string("{}"), "session_id": .string("s"), "structured_output": .object(object)]).data
+    }
+
+    func testMakeCaseRejectsAStatementThatDoesNotReconcile() async throws {
+        let data = try kafeEnvelope { object in
+            var statement = object["kontoutskrift"]!.object!
+            var lines = statement["linjer"]!.array!
+            var second = lines[1].object!; second["belop"] = .number(-18000); lines[1] = .object(second)
+            statement["linjer"] = .array(lines); object["kontoutskrift"] = .object(statement)
+        }
+        let tutor = Tutor(library: Self.library, runner: ClaudeRunner(processes: FakeProcesses(reply: ProcessResult(exitCode: 0, stdout: data, stderr: Data()))), model: "haiku")
+        do { _ = try await tutor.makeCase(tema: "mva"); XCTFail("expected invalidPuzzle") }
+        catch ClaudeError.invalidPuzzle(let problems) { XCTAssertTrue(problems.contains { $0.contains("b02") }, problems.joined(separator: "; ")) }
+        catch { XCTFail("\(error)") }
+    }
+
+    func testMakeCaseAttachesBankAndCurrencyCardsAndAcceptsAGoodCase() async throws {
+        let fake = FakeProcesses(reply: ProcessResult(exitCode: 0, stdout: try kafeEnvelope(), stderr: Data()))
+        let tutor = Tutor(library: Self.library, runner: ClaudeRunner(processes: fake), model: "haiku")
+        let made = try await tutor.makeCase(tema: "lonn")
+        XCTAssertEqual(made.kontoutskrift?.linjer.count, 8)
+        let args = fake.calls.last!
+        let system = args[args.firstIndex(of: "--system-prompt")! + 1]
+        XCTAssertTrue(system.contains("## Valuta og retting av feil"))
+        XCTAssertTrue(system.contains("## Reskontro, tap på fordringer"))
+        XCTAssertTrue(system.contains("## " + Self.library.rules(tema: "lonn").first!.tittel), "the topic's own cards are still there")
+        let prompt = args[args.firstIndex(of: "-p")! + 1]
+        XCTAssertTrue(prompt.contains("kontoutskrift"))
+        let richest = SandboxCase.load(folder: ContentLocator.repoContent.appendingPathComponent("sandkasse"), includeGenerated: false)
+            .max { ($0.kontoutskrift?.linjer.count ?? 0) < ($1.kontoutskrift?.linjer.count ?? 0) }!.id
+        XCTAssertTrue(prompt.contains("\"id\":\"\(richest)\""), "the example is the hand-written case with the most bank lines")
+    }
+
+    func testLoadCanSkipGeneratedCases() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("sandkasse-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("generert"), withIntermediateDirectories: true)
+        let kafe = try Data(contentsOf: ContentLocator.repoContent.appendingPathComponent("sandkasse/kafe-001.json"))
+        try kafe.write(to: root.appendingPathComponent("kafe-001.json"))
+        try kafe.write(to: root.appendingPathComponent("generert/x.json"))
+        XCTAssertEqual(SandboxCase.load(folder: root).count, 2)
+        XCTAssertEqual(SandboxCase.load(folder: root, includeGenerated: false).count, 1)
+    }
 }

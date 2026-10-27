@@ -63,8 +63,9 @@ public struct SandboxCase: Codable, Hashable, Sendable, Identifiable {
         try c.encodeIfPresent(kontoutskrift, forKey: .kontoutskrift); try c.encodeIfPresent(valutakurser, forKey: .valutakurser)
     }
 
-    public static func load(folder: URL) -> [SandboxCase] {
-        ContentLibrary.jsonFiles(under: folder).compactMap { url in
+    /// `includeGenerated: false` skips files under a `generert` folder, so only hand-written cases remain.
+    public static func load(folder: URL, includeGenerated: Bool = true) -> [SandboxCase] {
+        ContentLibrary.jsonFiles(under: folder).filter { includeGenerated || !$0.pathComponents.contains("generert") }.compactMap { url in
             try? JSONDecoder().decode(SandboxCase.self, from: Data(contentsOf: url))
         }
     }

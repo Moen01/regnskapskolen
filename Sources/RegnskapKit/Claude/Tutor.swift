@@ -21,9 +21,13 @@ public final class Tutor: @unchecked Sendable {
         try? String(contentsOf: root.appendingPathComponent("prompter/\(name).md"), encoding: .utf8)
     }
 
-    func system(_ name: String, tema: String) -> String {
+    func system(_ name: String, tema: String) -> String { system(name, temas: [tema]) }
+
+    /// The cards of every topic in order, each card once.
+    func system(_ name: String, temas: [String]) -> String {
         let base = Self.prompt(named: name, root: library.root) ?? "Du er en norsk regnskapsveileder. Svar på bokmål, kort, og vis til lovparagrafer bare når du er sikker."
-        let cards = library.rules(tema: tema).map(\.promptText).joined(separator: "\n\n")
+        var seen = Set<String>()
+        let cards = temas.flatMap { library.rules(tema: $0) }.filter { seen.insert($0.id).inserted }.map(\.promptText).joined(separator: "\n\n")
         return base + "\n\n# Regelkort for temaet\n\n" + (cards.isEmpty ? "(ingen)" : cards) + "\n\n# Satser og frister (bruk disse, ikke egne tall)\n\n" + library.rates.promptSummary()
     }
 
@@ -86,11 +90,13 @@ public final class Tutor: @unchecked Sendable {
 
     /// A sandbox case for a topic: company, events, expected trial balance and a model journal that must reconcile.
     public func makeCase(tema: String, vanskelighet: Int = 3) async throws -> SandboxCase {
-        let existing = SandboxCase.load(folder: library.root.appendingPathComponent("sandkasse")).first
+        // The richest hand-written case shows the format best; generated cases are never the model.
+        let existing = SandboxCase.load(folder: library.root.appendingPathComponent("sandkasse"), includeGenerated: false)
+            .max { ($0.kontoutskrift?.linjer.count ?? 0) < ($1.kontoutskrift?.linjer.count ?? 0) }
         let example = existing.map { String(decoding: (try? JSONEncoder().encode($0)) ?? Data(), as: UTF8.self) } ?? "(ingen)"
         let accounts = library.chart.all.map { "\($0.nr) \($0.navn)" }.joined(separator: "; ")
         let prompt = """
-        Lag en sandkasse-case for temaet «\(tema)» med vanskelighet \(vanskelighet): et lite norsk selskap, 8–14 hendelser i én måned som brukeren skal bokføre, en fasitSaldobalanse (debet pluss, kredit minus, summen null) og en fasitJournal som gir nøyaktig den saldobalansen. Bruk bare kontoer fra listen. Bruk id «\(tema)-case-\(Int(Date().timeIntervalSince1970))».
+        Lag en sandkasse-case for temaet «\(tema)» med vanskelighet \(vanskelighet): et lite norsk selskap, 8–14 hendelser i én måned som brukeren skal bokføre, en fasitSaldobalanse (debet pluss, kredit minus, summen null) og en fasitJournal som gir nøyaktig den saldobalansen, og en kontoutskrift for 1920 der hver linje peker på bilagene (1-basert nummer i fasitJournal) den gjør opp. Bruk bare kontoer fra listen. Bruk id «\(tema)-case-\(Int(Date().timeIntervalSince1970))».
 
         ## Kontoer
         \(accounts)
@@ -101,7 +107,7 @@ public final class Tutor: @unchecked Sendable {
         ```
         Svar bare med JSON etter skjemaet.
         """
-        let reply = try await runner.run(ClaudeRequest(system: system("sandkasse", tema: tema), prompt: prompt, schema: PuzzleSchema.sandboxCase, model: model, resume: nil, persist: false))
+        let reply = try await runner.run(ClaudeRequest(system: system("sandkasse", temas: [tema, "reskontro-bank", "valuta-korrigeringer"]), prompt: prompt, schema: PuzzleSchema.sandboxCase, model: model, resume: nil, persist: false))
         guard let structured = reply.structured else { throw ClaudeError.badOutput }
         let made: SandboxCase
         do { made = try JSONDecoder().decode(SandboxCase.self, from: structured.data) } catch { throw ClaudeError.invalidPuzzle([ContentLibrary.describe(error)]) }

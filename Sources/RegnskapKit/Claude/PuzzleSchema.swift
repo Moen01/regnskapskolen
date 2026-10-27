@@ -61,6 +61,8 @@ public enum PuzzleSchema {
     public static let sandboxCase: JSONValue = {
         let line = obj(["konto": str, "side": strEnum(["D", "K"]), "belop": num, "mvaKode": str], required: ["konto", "side", "belop"])
         let entry = obj(["dato": str, "tekst": str, "linjer": arr(line, min: 2)], required: ["dato", "tekst", "linjer"])
+        let rate = obj(["dato": str, "kurs": num], required: ["dato", "kurs"])
+        let bankLine = obj(["id": str, "dato": str, "tekst": str, "belop": num, "bilag": arr(.object(["type": .string("integer"), "minimum": .number(1)]))], required: ["id", "dato", "tekst", "belop", "bilag"])
         return obj([
             "id": str, "tittel": str, "selskap": str, "beskrivelse": str,
             "vanskelighet": .object(["type": .string("integer"), "minimum": .number(1), "maximum": .number(5)]),
@@ -68,6 +70,8 @@ public enum PuzzleSchema {
             "hendelser": arr(obj(["dato": str, "tekst": str, "hint": str], required: ["dato", "tekst"]), min: 6),
             "fasitSaldobalanse": .object(["type": .string("object"), "additionalProperties": num]),
             "fasitJournal": obj(["entries": arr(entry, min: 6)], required: ["entries"]),
-        ], required: ["id", "tittel", "selskap", "beskrivelse", "vanskelighet", "lov", "hendelser", "fasitSaldobalanse", "fasitJournal"])
+            "kontoutskrift": obj(["konto": strEnum(["1920"]), "utgaaende": num, "linjer": arr(bankLine, min: 2)], required: ["konto", "utgaaende", "linjer"]),
+            "valutakurser": .object(["type": .string("object"), "additionalProperties": arr(rate)]),
+        ], required: ["id", "tittel", "selskap", "beskrivelse", "vanskelighet", "lov", "hendelser", "fasitSaldobalanse", "fasitJournal", "kontoutskrift"])
     }()
 }
