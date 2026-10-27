@@ -1,5 +1,10 @@
 import Foundation
 
+private extension Array where Element: Hashable {
+    /// The elements in order, each once.
+    var unique: [Element] { var seen = Set<Element>(); return filter { seen.insert($0).inserted } }
+}
+
 /// One match the user made: some bank lines that together equal some vouchers' bank movement.
 public struct BankMatch: Codable, Hashable, Sendable, Identifiable {
     public var id: UUID
@@ -35,11 +40,11 @@ public struct Reconciliation: Codable, Hashable, Sendable {
     /// Bank sum minus journal bank movement for a selection; nil when an id is unknown.
     public static func difference(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> Decimal? {
         var bank: Decimal = 0, books: Decimal = 0
-        for id in bankLineIds {
+        for id in bankLineIds.unique {
             guard let line = statement.line(id: id) else { return nil }
             bank += line.belop
         }
-        for id in entryIds {
+        for id in entryIds.unique {
             guard let entry = journal.entries.first(where: { $0.id == id }) else { return nil }
             books += entry.bankMovement(konto: statement.konto)
         }
@@ -53,7 +58,7 @@ public struct Reconciliation: Codable, Hashable, Sendable {
     @discardableResult
     public mutating func match(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal) -> MatchError? {
         if let error = check(bankLineIds: bankLineIds, entryIds: entryIds, statement: statement, journal: journal) { return error }
-        matches.append(BankMatch(bankLineIds: bankLineIds, entryIds: entryIds))
+        matches.append(BankMatch(bankLineIds: bankLineIds.unique, entryIds: entryIds.unique))
         return nil
     }
 
@@ -69,6 +74,8 @@ public struct Reconciliation: Codable, Hashable, Sendable {
 
     // `ignoringMatches` lets prune re-check a match against itself without tripping alreadyMatched.
     private func validate(bankLineIds: [String], entryIds: [UUID], statement: BankStatement, journal: Journal, ignoringMatches: Bool) -> MatchError? {
+        // A repeated id must count once, or a selection could be padded to hit a zero difference.
+        let bankLineIds = bankLineIds.unique, entryIds = entryIds.unique
         if bankLineIds.isEmpty || entryIds.isEmpty { return .emptySide }
         for id in bankLineIds where statement.line(id: id) == nil { return .unknownId(id) }
         for id in entryIds where !journal.entries.contains(where: { $0.id == id }) { return .unknownId(id.uuidString) }
@@ -111,7 +118,7 @@ public struct BankCheck: Hashable, Sendable {
 extension JournalEntry {
     /// What "Før fra banklinjen" starts with: the line's date and text, a bank line equal to it, and an empty counter line.
     public init(bankLine: BankLine, konto: String = JournalValidator.bank) {
-        let side: Side = bankLine.belop >= 0 ? .debet : .kredit
+        let side: Side = bankLine.belop > 0 ? .debet : .kredit
         self.init(dato: bankLine.dato, tekst: bankLine.tekst, linjer: [
             JournalLine(konto: konto, side: side, belop: abs(bankLine.belop)),
             JournalLine(konto: "", side: side == .debet ? .kredit : .debet, belop: 0),

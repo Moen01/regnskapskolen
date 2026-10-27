@@ -84,6 +84,16 @@ final class BankReconciliationTests: XCTestCase {
         XCTAssertEqual(BankCheck(statement: statement, journal: more, reconciliation: r).entriesTotal, 5, "a zero net movement is not a bank voucher")
     }
 
+    func testRepeatedIdsCountOnce() {
+        var r = Reconciliation()
+        XCTAssertEqual(Reconciliation.difference(bankLineIds: ["b03", "b03"], entryIds: [], statement: statement, journal: journal), -21000)
+        // bank -21 000 minus journal -42 000 is +21 000
+        XCTAssertEqual(r.match(bankLineIds: ["b03", "b03"], entryIds: [salary.id], statement: statement, journal: journal), .difference(21000))
+        XCTAssertTrue(r.matches.isEmpty)
+        XCTAssertNil(r.match(bankLineIds: ["b01", "b01"], entryIds: [opening.id, opening.id], statement: statement, journal: journal))
+        XCTAssertEqual(r.matches.first?.bankLineIds, ["b01"]); XCTAssertEqual(r.matches.first?.entryIds, [opening.id])
+    }
+
     func testEntryFromBankLineMatchesTheLine() {
         let fee = BankLine(id: "b09", dato: mars(31), tekst: "Gebyr", belop: -150, bilag: [])
         let entry = JournalEntry(bankLine: fee)
@@ -92,6 +102,8 @@ final class BankReconciliationTests: XCTestCase {
         XCTAssertEqual(entry.linjer[0].konto, "1920"); XCTAssertEqual(entry.linjer[0].side, .kredit); XCTAssertEqual(entry.linjer[0].belop, 150)
         XCTAssertEqual(entry.linjer[1].konto, ""); XCTAssertEqual(entry.linjer[1].belop, 0)
         XCTAssertEqual(JournalEntry(bankLine: BankLine(id: "x", dato: mars(1), tekst: "Renter", belop: 40, bilag: [])).linjer[0].side, .debet)
+        let zero = JournalEntry(bankLine: BankLine(id: "z", dato: mars(1), tekst: "Null", belop: 0, bilag: []))
+        XCTAssertEqual(zero.linjer[0].side, .kredit); XCTAssertEqual(zero.linjer[0].belop, 0)
         let s = BankStatement(konto: "1920", utgaaende: statement.utgaaende - 150, linjer: statement.linjer + [fee])
         var j = journal; j.entries.append(entry)
         XCTAssertNil(Reconciliation().check(bankLineIds: ["b09"], entryIds: [entry.id], statement: s, journal: j))
