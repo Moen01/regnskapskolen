@@ -32,6 +32,8 @@ final class AppStore {
 
     var sandbox = Journal()
     var activeCase: SandboxCase?
+    var reconciliation = Reconciliation()
+    var sandboxPane: SandboxPane = .journal
     var sandboxProblems: [JournalProblem] = []
 
     var remainingToday: Int { progress.days[todayKey.string]?.remaining ?? today.count }
