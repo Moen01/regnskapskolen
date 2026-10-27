@@ -34,4 +34,24 @@ final class ProgressStoreTests: XCTestCase {
         try store.save(LearnerProgress())
         XCTAssertEqual(store.load().puzzles.count, 0)
     }
+
+    func testAFileWithoutGameReadsWithEmptyGameProgress() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("fremdrift-\(UUID().uuidString).json")
+        try Data(#"{"puzzles":{"x":{"box":1,"attempts":1,"correct":1}},"days":{}}"#.utf8).write(to: url)
+        let loaded = ProgressStore(url: url).load()
+        XCTAssertEqual(loaded.puzzles["x"]?.box, 1)
+        XCTAssertEqual(loaded.game, GameProgress())
+    }
+
+    func testGameProgressRoundTrips() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("fremdrift-\(UUID().uuidString).json")
+        var progress = LearnerProgress()
+        progress.game.xp = 420
+        progress.game.badges["lynrask"] = DayKey(string: "2026-10-27")!
+        progress.game.bestScores["lynrunde"] = 1600
+        progress.game.counters["mva-paa-rad"] = 3
+        let store = ProgressStore(url: url)
+        try store.save(progress)
+        XCTAssertEqual(store.load().game, progress.game)
+    }
 }

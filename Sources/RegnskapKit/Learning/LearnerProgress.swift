@@ -36,9 +36,20 @@ public struct LearnerProgress: Codable, Hashable, Sendable {
     public var puzzles: [String: PuzzleProgress]
     /// Keyed by the day's "YYYY-MM-DD".
     public var days: [String: DayRecord]
+    public var game: GameProgress
 
-    public init(puzzles: [String: PuzzleProgress] = [:], days: [String: DayRecord] = [:]) {
-        self.puzzles = puzzles; self.days = days
+    enum CodingKeys: String, CodingKey { case puzzles, days, game }
+
+    public init(puzzles: [String: PuzzleProgress] = [:], days: [String: DayRecord] = [:], game: GameProgress = GameProgress()) {
+        self.puzzles = puzzles; self.days = days; self.game = game
+    }
+
+    /// A file written before the games has no `game`; it reads as empty rather than failing.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        puzzles = try c.decode([String: PuzzleProgress].self, forKey: .puzzles)
+        days = try c.decode([String: DayRecord].self, forKey: .days)
+        game = try c.decodeIfPresent(GameProgress.self, forKey: .game) ?? GameProgress()
     }
 
     /// Consecutive completed days ending today, or ending yesterday when today is not done yet.
