@@ -21,4 +21,13 @@ final class SandboxCaseTests: XCTestCase {
         XCTAssertEqual(diffs.count, c.fasitSaldobalanse.filter { $0.value != 0 }.count)
         XCTAssertTrue(diffs.allSatisfy { $0.faktisk == 0 })
     }
+
+    func testKafeHasAStatementThatReconciles() throws {
+        let kafe = try XCTUnwrap(SandboxCase.load(folder: ContentLocator.repoContent.appendingPathComponent("sandkasse")).first { $0.id == "kafe-001" })
+        let statement = try XCTUnwrap(kafe.kontoutskrift)
+        XCTAssertEqual(statement.linjer.count, 8)
+        XCTAssertEqual(statement.utgaaende, 94900)
+        XCTAssertEqual(statement.linjer.map(\.bilag), [[1], [2], [4], [5], [7], [8], [9], [11]])
+        XCTAssertEqual(SandboxCaseValidator.problems(kafe, chart: Self.library.chart, rates: Self.library.rates), [])
+    }
 }

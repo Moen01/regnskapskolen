@@ -109,6 +109,20 @@
     "6540": 25000,
     "7770": 150
   },
+  "kontoutskrift": {
+    "konto": "1920",
+    "utgaaende": 94900,
+    "linjer": [
+      { "id": "b01", "dato": "2026-03-01", "tekst": "Innskudd aksjekapital og egenkapital", "belop": 100000, "bilag": [1] },
+      { "id": "b02", "dato": "2026-03-01", "tekst": "Nettgiro Gårdeier AS, husleie mars", "belop": -18750, "bilag": [2] },
+      { "id": "b03", "dato": "2026-03-05", "tekst": "Kontantinnskudd uke 10", "belop": 23000, "bilag": [4] },
+      { "id": "b04", "dato": "2026-03-10", "tekst": "Kortoppgjør Nets", "belop": 50000, "bilag": [5] },
+      { "id": "b05", "dato": "2026-03-15", "tekst": "Nettgiro Grossisten AS", "belop": -9200, "bilag": [7] },
+      { "id": "b06", "dato": "2026-03-25", "tekst": "Lønn mars", "belop": -35000, "bilag": [8] },
+      { "id": "b07", "dato": "2026-03-26", "tekst": "Skatteetaten, forskuddstrekk", "belop": -15000, "bilag": [9] },
+      { "id": "b08", "dato": "2026-03-31", "tekst": "Gebyr", "belop": -150, "bilag": [11] }
+    ]
+  },
   "fasitJournal": {
     "entries": [
       {
