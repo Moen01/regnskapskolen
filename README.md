@@ -17,6 +17,7 @@ Med [Claude Code](https://claude.com/claude-code) installert kan appen forklare 
 3. Appen er ad hoc-signert: høyreklikk → *Åpne* første gang (macOS spør én gang).
 4. Finn bokikonet i menylinjen. Tallet er oppgavene som gjenstår i dag.
 5. Gå gjennom oppsettet: når du vil minnes på, og om Claude skal brukes.
+6. Appen sier fra i menylinjen når en ny versjon finnes; du trykker, den bytter seg selv ut og starter på nytt.
 
 Krever macOS 15 eller nyere.
 
@@ -29,6 +30,29 @@ cd regnskapskolen
 ```
 
 Skriptet sjekker Xcode og Swift 6, ser etter Claude Code, bygger appen, legger den i `/Applications`, peker den på `Innhold/` i repoet (så oppgaver du eller Claude skriver, vises uten ny bygging) og åpner den. Andre kommandoer: `make test`, `make app`, `make run`, `make install`, `make icon`.
+
+## Oppdateringer
+
+Appen sjekker nyeste utgivelse på GitHub 30 sekunder etter start og hver sjette time (kan slås av i Innstillinger). Finnes en nyere versjon, får du knappen **Oppdater til X.Y.Z** i menylinjen og **Oppdater og start på nytt** i Innstillinger → Oppdateringer, med utgivelsesnotatene under, og én varsling. Appen laster ned `Regnskapsskolen-<versjon>.zip` fra utgivelsen, pakker ut, kontrollerer signaturen (`codesign --verify`), bytter seg selv ut og starter på nytt. En app signert med Developer ID godtar bare en oppdatering fra samme Apple-team. En ad hoc-signert utgivelse (uten hemmelighetene under) kontrolleres bare for at bundelen er hel; Developer ID anbefales. Et lokalt bygg (`make app`, `make install`) er et utviklingsbygg og oppdaterer aldri seg selv.
+
+Publiser en versjon med en annotert tag; meldingen blir utgivelsesnotatet i appen:
+
+```sh
+git tag -a v0.2.0 -m "Regnskapsskolen 0.2.0: bankavstemming i sandkassen"
+git push origin v0.2.0
+```
+
+Workflowen **Release** tester, bygger, signerer og notariserer når disse hemmelighetene finnes i repoet, og legger zip-en på utgivelsen:
+
+| Hemmelighet | Hva det er |
+|---|---|
+| `DEVELOPER_ID_CERT_P12` | Sertifikatet **Developer ID Application** med privat nøkkel, eksportert fra Nøkkelringtilgang som .p12 og base64-kodet (`base64 -i cert.p12 \| pbcopy`) |
+| `DEVELOPER_ID_CERT_PASSWORD` | Passordet du satte ved eksporten |
+| `NOTARY_KEY_P8` | En App Store Connect API-nøkkel (Users and Access → Integrations → Team Keys, rollen Developer); innholdet i .p8-fila |
+| `NOTARY_KEY_ID` | Nøkkelens ID |
+| `NOTARY_ISSUER_ID` | Issuer ID over nøkkellisten |
+
+Mer i `docs/releasing.md`.
 
 ## Claude
 

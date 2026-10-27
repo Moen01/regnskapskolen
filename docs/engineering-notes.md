@@ -37,6 +37,12 @@ Ting som kostet tid, så de ikke koster tid igjen.
 - **Klokka er et argument, ikke `Date()`.** `LightningRound` og `DebitCreditDrill` får `now` inn i hvert kall og pauser ved å bokføre pausetid; testene kjører en hel runde med faste tall. Appen tikker fra en `Task` hvert 100 ms, men tildeler bare runden på nytt når fasen endrer seg, ellers tegner hele skjermen ti ganger i sekundet. Selve nedtellingen leser `TimelineView` rett fra runden.
 - **Én tastatursnarvei per knapp.** `Debet` skal svare på både ← og D; den andre tasten ligger på en usynlig knapp i `.background`.
 
+## Oppdateringer og Swift 6
+
+- **`static let` i en `@MainActor`-klasse er aktør-isolert.** `Reminder.updatePrefix` leses fra en `nonisolated` delegatmetode og må være `nonisolated static let`, ellers nekter kompilatoren.
+- **`try await XCTUnwrap(expr)` kompilerer ikke**: `XCTUnwrap` tar en autoclosure som ikke kan vente. Skriv `let x = try await expr; try XCTUnwrap(x)`.
+- **Skjermbildemodus må aldri lagre til Application Support.** En avsluttet demo-runde lagret fremdriften over den ekte fila (27.10.2026). `Screenshots.capture` bytter `store.progressStore` til en fil ved siden av PNG-ene før noe tegnes.
+
 ## Skjermbilder uten å klikke
 
 `REGNSKAP_SCREENSHOTS=<mappe>` tegner hver skjerm i et vindu utenfor skjermen og skriver PNG. Tre ting måtte til på macOS 26:

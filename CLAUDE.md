@@ -43,6 +43,7 @@ make app                                # build/Regnskapsskolen.app
 make install                            # til /Applications
 REGNSKAP_SCREENSHOTS=/tmp/shots build/Regnskapsskolen.app/Contents/MacOS/Regnskapsskolen   # alle skjermer som PNG
 ./scripts/onboard.sh                    # førstegangsoppsett
+git tag -a vX.Y.Z -m "…" && git push origin vX.Y.Z   # utgivelse: CI bygger, signerer når hemmelighetene finnes, legger zip på releasen
 ```
 
 Skillene: `/ny-oppgave`, `/kvalitetssjekk`, `/forklar`, `/sandkasse-case`, `/ukens-tema` (se `.claude/skills/`).

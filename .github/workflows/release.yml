@@ -1,3 +1,7 @@
+# Builds Regnskapsskolen for a version tag and attaches the zip to the GitHub release, where the
+# app's updater finds it. With the Developer ID and notarisation secrets in place (see README,
+# «Oppdateringer») the app is signed and notarised; without them it is signed ad hoc as before.
+# Push an annotated tag such as v0.2.0: its message becomes the release notes the app shows.
 name: Release
 
 on:
@@ -20,14 +24,61 @@ jobs:
           key: swiftpm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Package.resolved') }}
           restore-keys: swiftpm-${{ runner.os }}-
       - run: swift test
+
+      - name: Decide whether to sign
+        env:
+          CERT_P12: ${{ secrets.DEVELOPER_ID_CERT_P12 }}
+        run: echo "SIGNING=$([[ -n "$CERT_P12" ]] && echo yes || echo no)" >> "$GITHUB_ENV"
+
+      # The Developer ID certificate goes into a throwaway keychain that only lives for this job.
+      - name: Import the signing certificate
+        if: env.SIGNING == 'yes'
+        env:
+          CERT_P12: ${{ secrets.DEVELOPER_ID_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.DEVELOPER_ID_CERT_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/cert.p12"
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN" | awk '/Developer ID Application/ { print $2; exit }')
+          [[ -n "$IDENTITY" ]] || { echo "No Developer ID Application identity in DEVELOPER_ID_CERT_P12"; exit 1; }
+          echo "SIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
+
       - name: Build the app bundle
         run: APP_VERSION="${GITHUB_REF_NAME#v}" ./scripts/bundle.sh release
+
+      - name: Notarise
+        if: env.SIGNING == 'yes'
+        env:
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          export NOTARY_KEY="$RUNNER_TEMP/notary.p8"
+          echo "$NOTARY_KEY_P8" > "$NOTARY_KEY"
+          ./scripts/notarize.sh "Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
+
       - name: Zip it
+        if: env.SIGNING != 'yes'
         run: ditto -c -k --keepParent build/Regnskapsskolen.app "Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
+
+      - name: Remove the signing keychain
+        if: always() && env.SIGNING == 'yes'
+        run: |
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true
+          rm -f "$RUNNER_TEMP/notary.p8"
+
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           ZIP="Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "Regnskapsskolen ${GITHUB_REF_NAME#v}" --generate-notes \
+          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "Regnskapsskolen ${GITHUB_REF_NAME#v}" --notes-from-tag \
             || gh release upload "$GITHUB_REF_NAME" "$ZIP" --clobber
