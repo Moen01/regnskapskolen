@@ -19,8 +19,23 @@ final class SchedulerTests: XCTestCase {
         XCTAssertEqual(progress.puzzles[id]?.box, 0)
         XCTAssertEqual(progress.puzzles[id]?.attempts, 3)
         XCTAssertEqual(progress.puzzles[id]?.correct, 2)
-        for _ in 0..<6 { Scheduler.record(AttemptResult(puzzleId: id, correctFirstTry: true), on: day.adding(days: 30), progress: &progress) }
+        for i in 0..<6 { Scheduler.record(AttemptResult(puzzleId: id, correctFirstTry: true), on: day.adding(days: 30 + i), progress: &progress) }
         XCTAssertEqual(progress.puzzles[id]?.box, 4, "box is capped at 4")
+    }
+
+    func testASecondCorrectAnswerTheSameDayKeepsTheBox() {
+        var progress = LearnerProgress()
+        let id = pool[0].id
+        XCTAssertTrue(Scheduler.isFirstAnswer(of: id, on: day, progress: progress))
+        Scheduler.record(AttemptResult(puzzleId: id, correctFirstTry: true), on: day, progress: &progress)
+        XCTAssertFalse(Scheduler.isFirstAnswer(of: id, on: day, progress: progress))
+        Scheduler.record(AttemptResult(puzzleId: id, correctFirstTry: true), on: day, progress: &progress)
+        XCTAssertEqual(progress.puzzles[id]?.box, 1, "one promotion per day")
+        XCTAssertEqual(progress.puzzles[id]?.attempts, 2)
+        XCTAssertEqual(progress.puzzles[id]?.correct, 2)
+        Scheduler.record(AttemptResult(puzzleId: id, correctFirstTry: false), on: day, progress: &progress)
+        XCTAssertEqual(progress.puzzles[id]?.box, 0, "a wrong answer always resets")
+        XCTAssertTrue(Scheduler.isFirstAnswer(of: id, on: day.adding(days: 1), progress: progress))
     }
 
     func testDueFollowsIntervals() {

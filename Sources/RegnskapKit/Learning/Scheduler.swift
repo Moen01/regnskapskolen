@@ -5,15 +5,23 @@ public enum Scheduler {
     public static let intervals = [0, 1, 3, 7, 21]
     public static let topBox = intervals.count - 1
 
-    /// Records one attempt: right on the first check moves the puzzle up a box, anything else sends
-    /// it back to box 0. The day's record is marked when the puzzle belongs to that day's set.
+    /// True until the puzzle has been answered on `day`: the first answer is the one that counts
+    /// for the box and for XP, so a game round cannot farm promotions in one evening.
+    public static func isFirstAnswer(of puzzleId: String, on day: DayKey, progress: LearnerProgress) -> Bool {
+        progress.puzzles[puzzleId]?.lastSeen != day
+    }
+
+    /// Records one attempt: right on the first check moves the puzzle up a box (at most once per
+    /// day), anything else sends it back to box 0. The day's record is marked when the puzzle
+    /// belongs to that day's set.
     public static func record(_ result: AttemptResult, on day: DayKey, progress: inout LearnerProgress) {
+        let first = isFirstAnswer(of: result.puzzleId, on: day, progress: progress)
         var p = progress.puzzles[result.puzzleId] ?? PuzzleProgress()
         p.box = min(max(p.box, 0), topBox)  // a hand-edited file must not index outside the intervals
         p.attempts += 1
         if result.correctFirstTry {
             p.correct += 1
-            p.box = min(topBox, p.box + 1)
+            if first { p.box = min(topBox, p.box + 1) }
         } else {
             p.box = 0
         }
