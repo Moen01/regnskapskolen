@@ -1,0 +1,435 @@
+{
+  "id": "bank-001",
+  "tittel": "Fjellsport AS: en måned med bankavstemming",
+  "selskap": "Fjellsport AS, Lillehammer (sone 1). Nettbutikk og butikk for friluftsutstyr. Avgiftspliktig (25 %), to ansatte.",
+  "beskrivelse": "Selskapet starter april 2026 med 150 000 kr i banken, 40 000 i kundefordringer, 60 000 i varelager, 100 000 i aksjekapital og 150 000 i annen egenkapital. Før hver hendelse som et eget bilag i sandkassen. Sjekk saldobalansen mot fasiten til slutt. Avstem banken i Bank-fanen til slutt. Alle beløp som ikke sier noe annet er eks. mva.",
+  "vanskelighet": 4,
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skjer i norske kroner, og en faktura i utenlandsk valuta føres til kursen på transaksjonsdagen."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 5-9",
+      "tekst": "Pengeposter i utenlandsk valuta omregnes ved årsslutt til balansedagens kurs, og urealisert tap og gevinst resultatføres."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 3-1",
+      "tekst": "Kundespesifikasjonen viser hver kunde med saldo og bevegelser, og summen skal stemme med kontrollkontoen 1500 i hovedboken."
+    }
+  ],
+  "hendelser": [
+    {
+      "dato": "2026-04-01",
+      "tekst": "Åpningsbalanse: 150 000 kr i banken, kundefordringer 40 000 kr (faktura til Fjellgruppa AS 25 000 kr og Turlaget 15 000 kr), varelager 60 000 kr. Aksjekapital 100 000 kr og annen egenkapital 150 000 kr."
+    },
+    {
+      "dato": "2026-04-02",
+      "tekst": "Varekjøp fra Bergans-grossisten AS, 40 000 kr + 25 % mva, på kreditt."
+    },
+    {
+      "dato": "2026-04-07",
+      "tekst": "Kortsalg tirsdag: 12 500 kr inkl. 25 % mva (kortinnløser)."
+    },
+    {
+      "dato": "2026-04-08",
+      "tekst": "Kortsalg onsdag: 10 000 kr inkl. 25 % mva."
+    },
+    {
+      "dato": "2026-04-09",
+      "tekst": "Kortsalg torsdag: 15 000 kr inkl. 25 % mva."
+    },
+    {
+      "dato": "2026-04-10",
+      "tekst": "Fjellgruppa AS betaler fakturaen på 25 000 kr."
+    },
+    {
+      "dato": "2026-04-13",
+      "tekst": "Lisens for nettbutikk-plattform fra Alpenwerk GmbH (Tyskland): 2 000 EUR, kurs 11,50, omvendt avgiftsplikt, 30 dagers kreditt.",
+      "hint": "Hva gjør du med mva når selger er utenlandsk, og hvilken kurs føres fakturaen til?"
+    },
+    {
+      "dato": "2026-04-15",
+      "tekst": "Fakturaen fra Bergans-grossisten betales fra bank."
+    },
+    {
+      "dato": "2026-04-20",
+      "tekst": "Turlaget betaler fakturaen på 15 000 kr."
+    },
+    {
+      "dato": "2026-04-24",
+      "tekst": "Alpenwerk GmbH betales: 2 000 EUR, kurs 11,80.",
+      "hint": "Fakturaen ble ført til 23 000. Hva skjer med de 600?"
+    },
+    {
+      "dato": "2026-04-24",
+      "tekst": "Lønn for april, to ansatte: brutto 30 000 kr hver, forskuddstrekk 9 000 kr hver, netto utbetalt fra bank til hver. Arbeidsgiveravgift 14,1 %."
+    },
+    {
+      "dato": "2026-04-27",
+      "tekst": "Forskuddstrekket betales til Skatteetaten (første virkedag etter utbetalingen)."
+    },
+    {
+      "dato": "2026-04-28",
+      "tekst": "Salg på faktura til Turlaget: 20 000 kr + 25 % mva, forfall i mai."
+    },
+    {
+      "dato": "2026-04-30",
+      "tekst": "Kortinnløseren trekker gebyr for april, 450 kr, ingen mva.",
+      "hint": "Står dette på kontoutskriften før du har ført det?"
+    }
+  ],
+  "fasitSaldobalanse": {
+    "1400": 60000,
+    "1500": 25000,
+    "1920": 93450,
+    "2000": -100000,
+    "2050": -150000,
+    "2400": 0,
+    "2600": 0,
+    "2700": -18250,
+    "2710": 15750,
+    "2770": -8460,
+    "3000": -50000,
+    "4300": 40000,
+    "5000": 60000,
+    "5400": 8460,
+    "6790": 23000,
+    "7770": 450,
+    "8160": 600
+  },
+  "kontoutskrift": {
+    "konto": "1920",
+    "utgaaende": 93450,
+    "linjer": [
+      { "id": "b01", "dato": "2026-04-01", "tekst": "Inngående saldo", "belop": 150000, "bilag": [1] },
+      { "id": "b02", "dato": "2026-04-13", "tekst": "Nets oppgjør uke 15", "belop": 37500, "bilag": [3, 4, 5] },
+      { "id": "b03", "dato": "2026-04-10", "tekst": "Innbet. Fjellgruppa AS", "belop": 25000, "bilag": [6] },
+      { "id": "b04", "dato": "2026-04-15", "tekst": "Nettgiro Bergans-grossisten AS", "belop": -50000, "bilag": [8] },
+      { "id": "b05", "dato": "2026-04-20", "tekst": "Innbet. Turlaget", "belop": 15000, "bilag": [9] },
+      { "id": "b06", "dato": "2026-04-24", "tekst": "Utland Alpenwerk GmbH EUR 2 000,00", "belop": -23600, "bilag": [10] },
+      { "id": "b07", "dato": "2026-04-24", "tekst": "Lønn Kari Nordmann", "belop": -21000, "bilag": [11] },
+      { "id": "b08", "dato": "2026-04-24", "tekst": "Lønn Ola Hansen", "belop": -21000, "bilag": [11] },
+      { "id": "b09", "dato": "2026-04-27", "tekst": "Skatteetaten forskuddstrekk", "belop": -18000, "bilag": [12] },
+      { "id": "b10", "dato": "2026-04-30", "tekst": "Nets gebyr april", "belop": -450, "bilag": [14] }
+    ]
+  },
+  "valutakurser": {
+    "EUR": [
+      { "dato": "2026-04-13", "kurs": 11.5 },
+      { "dato": "2026-04-24", "kurs": 11.8 }
+    ]
+  },
+  "fasitJournal": {
+    "entries": [
+      {
+        "dato": "2026-04-01",
+        "tekst": "Åpningsbalanse",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 150000
+          },
+          {
+            "konto": "1500",
+            "side": "D",
+            "belop": 40000
+          },
+          {
+            "konto": "1400",
+            "side": "D",
+            "belop": 60000
+          },
+          {
+            "konto": "2000",
+            "side": "K",
+            "belop": 100000
+          },
+          {
+            "konto": "2050",
+            "side": "K",
+            "belop": 150000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-02",
+        "tekst": "Varekjøp Bergans-grossisten på kreditt",
+        "linjer": [
+          {
+            "konto": "4300",
+            "side": "D",
+            "belop": 40000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2710",
+            "side": "D",
+            "belop": 10000
+          },
+          {
+            "konto": "2400",
+            "side": "K",
+            "belop": 50000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-07",
+        "tekst": "Kortsalg tirsdag",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 12500
+          },
+          {
+            "konto": "3000",
+            "side": "K",
+            "belop": 10000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 2500
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-08",
+        "tekst": "Kortsalg onsdag",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 10000
+          },
+          {
+            "konto": "3000",
+            "side": "K",
+            "belop": 8000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 2000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-09",
+        "tekst": "Kortsalg torsdag",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 15000
+          },
+          {
+            "konto": "3000",
+            "side": "K",
+            "belop": 12000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 3000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-10",
+        "tekst": "Innbetaling Fjellgruppa AS",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 25000
+          },
+          {
+            "konto": "1500",
+            "side": "K",
+            "belop": 25000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-13",
+        "tekst": "Lisens Alpenwerk GmbH, omvendt avgiftsplikt",
+        "linjer": [
+          {
+            "konto": "6790",
+            "side": "D",
+            "belop": 23000,
+            "mvaKode": "omvendt"
+          },
+          {
+            "konto": "2710",
+            "side": "D",
+            "belop": 5750
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 5750
+          },
+          {
+            "konto": "2400",
+            "side": "K",
+            "belop": 23000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-15",
+        "tekst": "Betalt Bergans-grossisten",
+        "linjer": [
+          {
+            "konto": "2400",
+            "side": "D",
+            "belop": 50000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 50000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-20",
+        "tekst": "Innbetaling Turlaget",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 15000
+          },
+          {
+            "konto": "1500",
+            "side": "K",
+            "belop": 15000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-24",
+        "tekst": "Betalt Alpenwerk, valutatap",
+        "linjer": [
+          {
+            "konto": "2400",
+            "side": "D",
+            "belop": 23000
+          },
+          {
+            "konto": "8160",
+            "side": "D",
+            "belop": 600
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 23600
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-24",
+        "tekst": "Lønn april",
+        "linjer": [
+          {
+            "konto": "5000",
+            "side": "D",
+            "belop": 60000
+          },
+          {
+            "konto": "2600",
+            "side": "K",
+            "belop": 18000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 21000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 21000
+          },
+          {
+            "konto": "5400",
+            "side": "D",
+            "belop": 8460
+          },
+          {
+            "konto": "2770",
+            "side": "K",
+            "belop": 8460
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-27",
+        "tekst": "Forskuddstrekk betalt til Skatteetaten",
+        "linjer": [
+          {
+            "konto": "2600",
+            "side": "D",
+            "belop": 18000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 18000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-28",
+        "tekst": "Fakturasalg Turlaget",
+        "linjer": [
+          {
+            "konto": "1500",
+            "side": "D",
+            "belop": 25000
+          },
+          {
+            "konto": "3000",
+            "side": "K",
+            "belop": 20000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 5000
+          }
+        ]
+      },
+      {
+        "dato": "2026-04-30",
+        "tekst": "Kortgebyr april",
+        "linjer": [
+          {
+            "konto": "7770",
+            "side": "D",
+            "belop": 450
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 450
+          }
+        ]
+      }
+    ]
+  }
+}
