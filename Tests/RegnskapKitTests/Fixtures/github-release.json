@@ -1,0 +1,10 @@
+{
+  "tag_name": "v0.2.0",
+  "name": "Regnskapsskolen 0.2.0",
+  "body": "Bankavstemming i sandkassen.\n\n- Ny fane «Bank»\n- Casen bank-001",
+  "published_at": "2026-10-27T18:00:00Z",
+  "html_url": "https://github.com/Moen01/regnskapskolen/releases/tag/v0.2.0",
+  "assets": [
+    { "name": "Regnskapsskolen-0.2.0.zip", "browser_download_url": "https://github.com/Moen01/regnskapskolen/releases/download/v0.2.0/Regnskapsskolen-0.2.0.zip" }
+  ]
+}
