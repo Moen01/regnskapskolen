@@ -20,7 +20,7 @@ struct NumberView: View {
     }
 }
 
-/// "Frist": the event and a date picker.
+/// "Frist": the event, a field to type the date in and a calendar to click in.
 struct DeadlineView: View {
     let deadline: Deadline
     @Binding var day: DayKey?
@@ -29,11 +29,8 @@ struct DeadlineView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(deadline.hendelse)
-            DatePicker("Frist", selection: Binding(get: { day?.date ?? Date() }, set: { day = DayKey($0) }), displayedComponents: .date)
-                .datePickerStyle(.field)
-                .environment(\.locale, Locale(identifier: "nb_NO"))
-                .frame(width: 220)
-            if day == nil { Text("Velg en dato.").font(.caption).foregroundStyle(.secondary) }
+            Text("Skriv fristen, eller velg dagen i kalenderen.").font(.caption).foregroundStyle(.secondary)
+            DateField(day: $day, inlineCalendar: true)
         }
         .disabled(disabled)
     }

@@ -47,6 +47,8 @@ struct MainView: View {
             }
             .frame(minWidth: 600)
         }
+        // Picking a section in the sidebar is the way out of an open puzzle, not only the back button.
+        .onChange(of: navigation.section) { store.openPuzzle = nil }
         .sheet(isPresented: $navigation.showOnboarding) { OnboardingView() }
         .overlay(alignment: .bottom) {
             if let notice = store.contentNotice ?? store.loadError, store.library != nil {

@@ -47,10 +47,8 @@ struct EntryCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                DatePicker("Dato", selection: Binding(get: { entry.dato.date }, set: { entry.dato = DayKey($0) }), displayedComponents: .date)
-                    .datePickerStyle(.field).labelsHidden()
-                    .environment(\.locale, Locale(identifier: "nb_NO"))
-                    .frame(width: 110)
+                // A voucher always has a date: an emptied or half-typed field keeps the last one until it parses again.
+                DateField(day: Binding(get: { entry.dato }, set: { if let day = $0 { entry.dato = day } }))
                 TextField("Bilagstekst", text: $entry.tekst).textFieldStyle(.roundedBorder)
                 Button { onDelete() } label: { Image(systemName: "trash") }.buttonStyle(.plain).foregroundStyle(.secondary).help("Slett bilaget")
             }

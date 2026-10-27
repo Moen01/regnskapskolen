@@ -49,6 +49,14 @@ public struct DayKey: Hashable, Codable, Comparable, Sendable, CustomStringConve
     public func adding(days: Int) -> DayKey { DayKey(Calendar.norwegian.date(byAdding: .day, value: days, to: date)!) }
     public func adding(months: Int) -> DayKey { DayKey(Calendar.norwegian.date(byAdding: .month, value: months, to: date)!) }
 
+    /// The 42 days a month calendar shows: six rows of Monday to Sunday, starting on the Monday on
+    /// or before the first of the month. Days from the months around fill the first and last rows.
+    public static func monthGrid(year: Int, month: Int) -> [DayKey] {
+        let first = DayKey(year: year, month: month, day: 1)
+        let start = first.adding(days: -(first.weekday - 1))
+        return (0..<42).map { start.adding(days: $0) }
+    }
+
     public static func daysBetween(_ a: DayKey, _ b: DayKey) -> Int {
         Calendar.norwegian.dateComponents([.day], from: a.date, to: b.date).day!
     }

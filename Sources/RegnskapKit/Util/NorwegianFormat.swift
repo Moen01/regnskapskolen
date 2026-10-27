@@ -68,4 +68,16 @@ public enum NorwegianFormat {
 
     /// Reads "2026-06-10" (midnight in Oslo). Nil for other shapes.
     public static func parseDate(_ text: String) -> Date? { DayKey(string: text)?.date }
+
+    /// Reads a day the way it is typed: "10.06.2026", "1.6.2026", "10/06/2026", "10-06-2026" or
+    /// "2026-06-10". The year must have four digits: a two-digit year cannot be told from one that
+    /// is still being typed. Nil for anything else, including days that do not exist.
+    public static func parseDay(_ text: String) -> DayKey? {
+        let parts = text.trimmingCharacters(in: .whitespaces).split(omittingEmptySubsequences: false, whereSeparator: { ".-/".contains($0) })
+        guard parts.count == 3, parts.allSatisfy({ !$0.isEmpty && $0.allSatisfy { $0.isNumber } }) else { return nil }
+        let (yearPart, monthPart, dayPart) = parts[0].count == 4 ? (parts[0], parts[1], parts[2]) : (parts[2], parts[1], parts[0])
+        guard yearPart.count == 4, monthPart.count <= 2, dayPart.count <= 2,
+              let year = Int(yearPart), let month = Int(monthPart), let day = Int(dayPart) else { return nil }
+        return DayKey(string: String(format: "%04d-%02d-%02d", year, month, day))
+    }
 }

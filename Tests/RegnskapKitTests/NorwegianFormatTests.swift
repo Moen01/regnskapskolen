@@ -36,4 +36,20 @@ final class NorwegianFormatTests: XCTestCase {
         }
         XCTAssertEqual(NorwegianFormat.parseAmount("-1 250,50"), Decimal(string: "-1250.5"))
     }
+
+    func testParseDayReadsWhatAnAccountantTypes() {
+        XCTAssertEqual(NorwegianFormat.parseDay("10.06.2026"), DayKey(year: 2026, month: 6, day: 10))
+        XCTAssertEqual(NorwegianFormat.parseDay("1.6.2026"), DayKey(year: 2026, month: 6, day: 1))
+        XCTAssertEqual(NorwegianFormat.parseDay(" 10/06/2026 "), DayKey(year: 2026, month: 6, day: 10))
+        XCTAssertEqual(NorwegianFormat.parseDay("10-06-2026"), DayKey(year: 2026, month: 6, day: 10))
+        XCTAssertEqual(NorwegianFormat.parseDay("2026-06-10"), DayKey(year: 2026, month: 6, day: 10))
+        // A two-digit year is ambiguous while typing, so the year must be written out.
+        XCTAssertNil(NorwegianFormat.parseDay("10.06.26"))
+        XCTAssertNil(NorwegianFormat.parseDay("10.06.202"))
+        XCTAssertNil(NorwegianFormat.parseDay("31.02.2026"))
+        XCTAssertNil(NorwegianFormat.parseDay("10.13.2026"))
+        XCTAssertNil(NorwegianFormat.parseDay("10.06"))
+        XCTAssertNil(NorwegianFormat.parseDay(""))
+        XCTAssertNil(NorwegianFormat.parseDay("abc"))
+    }
 }

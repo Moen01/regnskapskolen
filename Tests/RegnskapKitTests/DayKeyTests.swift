@@ -44,4 +44,16 @@ final class DayKeyTests: XCTestCase {
         let utc = ISO8601DateFormatter().date(from: "2025-12-31T23:30:00Z")!
         XCTAssertEqual(DayKey(utc).string, "2026-01-01")
     }
+
+    func testMonthGridStartsOnMondayAndCoversSixWeeks() {
+        // October 2026 starts on a Thursday: the grid opens on Monday 28 September.
+        let grid = DayKey.monthGrid(year: 2026, month: 10)
+        XCTAssertEqual(grid.count, 42)
+        XCTAssertEqual(grid.first, DayKey(year: 2026, month: 9, day: 28))
+        XCTAssertEqual(grid[3], DayKey(year: 2026, month: 10, day: 1))
+        XCTAssertEqual(grid.last, DayKey(year: 2026, month: 11, day: 8))
+        XCTAssertTrue(grid.allSatisfy { $0.weekday == grid.firstIndex(of: $0)! % 7 + 1 })
+        // June 2026 starts on a Monday: no days from May.
+        XCTAssertEqual(DayKey.monthGrid(year: 2026, month: 6).first, DayKey(year: 2026, month: 6, day: 1))
+    }
 }
