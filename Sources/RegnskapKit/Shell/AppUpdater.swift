@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 /// A published build of Regnskapsskolen on GitHub Releases.
 public struct AppRelease: Sendable, Hashable {
@@ -82,6 +83,78 @@ public struct AppUpdater: Sendable {
     }
 
     nonisolated(unsafe) private static let iso8601 = ISO8601DateFormatter()
+
+    /// Downloads the release's zip, verifies it and swaps it in for `appPath`. The caller relaunches.
+    public func install(_ release: AppRelease, over appPath: String = Bundle.main.bundlePath) async throws {
+        guard let assetURL = release.assetURL, let assetName = release.assetName else { throw UpdateError.noAsset }
+        let parent = (appPath as NSString).deletingLastPathComponent
+        guard FileManager.default.isWritableFile(atPath: parent) else { throw UpdateError.notWritable(parent) }
+
+        let work = FileManager.default.temporaryDirectory.appendingPathComponent("regnskapsskolen-update-\(UUID().uuidString.prefix(6))")
+        try FileManager.default.createDirectory(at: work, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: work) }
+        let downloaded = try await download(assetURL)
+        let zip = work.appendingPathComponent(assetName)
+        try FileManager.default.moveItem(at: downloaded, to: zip)
+        try await Self.installArchive(zip.path, over: appPath)
+    }
+
+    /// Unpacks a zipped .app, verifies it, and swaps it in for `appPath`, keeping the old bundle as
+    /// `.previous` until the new one is in place and putting it back when the swap fails.
+    public static func installArchive(_ zipPath: String, over appPath: String) async throws {
+        let work = (zipPath as NSString).deletingLastPathComponent
+        let unpacked = (work as NSString).appendingPathComponent("unpacked-\(UUID().uuidString.prefix(6))")
+        defer { try? FileManager.default.removeItem(atPath: unpacked) }
+        _ = try await ProcessRunner.output("/usr/bin/ditto", ["-x", "-k", zipPath, unpacked], timeout: 120)
+        guard let app = try FileManager.default.contentsOfDirectory(atPath: unpacked).first(where: { $0.hasSuffix(".app") }) else { throw UpdateError.badArchive }
+        let newApp = (unpacked as NSString).appendingPathComponent(app)
+
+        // The bundle must be intact and signed before it replaces a working app. A Developer ID build
+        // only accepts builds from its own team, so an ad hoc or foreign bundle cannot replace it.
+        var args = ["--verify", "--deep", "--strict"]
+        if let team = teamIdentifier(of: appPath) {
+            args += ["-R", "=anchor apple generic and certificate leaf[subject.OU] = \"\(team)\""]
+        }
+        let verify = try await ProcessRunner.run("/usr/bin/codesign", args + [newApp], timeout: 60)
+        guard verify.succeeded else { throw UpdateError.badArchive }
+        _ = try? await ProcessRunner.run("/usr/bin/xattr", ["-dr", "com.apple.quarantine", newApp], timeout: 30)
+
+        let backup = appPath + ".previous"
+        try? FileManager.default.removeItem(atPath: backup)
+        try FileManager.default.moveItem(atPath: appPath, toPath: backup)
+        do {
+            try FileManager.default.moveItem(atPath: newApp, toPath: appPath)
+            try? FileManager.default.removeItem(atPath: backup)
+        } catch {
+            try? FileManager.default.moveItem(atPath: backup, toPath: appPath)
+            throw error
+        }
+    }
+
+    /// The signing team of a bundle, or nil when it is ad hoc or unsigned (a local `make install`).
+    public static func teamIdentifier(of path: String) -> String? {
+        var code: SecStaticCode?
+        guard SecStaticCodeCreateWithPath(URL(fileURLWithPath: path) as CFURL, [], &code) == errSecSuccess, let code else { return nil }
+        var info: CFDictionary?
+        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &info) == errSecSuccess,
+              let dict = info as? [String: Any] else { return nil }
+        return dict[kSecCodeInfoTeamIdentifier as String] as? String
+    }
+
+    /// Opens the app again once this process has quit.
+    public static func relaunch(_ appPath: String = Bundle.main.bundlePath) {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/bin/sh")
+        p.arguments = ["-c", relaunchCommand(appPath)]
+        try? p.run()
+    }
+
+    /// The command `relaunch` runs.
+    public static func relaunchCommand(_ appPath: String) -> String {
+        "sleep 1; /usr/bin/open \(shellQuote(appPath))"
+    }
+
+    static func shellQuote(_ s: String) -> String { "'" + s.replacingOccurrences(of: "'", with: "'\\''") + "'" }
 
     /// "0.10.0" > "0.9.3", number by number; a "-dev" suffix counts as 0.
     public static func isNewer(_ candidate: String, than current: String) -> Bool {
