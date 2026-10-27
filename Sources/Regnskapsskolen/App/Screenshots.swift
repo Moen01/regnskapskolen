@@ -27,6 +27,14 @@ enum Screenshots {
         navigation.section = .sandbox
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("sandbox-bank.png"))
         store.sandboxPane = .journal
+        // The games: a round just started, then its summary. No clock runs in screenshot mode.
+        navigation.section = .game
+        store.lynrundeTema = nil
+        store.startLightning()
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-lynrunde.png"))
+        store.endRound()
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-oppsummering.png"))
+        store.lastSummary = nil
         navigation.section = .today
         for kind in PuzzleKind.allCases {
             guard let puzzle = store.pool.first(where: { $0.kind == kind }) else { continue }

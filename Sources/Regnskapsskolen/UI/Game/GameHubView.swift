@@ -11,8 +11,20 @@ struct GameHubView: View {
     private var lightningPoolIsEmpty: Bool { LightningRound.eligible(pool: store.pool, tema: store.lynrundeTema).isEmpty }
 
     var body: some View {
+        if store.lightning != nil {
+            LightningRoundView()
+        } else if let summary = store.lastSummary {
+            RoundSummaryView(summary: summary, newBadges: store.newBadges, isRecord: store.lastWasRecord,
+                             onAgain: { summary.game == .lynrunde ? store.startLightning() : store.startDrill() },
+                             onHub: { store.lastSummary = nil })
+        } else {
+            hub
+        }
+    }
+
+    private var hub: some View {
         @Bindable var store = store
-        ScrollView {
+        return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 SectionHeader(title: "Spill", subtitle: "Korte runder som teller i boksene og gir XP")
                 levelCard
