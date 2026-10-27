@@ -154,38 +154,63 @@ struct ReportsView: View {
         Group {
             if let sandboxCase = store.activeCase {
                 let diffs = sandboxCase.compare(journal: journal, chart: chart)
-                if diffs.isEmpty {
-                    if journal.entries.isEmpty {
-                        Text("Før bilagene, så sammenlignes saldobalansen med fasiten her.").foregroundStyle(.secondary)
-                    } else {
-                        Label("Saldobalansen stemmer med fasiten. Godt jobbet!", systemImage: "checkmark.seal.fill").foregroundStyle(Color.ok)
-                    }
+                if journal.entries.isEmpty && diffs.isEmpty {
+                    Text("Før bilagene, så sammenlignes saldobalansen med fasiten her.").foregroundStyle(.secondary)
                 } else {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("\(diffs.count) konto\(diffs.count == 1 ? "" : "er") avviker fra fasiten").font(.headline)
-                        Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 4) {
-                            GridRow {
-                                Text("Konto")
-                                Text("Fasit").frame(maxWidth: .infinity, alignment: .trailing)
-                                Text("Din").frame(maxWidth: .infinity, alignment: .trailing)
-                                Text("Avvik").frame(maxWidth: .infinity, alignment: .trailing)
-                            }
-                            .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-                            Divider()
-                            ForEach(diffs) { diff in
-                                GridRow {
-                                    VStack(alignment: .leading, spacing: 0) { Text(diff.konto).monospacedDigit(); Text(chart.name(diff.konto)).font(.caption2).foregroundStyle(.secondary).lineLimit(1) }.frame(width: 72, alignment: .leading)
-                                    money(diff.forventet)
-                                    money(diff.faktisk)
-                                    money(diff.faktisk - diff.forventet).foregroundStyle(Color.bad)
-                                }
-                            }
+                    VStack(alignment: .leading, spacing: 16) {
+                        trialBalanceCheck(diffs, chart: chart)
+                        bankCheckBlock
+                        if diffs.isEmpty, store.bankCheck?.done ?? true {
+                            Text("Godt jobbet!").foregroundStyle(Color.ok)
                         }
-                        Text("Saldo: debet pluss, kredit minus.").font(.caption).foregroundStyle(.secondary)
                     }
                 }
             } else {
                 Text("Velg en case for å sammenligne med en fasit.").foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func trialBalanceCheck(_ diffs: [CaseDiff], chart: ChartOfAccounts) -> some View {
+        if diffs.isEmpty {
+            Label("Saldobalansen stemmer med fasiten", systemImage: "checkmark.seal.fill").foregroundStyle(Color.ok)
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("\(diffs.count) konto\(diffs.count == 1 ? "" : "er") avviker fra fasiten").font(.headline)
+                Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 4) {
+                    GridRow {
+                        Text("Konto")
+                        Text("Fasit").frame(maxWidth: .infinity, alignment: .trailing)
+                        Text("Din").frame(maxWidth: .infinity, alignment: .trailing)
+                        Text("Avvik").frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Divider()
+                    ForEach(diffs) { diff in
+                        GridRow {
+                            VStack(alignment: .leading, spacing: 0) { Text(diff.konto).monospacedDigit(); Text(chart.name(diff.konto)).font(.caption2).foregroundStyle(.secondary).lineLimit(1) }.frame(width: 72, alignment: .leading)
+                            money(diff.forventet)
+                            money(diff.faktisk)
+                            money(diff.faktisk - diff.forventet).foregroundStyle(Color.bad)
+                        }
+                    }
+                }
+                Text("Saldo: debet pluss, kredit minus.").font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var bankCheckBlock: some View {
+        if store.bankStatement == nil {
+            Text("Casen har ingen kontoutskrift.").foregroundStyle(.secondary)
+        } else if let bank = store.bankCheck {
+            if bank.done {
+                Label("Banken er avstemt", systemImage: "checkmark.seal.fill").foregroundStyle(Color.ok)
+            } else {
+                Label("\(bank.linesMatched) av \(bank.linesTotal) banklinjer avstemt, \(bank.entriesMatched) av \(bank.entriesTotal) bilag. Saldo 1920 \(NorwegianFormat.kroner(bank.bankBalance)) mot utgående \(NorwegianFormat.kroner(bank.utgaaende)).", systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(Color.warn)
             }
         }
     }
