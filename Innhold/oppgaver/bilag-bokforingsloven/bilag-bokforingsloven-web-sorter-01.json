@@ -1,0 +1,71 @@
+{
+  "id": "bilag-bokforingsloven-web-sorter-01",
+  "type": "klassifiser",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Sorter dokumentene. Husk at listen over…",
+  "oppgave": "Sorter dokumentene. Husk at listen over sekundærdokumentasjon er lukket: avtaler (unntatt avtaler av mindre betydning), korrespondanse med vesentlig tilleggsinformasjon, utgående pakksedler og prisoversikter som lov eller forskrift krever.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Primærdokumentasjon (5 år)",
+    "Sekundærdokumentasjon (3,5 år)"
+  ],
+  "elementer": [
+    {
+      "tekst": "En salgsfaktura som bedriften har sendt",
+      "svar": "Primærdokumentasjon (5 år)",
+      "hvorfor": "Fakturaer er primærdokumentasjon."
+    },
+    {
+      "tekst": "En leverandørfaktura som bedriften har mottatt",
+      "svar": "Primærdokumentasjon (5 år)",
+      "hvorfor": "Fakturaer er primærdokumentasjon, både de du sender og de du mottar."
+    },
+    {
+      "tekst": "Hovedboka",
+      "svar": "Primærdokumentasjon (5 år)",
+      "hvorfor": "Regnskapsbøkene er primærdokumentasjon."
+    },
+    {
+      "tekst": "Årsregnskapet",
+      "svar": "Primærdokumentasjon (5 år)",
+      "hvorfor": "Årsregnskapet er primærdokumentasjon."
+    },
+    {
+      "tekst": "En leieavtale for kontorlokalet",
+      "svar": "Sekundærdokumentasjon (3,5 år)",
+      "hvorfor": "Avtaler er sekundærdokumentasjon. Unntak: Er leieavtalen dokumentasjonen for posteringer, er den primærdokumentasjon og skal oppbevares i 5 år. Et eksempel er husleie som bokføres fra banken uten faktura."
+    },
+    {
+      "tekst": "En e-post der kunden bekrefter en avtalt rabatt",
+      "svar": "Sekundærdokumentasjon (3,5 år)",
+      "hvorfor": "Korrespondanse som gir vesentlig tilleggsinformasjon, er sekundærdokumentasjon."
+    },
+    {
+      "tekst": "En utgående pakkseddel",
+      "svar": "Sekundærdokumentasjon (3,5 år)",
+      "hvorfor": "Utgående pakksedler står på den lukkede listen over sekundærdokumentasjon."
+    },
+    {
+      "tekst": "En mva-melding som bedriften har sendt",
+      "svar": "Primærdokumentasjon (5 år)",
+      "hvorfor": "Mva-meldinger og annen pliktig rapportering er primærdokumentasjon."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "arsoppgjor-frist-001",
+  "type": "frist",
+  "tema": "arsoppgjor",
+  "vanskelighet": 2,
+  "tags": [
+    "frist",
+    "regnskapsregisteret"
+  ],
+  "status": "godkjent",
+  "tittel": "Innsending av årsregnskapet for 2025",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 8-2",
+      "tekst": "Årsregnskapet sendes Regnskapsregisteret innen én måned etter fastsettelsen, senest 31. juli."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 8-3",
+      "tekst": "Forsinkelsesgebyr løper fra første dag etter fristen."
+    }
+  ],
+  "forklaring": "Fristen er **31. juli 2026** (en fredag). Regnskapet må være fastsatt av generalforsamlingen innen 30. juni, og sendes innen én måned etter det; derfor kan fristen i praksis være tidligere enn 31. juli hvis generalforsamlingen holdes tidlig.",
+  "hendelse": "Et AS med kalenderår som regnskapsår skal sende årsregnskapet for 2025 til Regnskapsregisteret. Hva er siste frist?",
+  "fasit": "2026-07-31",
+  "fasitRegel": {
+    "type": "aarsregnskap",
+    "aar": 2025
+  },
+  "hint": "Én måned etter siste frist for fastsettelse."
+}

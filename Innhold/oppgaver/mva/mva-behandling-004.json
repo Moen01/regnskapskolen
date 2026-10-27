@@ -1,0 +1,32 @@
+{
+  "id": "mva-behandling-004",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "representasjon",
+    "fradrag"
+  ],
+  "status": "godkjent",
+  "tittel": "Middag med kunde",
+  "oppgave": "Velg sats på restaurantregningen og om bedriften har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-3",
+      "tekst": "Fradragsretten omfatter ikke inngående mva på servering, representasjon, gaver og kost til ansatte."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 6-21",
+      "tekst": "Fradrag gis ikke for representasjon."
+    }
+  ],
+  "forklaring": "Restauranten fakturerer **25 %** (servering er alminnelig sats). Men representasjon er avskåret fra fradrag etter mval. § 8-3, og kostnaden er heller ikke skattemessig fradragsberettiget (sktl. § 6-21). Hele beløpet inkl. mva føres på 7360 Representasjon, ikke fradragsberettiget. Unntak: enkel bevertning innenfor satsen per person kan føres på 7350, men mva-fradrag er avskåret uansett.",
+  "transaksjon": "Daglig leder tar en kunde med på restaurantmiddag etter forhandlinger. Regningen er 2 400 kr inkl. mva for to personer, med vin.",
+  "fasit": {
+    "behandling": "25",
+    "fradrag": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "arsoppgjor-quiz-002",
+  "type": "quiz",
+  "tema": "arsoppgjor",
+  "vanskelighet": 2,
+  "tags": [
+    "gebyr"
+  ],
+  "status": "godkjent",
+  "tittel": "Forsinkelsesgebyr",
+  "oppgave": "Årsregnskapet for 2025 sendes Regnskapsregisteret 20. august 2026. Hva skjer?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 8-3",
+      "tekst": "Er årsregnskapet ikke sendt innen fristen, påløper forsinkelsesgebyr til det er sendt, og styremedlemmene er solidarisk ansvarlige for gebyret."
+    }
+  ],
+  "forklaring": "Fristen var 31. juli. Fra 1. august løper **forsinkelsesgebyr** per uke, beregnet i rettsgebyr og økende jo lenger det går, til regnskapet er mottatt. Styremedlemmene hefter personlig og solidarisk. Et regnskap sendt *før* fristen med feil kan rettes innen to uker uten gebyr; det gjelder ikke når det sendes etter fristen.",
+  "alternativer": [
+    "Ingenting, fristen er 31. august",
+    "Forsinkelsesgebyr påløper fra 1. august til regnskapet er mottatt",
+    "Selskapet tvangsoppløses med en gang",
+    "Bare daglig leder får gebyr"
+  ],
+  "svar": 1
+}

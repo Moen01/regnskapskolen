@@ -1,0 +1,60 @@
+{
+  "id": "periodisering-postering-003",
+  "type": "postering",
+  "tema": "periodisering",
+  "vanskelighet": 2,
+  "tags": [
+    "forskudd-kunde",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Forskudd fra kunde",
+  "oppgave": "En kunde betaler 20 000 kr inn på bankkontoen i desember som forskudd på et kurs som holdes i februar. Faktura med mva sendes når kurset er levert. Før innbetalingen.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 2 opptjeningsprinsippet: inntekt resultatføres når den er opptjent."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-2-6",
+      "tekst": "Forskudd på leveranser skal dokumenteres med salgsdokument når det er avtalt."
+    }
+  ],
+  "forklaring": "Pengene er mottatt (D 1920 20 000), men inntekten er ikke opptjent før kurset er holdt. Beløpet er gjeld til kunden fram til da: K 2900 Forskudd fra kunder. I februar føres fakturaen mot 2900 og inntekten på 3000 med mva.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2900",
+      "navn": "Forskudd fra kunder"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1920",
+      "side": "D",
+      "belop": 20000
+    },
+    {
+      "konto": "2900",
+      "side": "K",
+      "belop": 20000
+    }
+  ]
+}

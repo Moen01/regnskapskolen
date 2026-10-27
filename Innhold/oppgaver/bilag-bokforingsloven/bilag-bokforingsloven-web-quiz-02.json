@@ -1,0 +1,37 @@
+{
+  "id": "bilag-bokforingsloven-web-quiz-02",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Når får et bilag bilagsnummer i regnskapssystemet?",
+  "oppgave": "Når får et bilag bilagsnummer i regnskapssystemet?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Nummeret tas fra `voucher_number_sequence` først når bilaget blir bokført. Derfor gir en slettet kladd ikke hull i serien.",
+  "alternativer": [
+    "Når kladden lages",
+    "Når vedlegget lastes opp",
+    "Når bilaget sendes til godkjenning",
+    "Når bilaget blir bokført"
+  ],
+  "svar": 3
+}

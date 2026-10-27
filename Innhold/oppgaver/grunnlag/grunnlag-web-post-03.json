@@ -1,0 +1,71 @@
+{
+  "id": "grunnlag-web-post-03",
+  "type": "postering",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Innbetaling på faktura 1002",
+  "oppgave": "En kunde betaler en faktura på 1 250 kr. Fakturaen ble bokført da du sendte den, med 1 250 kr på debet 1500 Kundefordringer. Nå kommer pengene inn på bankkontoen.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Banken øker på debet. Kunden skylder ikke lenger noe, så fordringen på 1500 minker på kredit.\n\n**Fellen:** Fører du kredit 3000 Salgsinntekt her, blir inntekten bokført to ganger. Den ble ført da fakturaen ble sendt. Betalingen gjør bare om fordringen til penger i banken.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående mva"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående mva"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt"
+    },
+    {
+      "nr": "6300",
+      "navn": "Leie lokale"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1920",
+      "side": "D",
+      "belop": 1250
+    },
+    {
+      "konto": "1500",
+      "side": "K",
+      "belop": 1250
+    }
+  ]
+}

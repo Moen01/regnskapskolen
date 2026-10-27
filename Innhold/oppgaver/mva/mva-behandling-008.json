@@ -1,0 +1,32 @@
+{
+  "id": "mva-behandling-008",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "kost-ansatte",
+    "fradrag"
+  ],
+  "status": "godkjent",
+  "tittel": "Mat til kantinen",
+  "oppgave": "Velg sats på kvitteringen fra dagligvarebutikken og om bedriften har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-2",
+      "tekst": "Næringsmidler har redusert sats (15 %)."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-3",
+      "tekst": "Fradragsretten omfatter ikke kost til og naturalavlønning av virksomhetens ansatte."
+    }
+  ],
+  "forklaring": "Mat fra butikk har **15 %**. Men mat som serveres de ansatte er «kost til ansatte», som er avskåret fra fradrag etter § 8-3 første ledd bokstav d. Hele beløpet inkl. mva er kostnad (5990 eller 7790). Det samme gjelder fruktkurv og fredagskake. Unntak: kaffe og enkel servering til kunder i møter kan vurderes som bevertning, men heller ikke det gir mva-fradrag.",
+  "transaksjon": "Kontorlederen kjøper brød, pålegg og frukt for 1 150 kr inkl. mva til lunsjen for de ansatte.",
+  "fasit": {
+    "behandling": "15",
+    "fradrag": false
+  }
+}

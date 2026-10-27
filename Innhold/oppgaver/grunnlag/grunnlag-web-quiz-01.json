@@ -1,0 +1,27 @@
+{
+  "id": "grunnlag-web-quiz-01",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Du kjøper kontorrekvisita for 500 kr og betaler med…",
+  "oppgave": "Du kjøper kontorrekvisita for 500 kr og betaler med bankkort. Hvilken side får bankkontoen (1920)?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    }
+  ],
+  "forklaring": "Banken er en eiendel. Pengene går ut, så eiendelen minker. Eiendeler minker på kredit. Kostnaden (6800) får debet.",
+  "alternativer": [
+    "Debet",
+    "Kredit",
+    "Begge",
+    "Ingen"
+  ],
+  "svar": 1
+}

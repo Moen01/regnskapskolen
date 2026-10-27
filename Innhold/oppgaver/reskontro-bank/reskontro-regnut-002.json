@@ -1,0 +1,25 @@
+{
+  "id": "reskontro-regnut-002",
+  "type": "regnut",
+  "tema": "reskontro-bank",
+  "vanskelighet": 3,
+  "tags": [
+    "forsinkelsesrente",
+    "regning"
+  ],
+  "status": "godkjent",
+  "tittel": "Forsinkelsesrente for 30 dager",
+  "oppgave": "En faktura på 100 000 kr forfalt 1. september 2026 og betales 1. oktober 2026, 30 dager for sent. Forsinkelsesrenten for andre halvår 2026 er 12,25 % p.a. Hvor mye rente kan kreves (365 dager i året)?",
+  "lov": [
+    {
+      "lov": "forsinkelsesrenteloven",
+      "paragraf": "§ 3",
+      "tekst": "Forsinkelsesrenten fastsettes hvert halvår av Finansdepartementet som styringsrenten tillagt minst 8 prosentpoeng; andre halvår 2026: 12,25 %."
+    }
+  ],
+  "forklaring": "100 000 × 12,25 % × 30/365 = **1 006,85 kr**, avrundet 1 007 kr. Renten løper fra forfall til betaling. I tillegg kan kreditor kreve standardkompensasjon (430 kr i andre halvår 2026) når skyldneren er næringsdrivende.",
+  "svar": 1007,
+  "toleranse": 1,
+  "enhet": "kr",
+  "hint": "Beløp × sats × dager/365."
+}

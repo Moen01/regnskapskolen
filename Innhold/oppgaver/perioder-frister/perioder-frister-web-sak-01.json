@@ -1,0 +1,55 @@
+{
+  "id": "perioder-frister-web-sak-01",
+  "type": "sak",
+  "tema": "perioder-frister",
+  "vanskelighet": 3,
+  "tags": [
+    "sak",
+    "edge-case",
+    "låsing"
+  ],
+  "status": "utkast",
+  "tittel": "«Perioden er låst», men linjene er i åpen periode",
+  "oppgave": "Les meldingen og velg riktig behandling.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering; en rapportert periode endres ikke uten korreksjon."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    }
+  ],
+  "forklaring": "Låsingen bruker flere datoer: **bilagsdatoen** og **hver linjedato**. Kunden nevner bare linjedatoene. Hvis bilagsdatoen er i juni, er bilaget låst selv om alle linjene er i juli eller senere. At det skjer «bare av og til» passer med at bilagsdatoen noen ganger blir stående på dagens dato fra et tidligere utkast.\n\nÅ låse opp (B) eller flytte låsedatoen (C) er feil vei: perioden er låst fordi mva-meldingen for 3. termin er levert. Bokføring i en rapportert periode krever at meldingen korrigeres. Å endre linjedatoene (D) flytter kostnader til feil periode og bryter nøyaktighetskravet.",
+  "fra": "Kunde av regnskapsbyrået",
+  "melding": "Bilaget har linjedatoer fra juli til desember 2026. Regnskapet er låst til og med 30.06.2026, men systemet sier likevel at perioden er låst. Det skjer bare av og til. Hva er galt?",
+  "valg": [
+    {
+      "nokkel": "A",
+      "tekst": "Sjekk bilagsdatoen øverst i bilaget. Den kan ligge i den låste perioden selv om linjene ikke gjør det."
+    },
+    {
+      "nokkel": "B",
+      "tekst": "Lås opp perioden, bokfør bilaget og lås igjen."
+    },
+    {
+      "nokkel": "C",
+      "tekst": "Flytt låsedatoen permanent tilbake til 31.12.2025."
+    },
+    {
+      "nokkel": "D",
+      "tekst": "Sett 01.07.2026 som dato på alle linjene, så går det gjennom."
+    }
+  ],
+  "svar": "A",
+  "sporsmal": [
+    "Hva er bilagsdatoen, ikke bare linjedatoene?",
+    "Er låsedatoen endret nylig?",
+    "Kan feilen gjenskapes med det samme bilaget?",
+    "Hva er den nøyaktige feilmeldingen, ord for ord?"
+  ],
+  "forslag": "Låsingen sjekker både bilagsdatoen og datoen på hver linje. Hvis bilagsdatoen øverst er 30.06.2026 eller tidligere, stoppes bilaget selv om alle linjene er i juli eller senere. Sjekk bilagsdatoen først. Ikke lås opp en periode som er rapportert; da må mva-meldingen i så fall korrigeres."
+}

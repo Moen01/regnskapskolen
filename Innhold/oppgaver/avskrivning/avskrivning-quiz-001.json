@@ -1,0 +1,28 @@
+{
+  "id": "avskrivning-quiz-001",
+  "type": "quiz",
+  "tema": "avskrivning",
+  "vanskelighet": 2,
+  "tags": [
+    "driftsmiddel",
+    "grense"
+  ],
+  "status": "godkjent",
+  "tittel": "PC til 25 000 kr",
+  "oppgave": "Selskapet kjøper en bærbar PC til 25 000 kr eks. mva med forventet levetid på fire år. Hvordan behandles kjøpet skattemessig?",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-40",
+      "tekst": "Et driftsmiddel er betydelig når kostprisen er 30 000 kr eller mer, og varig når levetiden er minst tre år. Driftsmidler under grensen kan fradragsføres direkte."
+    }
+  ],
+  "forklaring": "Kostprisen er under **30 000 kr**, så PC-en er ikke «betydelig» og kan **kostnadsføres direkte** (6540 Inventar) selv om den varer i fire år. Begge vilkår (varig *og* betydelig) må være oppfylt for aktiveringsplikt. Grensen ble hevet fra 15 000 til 30 000 kr fra inntektsåret 2024.",
+  "alternativer": [
+    "Aktiveres og saldoavskrives i gruppe a (30 %)",
+    "Kostnadsføres direkte i kjøpsåret",
+    "Aktiveres og avskrives lineært over fire år",
+    "Aktiveres fordi levetiden er over tre år"
+  ],
+  "svar": 1
+}

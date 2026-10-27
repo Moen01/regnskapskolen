@@ -1,0 +1,90 @@
+{
+  "id": "kontoplan-web-sorter-01",
+  "type": "klassifiser",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Velg kategori for hver konto. Bruk det første sifferet som…",
+  "oppgave": "Velg kategori for hver konto. Bruk det første sifferet som hjelp. *Finans* betyr finansinntekt eller finanskostnad i klasse 8.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Eiendel",
+    "Gjeld",
+    "Egenkapital",
+    "Inntekt",
+    "Kostnad",
+    "Finans"
+  ],
+  "elementer": [
+    {
+      "tekst": "`1920` Bankinnskudd",
+      "svar": "Eiendel",
+      "hvorfor": "Klasse 1. Penger i banken eies av bedriften."
+    },
+    {
+      "tekst": "`1500` Kundefordringer",
+      "svar": "Eiendel",
+      "hvorfor": "Klasse 1, gruppe 15 Kortsiktige fordringer. Kunden skylder bedriften penger, og det kravet er en eiendel."
+    },
+    {
+      "tekst": "`1250` Inventar",
+      "svar": "Eiendel",
+      "hvorfor": "Klasse 1, gruppe 12. Dette er inventar som skal avskrives over flere år. Det er en eiendel, ikke en kostnad."
+    },
+    {
+      "tekst": "`2400` Leverandørgjeld",
+      "svar": "Gjeld",
+      "hvorfor": "Klasse 2, gruppe 24. Bedriften skylder leverandøren penger."
+    },
+    {
+      "tekst": "`2700` Utgående merverdiavgift, høy sats",
+      "svar": "Gjeld",
+      "hvorfor": "Klasse 2, gruppe 27 Skyldige offentlige avgifter. Mvaen på salget skal betales til staten."
+    },
+    {
+      "tekst": "`2940` Skyldige feriepenger",
+      "svar": "Gjeld",
+      "hvorfor": "Klasse 2, gruppe 29 Annen kortsiktig gjeld. Bedriften skylder de ansatte feriepengene."
+    },
+    {
+      "tekst": "`2050` Annen egenkapital",
+      "svar": "Egenkapital",
+      "hvorfor": "Klasse 2, men gruppe 20 er egenkapital. Det er eiernes andel, ikke gjeld til andre."
+    },
+    {
+      "tekst": "`3100` Salgsinntekt handelsvarer, innenlands, avgiftsfri",
+      "svar": "Inntekt",
+      "hvorfor": "Klasse 3, gruppe 31 Salgsinntekt, avgiftsfri. Salget er fritatt for mva (nullsats), men bedriften har fradragsrett. Det er ikke det samme som gruppe 32, utenfor avgiftsområdet."
+    },
+    {
+      "tekst": "`6300` Leie lokale",
+      "svar": "Kostnad",
+      "hvorfor": "Klasse 6, annen driftskostnad."
+    },
+    {
+      "tekst": "`7770` Bank- og kortgebyr",
+      "svar": "Kostnad",
+      "hvorfor": "Klasse 7. Ordet «bank» lurer mange. Gebyret er en driftskostnad. Bankkontoen selv er 1920."
+    },
+    {
+      "tekst": "`8050` Renteinntekt bankinnskudd",
+      "svar": "Finans",
+      "hvorfor": "Klasse 8. Renter er finansinntekt, ikke salgsinntekt. Derfor ligger de ikke i klasse 3."
+    },
+    {
+      "tekst": "`8150` Rentekostnad banklån",
+      "svar": "Finans",
+      "hvorfor": "Klasse 8. Renter er en finanskostnad. Lånet selv er gjeld i klasse 2, men rentene er en kostnad i resultatet."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "mva-quiz-002",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "registrering"
+  ],
+  "status": "godkjent",
+  "tittel": "Når må du registrere deg i Mva-registeret?",
+  "oppgave": "Et nystartet enkeltpersonforetak selger avgiftspliktige tjenester. Når oppstår registreringsplikten?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 2-1",
+      "tekst": "Næringsdrivende skal registreres når omsetning og uttak som er omfattet av loven, overstiger 50 000 kroner i en periode på tolv måneder."
+    }
+  ],
+  "forklaring": "Grensen er **50 000 kr i løpet av 12 måneder** (ikke kalenderåret), og det er omsetningen *uten* mva som teller. Før registrering skal det ikke faktureres med mva. Den fakturaen som passerer grensen, skal ha mva. For veldedige og allmennyttige organisasjoner er grensen 140 000 kr.",
+  "alternativer": [
+    "Når omsetningen passerer 50 000 kr i løpet av 12 måneder",
+    "Når omsetningen passerer 50 000 kr i et kalenderår",
+    "Fra første faktura",
+    "Når omsetningen passerer 1 000 000 kr"
+  ],
+  "svar": 0
+}

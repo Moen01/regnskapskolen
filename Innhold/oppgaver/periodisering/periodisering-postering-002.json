@@ -1,0 +1,61 @@
+{
+  "id": "periodisering-postering-002",
+  "type": "postering",
+  "tema": "periodisering",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "påløpt",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Påløpt strøm uten faktura",
+  "oppgave": "Strømmen for desember er brukt, men fakturaen kommer først i januar. Du anslår kostnaden til 4 000 kr eks. mva. Før avsetningen per 31. desember.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 3 sammenstillingsprinsippet: kostnaden hører til desember selv om fakturaen kommer i januar."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 15-10",
+      "tekst": "Inngående mva kan bare fradragsføres når den er dokumentert med salgsdokument (faktura)."
+    }
+  ],
+  "forklaring": "Kostnaden hører til desember, så den avsettes: D 6340 4 000, K 2960 4 000 (påløpt kostnad, en kortsiktig gjeld). Merk: **ingen mva** på avsetningen. Fradraget for inngående mva kommer først når fakturaen foreligger (mval. § 15-10). I januar reverseres avsetningen, og fakturaen bokføres som normalt med mva.",
+  "kontoer": [
+    {
+      "nr": "1740",
+      "navn": "Forskuddsbetalt kostnad"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift"
+    },
+    {
+      "nr": "2960",
+      "navn": "Påløpt kostnad"
+    },
+    {
+      "nr": "6340",
+      "navn": "Lys og varme"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6340",
+      "side": "D",
+      "belop": 4000
+    },
+    {
+      "konto": "2960",
+      "side": "K",
+      "belop": 4000
+    }
+  ]
+}

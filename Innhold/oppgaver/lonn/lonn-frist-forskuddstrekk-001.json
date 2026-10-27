@@ -1,0 +1,34 @@
+{
+  "id": "lonn-frist-forskuddstrekk-001",
+  "type": "frist",
+  "tema": "lonn",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "2026",
+    "forskuddstrekk"
+  ],
+  "status": "godkjent",
+  "tittel": "Når skal forskuddstrekket betales?",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 5-12",
+      "tekst": "Kravet om skattetrekkskonto er opphevet fra 1. januar 2026."
+    },
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 10-10",
+      "tekst": "Fra 2026 forfaller forskuddstrekket til betaling senest første virkedag etter lønnsutbetalingen."
+    }
+  ],
+  "forklaring": "Fra 1. januar 2026 er skattetrekkskontoen avviklet. Trekket betales **direkte til Skatteetaten senest første virkedag etter utbetalingen**. Lønn utbetalt fredag 9. oktober 2026 gir frist mandag 12. oktober. Til og med 2025 var fristen den 15. annenhver måned (15. november for september–oktober).",
+  "hendelse": "Lønnen for september utbetales fredag 9. oktober 2026. Når må forskuddstrekket senest være betalt til Skatteetaten?",
+  "fasit": "2026-10-12",
+  "fasitRegel": {
+    "type": "forskuddstrekk",
+    "utbetalt": "2026-10-09"
+  },
+  "hint": "Reglene ble endret 1. januar 2026. Skattetrekkskontoen finnes ikke lenger."
+}

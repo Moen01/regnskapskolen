@@ -1,0 +1,63 @@
+{
+  "id": "kontoplan-web-post-02",
+  "type": "postering",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Husleie uten mva",
+  "oppgave": "Bedriften betaler **8 000 kr** i husleie direkte fra bankkontoen. Det er ingen mva på leien.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    }
+  ],
+  "forklaring": "**6300** (klasse 6, kostnad) får debet 8 000. **1920** (klasse 1, eiendel) får kredit 8 000, fordi pengene går ut av banken. Det er ingen mva, så 2710 er ikke med. Betalingen skjer med en gang, så 2400 er heller ikke med. Utleie av fast eiendom er normalt unntatt fra mva (mval. § 3-11). Er utleieren frivillig registrert, legger hen likevel mva på leien.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift, høy sats"
+    },
+    {
+      "nr": "6300",
+      "navn": "Leie lokale"
+    },
+    {
+      "nr": "7770",
+      "navn": "Bank- og kortgebyr"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6300",
+      "side": "D",
+      "belop": 8000
+    },
+    {
+      "konto": "1920",
+      "side": "K",
+      "belop": 8000
+    }
+  ]
+}

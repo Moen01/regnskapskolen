@@ -1,0 +1,79 @@
+{
+  "id": "grunnlag-web-sorter-01",
+  "type": "klassifiser",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Velg kontotypen for hver konto. Tenk på regnskapsligningen:…",
+  "oppgave": "Velg kontotypen for hver konto. Tenk på regnskapsligningen: hva bedriften eier, hva den skylder, og hva som gir overskudd eller underskudd.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Eiendel",
+    "Gjeld",
+    "Egenkapital",
+    "Inntekt",
+    "Kostnad"
+  ],
+  "elementer": [
+    {
+      "tekst": "`6800` Kontorrekvisita",
+      "svar": "Kostnad",
+      "hvorfor": "Papir, penner og annet som brukes opp i driften. Det minker overskuddet."
+    },
+    {
+      "tekst": "`1920` Bankinnskudd",
+      "svar": "Eiendel",
+      "hvorfor": "Pengene på bankkontoen eies av bedriften."
+    },
+    {
+      "tekst": "`3000` Salgsinntekt",
+      "svar": "Inntekt",
+      "hvorfor": "Salg av varer og tjenester. Det øker overskuddet."
+    },
+    {
+      "tekst": "`2400` Leverandørgjeld",
+      "svar": "Gjeld",
+      "hvorfor": "Bedriften skylder leverandørene penger for det den har kjøpt."
+    },
+    {
+      "tekst": "`2050` Annen egenkapital",
+      "svar": "Egenkapital",
+      "hvorfor": "Overskudd fra tidligere år som eierne har latt bli i bedriften."
+    },
+    {
+      "tekst": "`1500` Kundefordringer",
+      "svar": "Eiendel",
+      "hvorfor": "Kundene skylder bedriften penger. Kravet er noe bedriften eier."
+    },
+    {
+      "tekst": "`6300` Leie lokale",
+      "svar": "Kostnad",
+      "hvorfor": "Husleie er en utgift i driften. Det minker overskuddet."
+    },
+    {
+      "tekst": "`2700` Utgående mva",
+      "svar": "Gjeld",
+      "hvorfor": "Mvaen på salget skal betales til staten. Den er gjeld fram til mva-oppgjøret."
+    },
+    {
+      "tekst": "`2000` Aksjekapital",
+      "svar": "Egenkapital",
+      "hvorfor": "Pengene eierne skjøt inn da aksjeselskapet ble stiftet."
+    },
+    {
+      "tekst": "`3100` Salgsinntekt, avgiftsfri",
+      "svar": "Inntekt",
+      "hvorfor": "Salg uten mva er også inntekt. Det er bare mvaen som mangler."
+    }
+  ]
+}

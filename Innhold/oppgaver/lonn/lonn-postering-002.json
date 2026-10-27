@@ -1,0 +1,91 @@
+{
+  "id": "lonn-postering-002",
+  "type": "postering",
+  "tema": "lonn",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "feriepenger",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Avsetning av feriepenger med arbeidsgiveravgift",
+  "oppgave": "Samme måned skal feriepengene avsettes: 12 % av bruttolønnen på 50 000 kr (tariffavtale). Arbeidsgiveravgiften av feriepengene (14,1 %) skal også avsettes nå. Før avsetningsbilaget.",
+  "lov": [
+    {
+      "lov": "ferieloven",
+      "paragraf": "§ 10",
+      "tekst": "Feriepenger beregnes av arbeidsvederlag utbetalt i opptjeningsåret: 10,2 % etter loven, 12 % ved fem ukers ferie etter tariffavtale."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 3 sammenstillingsprinsippet: kostnader føres i samme periode som inntekten de har bidratt til. Feriepengene koster i opptjeningsåret, ikke når de utbetales."
+    }
+  ],
+  "forklaring": "Feriepengene opptjenes nå og utbetales neste år, så de kostnadsføres nå (D 5180 6 000) mot gjeld (K 2940 6 000). Arbeidsgiveravgift beregnes når feriepengene utbetales, men kostnaden hører til opptjeningsåret: D 5405 846 (14,1 % av 6 000) mot K 2780 846. Vanlig feil: å glemme avgiften av feriepengene, så gjelden i balansen blir 846 kr for lav.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2600",
+      "navn": "Forskuddstrekk"
+    },
+    {
+      "nr": "2770",
+      "navn": "Skyldig arbeidsgiveravgift"
+    },
+    {
+      "nr": "2780",
+      "navn": "Påløpt arbeidsgiveravgift av feriepenger"
+    },
+    {
+      "nr": "2910",
+      "navn": "Gjeld til ansatte"
+    },
+    {
+      "nr": "2940",
+      "navn": "Skyldige feriepenger"
+    },
+    {
+      "nr": "5000",
+      "navn": "Lønn til ansatte"
+    },
+    {
+      "nr": "5180",
+      "navn": "Feriepenger"
+    },
+    {
+      "nr": "5400",
+      "navn": "Arbeidsgiveravgift"
+    },
+    {
+      "nr": "5405",
+      "navn": "Arbeidsgiveravgift av feriepenger"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "5180",
+      "side": "D",
+      "belop": 6000
+    },
+    {
+      "konto": "2940",
+      "side": "K",
+      "belop": 6000
+    },
+    {
+      "konto": "5405",
+      "side": "D",
+      "belop": 846
+    },
+    {
+      "konto": "2780",
+      "side": "K",
+      "belop": 846
+    }
+  ]
+}

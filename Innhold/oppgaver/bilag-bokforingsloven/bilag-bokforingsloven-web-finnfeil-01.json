@@ -1,0 +1,77 @@
+{
+  "id": "bilag-bokforingsloven-web-finnfeil-01",
+  "type": "finnfeil",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "kontroll"
+  ],
+  "status": "utkast",
+  "tittel": "Faktura 1043",
+  "oppgave": "Selgeren er et aksjeselskap og er registrert i Merverdiavgiftsregisteret. Klikk på radene som bryter med bff § 5-1-1. Tre eller fire rader er feil.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Det er fire feil: `MVA` mangler etter selgers org.nr., leveringstid og -sted mangler, mva er ikke vist i NOK, og forfallsdato mangler. Får bedriften en slik faktura fra en leverandør, skal den be om en ny, riktig faktura (bff § 5-5-1).",
+  "overskrift": "Faktura 1043",
+  "elementer": [
+    {
+      "tekst": "**Fakturanr. og dato:** 1043, utstedt 03.03.2026",
+      "feil": false
+    },
+    {
+      "tekst": "**Selger:** Eksempelfirma AS, Industriveien 1, 0000 Byen. Foretaksregisteret. Org.nr. 123 456 789",
+      "feil": true,
+      "hvorfor": "Selgeren er mva-registrert. Da skal det stå `MVA` etter organisasjonsnummeret: *123 456 789 MVA*."
+    },
+    {
+      "tekst": "**Kjøper:** Kundefirma AS, Storgata 1, 0000 Byen",
+      "feil": false
+    },
+    {
+      "tekst": "**Beskrivelse:** Montering av hyller, 6 timer arbeid",
+      "feil": false
+    },
+    {
+      "tekst": "**Leveringstid og -sted:** (ikke oppgitt)",
+      "feil": true,
+      "hvorfor": "Tid og sted for levering skal stå på fakturaen. Leveringstiden avgjør blant annet hvilken periode salget hører til."
+    },
+    {
+      "tekst": "**Valuta:** EUR",
+      "feil": false
+    },
+    {
+      "tekst": "**Beløp eks. mva:** 1 000,00 EUR",
+      "feil": false
+    },
+    {
+      "tekst": "**Mva 25 %:** 250,00 EUR",
+      "feil": true,
+      "hvorfor": "Mva skal også vises i norske kroner. Fakturaen kan ellers være i euro."
+    },
+    {
+      "tekst": "**Å betale:** 1 250,00 EUR",
+      "feil": false
+    },
+    {
+      "tekst": "**Forfallsdato:** (ikke oppgitt)",
+      "feil": true,
+      "hvorfor": "Vederlag og forfallsdato skal stå på fakturaen."
+    }
+  ]
+}

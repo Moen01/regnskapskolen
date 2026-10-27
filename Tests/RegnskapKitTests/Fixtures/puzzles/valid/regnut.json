@@ -1,0 +1,5 @@
+{ "id": "fx-regnut", "type": "regnut", "tema": "mva", "vanskelighet": 1, "status": "godkjent",
+  "tittel": "Mva av brutto", "oppgave": "En kvittering lyder på 1 250 kr inkl. 25 % mva. Hvor mye er mva?",
+  "svar": 250, "toleranse": 0, "enhet": "kr", "hint": "Del på 1,25 for å finne nettobeløpet.",
+  "lov": [{ "lov": "merverdiavgiftsloven", "paragraf": "§ 5-1", "tekst": "25 %." }],
+  "forklaring": "1 250 / 1,25 = 1 000 netto. Mva = 250." }

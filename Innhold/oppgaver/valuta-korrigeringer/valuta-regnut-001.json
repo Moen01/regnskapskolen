@@ -1,0 +1,26 @@
+{
+  "id": "valuta-regnut-001",
+  "type": "regnut",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "valuta",
+    "årsslutt"
+  ],
+  "status": "godkjent",
+  "tittel": "Omregning ved årsslutt",
+  "oppgave": "Per 31. desember har selskapet en ubetalt kundefordring på 5 000 EUR, bokført til 11,50 (57 500 kr). Kursen 31. desember er 11,20. Hvor stort valutatap skal føres (positivt tall)?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 5-9",
+      "tekst": "Pengeposter i utenlandsk valuta skal vurderes etter kursen ved regnskapsårets slutt."
+    }
+  ],
+  "forklaring": "5 000 × 11,20 = 56 000 kr. Bokført 57 500. Tapet er **1 500 kr**: D 8160 1 500, K 1500 1 500. Dette er urealisert, men regnskapsloven krever omregning til balansedagens kurs for pengeposter (fordringer og gjeld), i motsetning til varelager, som beholder historisk kurs.",
+  "svar": 1500,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Regn om fordringen til kursen 31.12 og sammenlign med bokført verdi."
+}

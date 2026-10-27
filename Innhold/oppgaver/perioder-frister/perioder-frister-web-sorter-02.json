@@ -1,0 +1,56 @@
+{
+  "id": "perioder-frister-web-sorter-02",
+  "type": "klassifiser",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Regnskapet er låst til og med 30.06.2026. Kan bilaget…",
+  "oppgave": "Regnskapet er **låst til og med 30.06.2026**. Kan bilaget bokføres, eller stopper låsen det?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Kan bokføres",
+    "Låst"
+  ],
+  "elementer": [
+    {
+      "tekst": "Faktura datert 15.07.2026",
+      "svar": "Kan bokføres",
+      "hvorfor": "15. juli er etter låsedatoen. Juli er åpen."
+    },
+    {
+      "tekst": "Kvittering datert 30.06.2026, funnet i en lomme i juli",
+      "svar": "Låst",
+      "hvorfor": "Låsen gjelder *til og med* 30.06. En dato som er lik låsedatoen, er låst."
+    },
+    {
+      "tekst": "Bilag datert 01.07.2026",
+      "svar": "Kan bokføres",
+      "hvorfor": "1. juli er den første dagen etter låsedatoen."
+    },
+    {
+      "tekst": "Leverandørfaktura datert 20.06.2026, mottatt 05.07.2026",
+      "svar": "Låst",
+      "hvorfor": "Fakturadatoen bestemmer perioden, ikke dagen den kom i posten. Juni er låst."
+    },
+    {
+      "tekst": "Bilag med bilagsdato 05.07.2026, der én linje har datoen 28.06.2026",
+      "svar": "Låst",
+      "hvorfor": "API-et sjekker bilagsdatoen *og* hver linjedato. Bilagsdatoen er åpen, men linjen datert 28.06 er i en låst periode. Da stoppes hele bilaget. Kunden ser ofte bare bilagsdatoen øverst og tror at alt er i juli."
+    },
+    {
+      "tekst": "Faktura datert 10.09.2026",
+      "svar": "Kan bokføres",
+      "hvorfor": "September er etter låsedatoen."
+    }
+  ]
+}

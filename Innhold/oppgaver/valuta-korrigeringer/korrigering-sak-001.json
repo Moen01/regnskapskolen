@@ -1,0 +1,54 @@
+{
+  "id": "korrigering-sak-001",
+  "type": "sak",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 5,
+  "tags": [
+    "sak",
+    "edge-case",
+    "tidligere-år"
+  ],
+  "status": "godkjent",
+  "tittel": "Feil i et årsregnskap som allerede er levert",
+  "oppgave": "Les meldingen og velg riktig behandling.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-3",
+      "tekst": "Virkning av korrigering av feil i tidligere årsregnskap skal føres direkte mot egenkapitalen; uvesentlige feil kan resultatføres i året de oppdages."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Et avsluttet regnskapsår åpnes ikke på nytt; feilen rettes i inneværende år."
+    }
+  ],
+  "forklaring": "Fjorårets regnskap er fastsatt og levert, så det **åpnes ikke på nytt**. Er feilen **vesentlig**, føres korreksjonen direkte mot egenkapitalen (2050) i inneværende år, med note og omarbeidede sammenligningstall. Er den **uvesentlig**, resultatføres den i år. En kostnad på 80 000 kr som skulle vært aktivert, må vurderes mot resultatet og balansen: i et lite selskap kan den være vesentlig. Ny mva-melding er ikke tema (mva-behandlingen var riktig); skattemeldingen for fjoråret kan derimot måtte endres, siden avskrivningsgrunnlaget er feil.",
+  "fra": "Regnskapsfører i byrået",
+  "melding": "Jeg fant nettopp at en maskin til 80 000 kr ble kostnadsført i fjor i stedet for å aktiveres. Årsregnskapet for fjoråret er fastsatt og sendt Regnskapsregisteret. Hva gjør jeg?",
+  "valg": [
+    {
+      "nokkel": "A",
+      "tekst": "Åpne fjoråret, rett bilaget og send nytt årsregnskap"
+    },
+    {
+      "nokkel": "B",
+      "tekst": "Rett i år: vesentlig feil føres mot egenkapitalen med note, uvesentlig feil resultatføres; vurder endring av fjorårets skattemelding"
+    },
+    {
+      "nokkel": "C",
+      "tekst": "Ingenting, feilen jevner seg ut over avskrivningstiden"
+    },
+    {
+      "nokkel": "D",
+      "tekst": "Lever ny mva-melding for fjoråret"
+    }
+  ],
+  "svar": "B",
+  "sporsmal": [
+    "Er beløpet vesentlig i forhold til resultat og egenkapital?",
+    "Er skattemeldingen for fjoråret påvirket (avskrivningsgrunnlag)?",
+    "Trenger noten til årets regnskap en forklaring?"
+  ],
+  "forslag": "Fjorårets regnskap åpnes ikke på nytt. Vurder om 80 000 kr er vesentlig for selskapet. Er det vesentlig, føres korreksjonen (aktivering med fratrekk for fjorårets avskrivning) direkte mot egenkapitalen i år, og forholdet forklares i note. Er det uvesentlig, føres det over resultatet i år. Sjekk også om fjorårets skattemelding må endres."
+}

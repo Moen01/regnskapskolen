@@ -1,0 +1,32 @@
+{
+  "id": "resultat-balanse-web-quiz-03",
+  "type": "quiz",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Konto 1920 Bankinnskudd har UB 75 000 kr per 31.12.2025.…",
+  "oppgave": "Konto 1920 Bankinnskudd har UB 75 000 kr per 31.12.2025. Hva er IB per 01.01.2026?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "En balansekonto tar med seg saldoen. UB 31.12 = IB 01.01.",
+  "alternativer": [
+    "0 kr",
+    "75 000 kr",
+    "Det kommer an på salget i januar",
+    "−75 000 kr"
+  ],
+  "svar": 1
+}

@@ -1,0 +1,56 @@
+{
+  "id": "periodisering-postering-005",
+  "type": "postering",
+  "tema": "periodisering",
+  "vanskelighet": 2,
+  "tags": [
+    "reversering",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Reversering 1. januar",
+  "oppgave": "31. desember ble det avsatt 4 000 kr for påløpt strøm (D 6340, K 2960). Før reverseringsbilaget 1. januar, slik at fakturaen i januar kan bokføres som normalt.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger rettes med nytt bilag, ikke ved sletting."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Sammenstillingsprinsippet: avsetningen tilhører fjoråret; i år nøytraliseres den av fakturaen."
+    }
+  ],
+  "forklaring": "Reverseringen er speilbildet av avsetningen: D 2960 4 000, K 6340 4 000. Når fakturaen på 4 000 + mva kommer, føres den D 6340 4 000, D 2710 1 000, K 2400 5 000. Netto kostnad i januar blir null, slik den skal.",
+  "kontoer": [
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift"
+    },
+    {
+      "nr": "2960",
+      "navn": "Påløpt kostnad"
+    },
+    {
+      "nr": "6340",
+      "navn": "Lys og varme"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "2960",
+      "side": "D",
+      "belop": 4000
+    },
+    {
+      "konto": "6340",
+      "side": "K",
+      "belop": 4000
+    }
+  ]
+}

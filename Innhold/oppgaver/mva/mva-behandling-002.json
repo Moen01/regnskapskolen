@@ -1,0 +1,32 @@
+{
+  "id": "mva-behandling-002",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "personkjøretøy",
+    "fradrag"
+  ],
+  "status": "godkjent",
+  "tittel": "Personbil til firmaet",
+  "oppgave": "Velg mva-behandling på fakturaen og om selskapet har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-4",
+      "tekst": "Fradragsretten omfatter ikke anskaffelse, drift og vedlikehold av personkjøretøy, med unntak for yrkesmessig utleie, persontransport og kjøreskoler."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-1",
+      "tekst": "Alminnelig sats 25 %."
+    }
+  ],
+  "forklaring": "Bilforhandleren fakturerer med 25 % mva som normalt. Men en **personbil** er avskåret fra fradrag etter § 8-4, selv om den bare brukes i næring. Hele beløpet inkl. mva aktiveres som kostpris på bilen. Unntakene gjelder bilutleie, drosje, kjøreskole og lignende. En varebil klasse 2 (grønne skilter) gir derimot fradrag.",
+  "transaksjon": "Et regnskapsbyrå kjøper en ny personbil (hvite skilter) til 400 000 kr + 25 % mva. Bilen skal bare brukes til kundebesøk.",
+  "fasit": {
+    "behandling": "25",
+    "fradrag": false
+  }
+}

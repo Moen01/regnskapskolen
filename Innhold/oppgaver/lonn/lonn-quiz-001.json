@@ -1,0 +1,29 @@
+{
+  "id": "lonn-quiz-001",
+  "type": "quiz",
+  "tema": "lonn",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "2026",
+    "skattetrekkskonto"
+  ],
+  "status": "godkjent",
+  "tittel": "Skattetrekkskontoen i 2026",
+  "oppgave": "En kollega sier: «Husk å overføre forskuddstrekket til skattetrekkskontoen etter lønnskjøringen.» Hva er riktig i 2026?",
+  "lov": [
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 5-12",
+      "tekst": "Kravet om egen skattetrekkskonto eller bankgaranti er opphevet fra 1. januar 2026."
+    }
+  ],
+  "forklaring": "Fra 1. januar 2026 er skattetrekkskontoen avviklet. Trekket **betales direkte til Skatteetaten senest første virkedag etter lønnsutbetalingen**, og utbetalingsdatoen rapporteres i a-meldingen. Den siste terminen for 2025 ble betalt fra kontoen innen 15. januar 2026; etter det skal saldoen være null.",
+  "alternativer": [
+    "Riktig, trekket skal stå på skattetrekkskonto til terminforfall den 15.",
+    "Feil, trekket betales direkte til Skatteetaten senest første virkedag etter utbetalingen",
+    "Feil, trekket betales sammen med arbeidsgiveravgiften den 15. annenhver måned",
+    "Riktig, men bare for bedrifter med over ti ansatte"
+  ],
+  "svar": 1
+}

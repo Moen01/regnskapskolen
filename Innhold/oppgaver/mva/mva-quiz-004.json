@@ -1,0 +1,38 @@
+{
+  "id": "mva-quiz-004",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "fritatt",
+    "unntatt"
+  ],
+  "status": "godkjent",
+  "tittel": "Fritatt eller unntatt?",
+  "oppgave": "Hva er forskjellen på en virksomhet med *fritatt* omsetning (for eksempel eksport) og en med *unntatt* omsetning (for eksempel undervisning)?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-5",
+      "tekst": "Undervisningstjenester er unntatt fra loven."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 6-21",
+      "tekst": "Eksport er fritatt (nullsats)."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Fradragsrett gjelder anskaffelser til avgiftspliktig virksomhet, fritatt omsetning medregnet."
+    }
+  ],
+  "forklaring": "**Fritatt** = innenfor loven med 0 % sats: ingen utgående mva, men full fradragsrett for inngående. **Unntatt** = utenfor loven: ingen utgående mva og *ingen* fradragsrett. Begge fakturerer uten mva, men økonomien er helt ulik: den unntatte virksomheten bærer mva på alle innkjøp som kostnad.",
+  "alternativer": [
+    "Ingen forskjell, begge fakturerer uten mva",
+    "Fritatt gir fradragsrett for inngående mva, unntatt gjør det ikke",
+    "Unntatt gir fradragsrett for inngående mva, fritatt gjør det ikke",
+    "Fritatt virksomhet trenger ikke registrere seg"
+  ],
+  "svar": 1
+}

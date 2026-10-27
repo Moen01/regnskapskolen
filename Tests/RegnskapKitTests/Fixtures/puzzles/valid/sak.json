@@ -1,0 +1,7 @@
+{ "id": "fx-sak", "type": "sak", "tema": "grunnlag", "vanskelighet": 2, "status": "godkjent",
+  "tittel": "Bilaget balanserer ikke per dato", "oppgave": "Hva er riktig behandling?",
+  "fra": "Kollega", "melding": "Systemet sier bilaget ikke balanserer på 22.09, men summene er like.",
+  "valg": [{ "nokkel": "A", "tekst": "Sjekk datoene på linjene" }, { "nokkel": "B", "tekst": "Slett bilaget" }],
+  "svar": "A", "sporsmal": ["Har alle linjene samme dato?"], "forslag": "Hver dato må gå i null for seg.",
+  "lov": [{ "lov": "bokføringsloven", "paragraf": "§ 7", "tekst": "Bokføringen skal være à jour per periode." }],
+  "forklaring": "Hver dato hører til en periode og må balansere for seg." }

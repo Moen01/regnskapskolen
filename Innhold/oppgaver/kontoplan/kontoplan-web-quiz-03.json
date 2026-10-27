@@ -1,0 +1,27 @@
+{
+  "id": "kontoplan-web-quiz-03",
+  "type": "quiz",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "En kunde vil skille renter på kassekreditten fra renter på…",
+  "oppgave": "En kunde vil skille renter på kassekreditten fra renter på banklånet (8150). Hvilket nummer passer best for en ny konto?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    }
+  ],
+  "forklaring": "8151 ligger i samme gruppe som 8150, gruppe 81 finanskostnad. Da havner kontoen riktig i rapportene. De andre numrene ville gjort rentene til en eiendel, gjeld eller salgsinntekt.",
+  "alternativer": [
+    "1951",
+    "2151",
+    "8151",
+    "3151"
+  ],
+  "svar": 2
+}

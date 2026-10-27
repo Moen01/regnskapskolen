@@ -1,0 +1,60 @@
+{
+  "id": "avskrivning-sorter-001",
+  "type": "klassifiser",
+  "tema": "avskrivning",
+  "vanskelighet": 3,
+  "tags": [
+    "saldogrupper"
+  ],
+  "status": "godkjent",
+  "tittel": "Hvilken saldogruppe?",
+  "oppgave": "Plasser hvert driftsmiddel i riktig saldogruppe.",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-41",
+      "tekst": "Driftsmidler som avskrives, deles i saldogruppene a til j."
+    }
+  ],
+  "forklaring": "Gruppe a (30 %) er kontormaskiner, b (20 %) ervervet goodwill, c (24 %) varebiler og lastebiler, d (20 %) personbiler, maskiner og inventar, i (2 %) forretningsbygg, j (10 %) fast teknisk installasjon i bygg.",
+  "kategorier": [
+    "a (30 %)",
+    "b (20 %)",
+    "c (24 %)",
+    "d (20 %)",
+    "i (2 %)",
+    "j (10 %)"
+  ],
+  "elementer": [
+    {
+      "tekst": "Kopimaskin til kontoret",
+      "svar": "a (30 %)",
+      "hvorfor": "Kontormaskiner er gruppe a."
+    },
+    {
+      "tekst": "Varebil (grønne skilter)",
+      "svar": "c (24 %)",
+      "hvorfor": "Varebiler, lastebiler og busser er gruppe c."
+    },
+    {
+      "tekst": "Personbil til daglig leder",
+      "svar": "d (20 %)",
+      "hvorfor": "Personbiler er gruppe d, sammen med maskiner og inventar."
+    },
+    {
+      "tekst": "Goodwill kjøpt ved oppkjøp av et firma",
+      "svar": "b (20 %)",
+      "hvorfor": "Ervervet forretningsverdi er gruppe b."
+    },
+    {
+      "tekst": "Kontorbygget selskapet eier",
+      "svar": "i (2 %)",
+      "hvorfor": "Forretningsbygg er gruppe i."
+    },
+    {
+      "tekst": "Ventilasjonsanlegget i bygget",
+      "svar": "j (10 %)",
+      "hvorfor": "Fast teknisk installasjon i bygninger er gruppe j, og avskrives separat fra bygget."
+    }
+  ]
+}

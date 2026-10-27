@@ -1,0 +1,33 @@
+{
+  "id": "lonn-frist-amelding-001",
+  "type": "frist",
+  "tema": "lonn",
+  "vanskelighet": 2,
+  "tags": [
+    "a-melding"
+  ],
+  "status": "godkjent",
+  "tittel": "Fristen for a-meldingen",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "a-opplysningsloven",
+      "paragraf": "§ 4",
+      "tekst": "A-meldingen leveres minst én gang per måned, senest den 5. i måneden etter."
+    },
+    {
+      "lov": "a-opplysningsforskriften",
+      "paragraf": "§ 2-1",
+      "tekst": "Fristen er den 5. i måneden etter utbetalingen."
+    }
+  ],
+  "forklaring": "A-meldingen for lønn utbetalt i september leveres senest **5. oktober 2026** (en mandag). Faller den 5. på helg eller helligdag, er fristen første virkedag etter.",
+  "hendelse": "Lønnen for september 2026 er utbetalt 25. september. Når er fristen for a-meldingen som gjelder september?",
+  "fasit": "2026-10-05",
+  "fasitRegel": {
+    "type": "amelding",
+    "maaned": 9,
+    "aar": 2026
+  },
+  "hint": "Den 5. i måneden etter."
+}

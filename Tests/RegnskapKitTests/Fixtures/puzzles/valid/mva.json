@@ -1,0 +1,6 @@
+{ "id": "fx-mva", "type": "mva", "tema": "mva", "vanskelighet": 3, "status": "godkjent",
+  "tittel": "Konsulent fra Sverige", "oppgave": "Velg behandling og om det er fradragsrett.",
+  "transaksjon": "Et norsk AS kjøper rådgivning fra et svensk firma for 10 000 kr. Tjenesten leveres over e-post.",
+  "fasit": { "behandling": "omvendt", "fradrag": true },
+  "lov": [{ "lov": "merverdiavgiftsloven", "paragraf": "§ 3-30", "tekst": "Fjernleverbare tjenester kjøpt fra utlandet: mottakeren beregner mva." }],
+  "forklaring": "Omvendt avgiftsplikt: 2 500 kr utgående og 2 500 kr inngående, netto null for en avgiftspliktig kjøper." }

@@ -1,0 +1,56 @@
+{
+  "id": "mva-postering-002",
+  "type": "postering",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "mva-oppgjør",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Terminoppgjør for mva",
+  "oppgave": "Ved slutten av terminen står 2700 Utgående mva med kreditsaldo 80 000 kr og 2710 Inngående mva med debetsaldo 30 000 kr. Før oppgjørsbilaget som nuller de to kontoene mot 2740 Oppgjørskonto mva.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 15-8",
+      "tekst": "Avgiftssubjektet beregner differansen mellom utgående og inngående mva for terminen og betaler den til staten."
+    }
+  ],
+  "forklaring": "2700 har kreditsaldo; for å nulle den debiteres 2700 med 80 000. 2710 har debetsaldo; den krediteres med 30 000. Differansen, 50 000 kr, krediteres 2740 og er beløpet som betales ved fristen. Når betalingen skjer: D 2740 50 000, K 1920 50 000.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift"
+    },
+    {
+      "nr": "2740",
+      "navn": "Oppgjørskonto merverdiavgift"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "2700",
+      "side": "D",
+      "belop": 80000
+    },
+    {
+      "konto": "2710",
+      "side": "K",
+      "belop": 30000
+    },
+    {
+      "konto": "2740",
+      "side": "K",
+      "belop": 50000
+    }
+  ]
+}

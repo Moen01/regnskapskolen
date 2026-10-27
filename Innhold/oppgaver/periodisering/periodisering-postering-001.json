@@ -1,0 +1,57 @@
+{
+  "id": "periodisering-postering-001",
+  "type": "postering",
+  "tema": "periodisering",
+  "vanskelighet": 3,
+  "tags": [
+    "forskuddsbetalt",
+    "årsslutt",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Forskuddsbetalt forsikring ved årsslutt",
+  "oppgave": "1. oktober betalte selskapet 12 000 kr for en forsikring som gjelder 1. oktober til 30. september neste år. Hele beløpet ble ført på 7500. Før periodiseringsbilaget per 31. desember.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 3 sammenstillingsprinsippet: utgifter kostnadsføres i samme periode som tilhørende inntekt."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 2 transaksjonsprinsippet: transaksjoner regnskapsføres til verdien av vederlaget på transaksjonstidspunktet."
+    }
+  ],
+  "forklaring": "Tre av tolv måneder hører til i år (3 000 kr). De resterende ni månedene, 9 000 kr, er en forskuddsbetaling: en eiendel ved årsslutt. Flytt dem ut av kostnaden: D 1740 9 000, K 7500 9 000. 1. januar reverseres bilaget, så kostnaden kommer i riktig år.",
+  "kontoer": [
+    {
+      "nr": "1740",
+      "navn": "Forskuddsbetalt kostnad"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2960",
+      "navn": "Påløpt kostnad"
+    },
+    {
+      "nr": "7500",
+      "navn": "Forsikringspremie"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1740",
+      "side": "D",
+      "belop": 9000
+    },
+    {
+      "konto": "7500",
+      "side": "K",
+      "belop": 9000
+    }
+  ]
+}

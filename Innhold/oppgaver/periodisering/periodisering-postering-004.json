@@ -1,0 +1,61 @@
+{
+  "id": "periodisering-postering-004",
+  "type": "postering",
+  "tema": "periodisering",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "påløpt-inntekt",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Opptjent, men ikke fakturert",
+  "oppgave": "Et konsulentselskap har jobbet 30 000 kr (eks. mva) på et prosjekt i desember, men fakturerer først i januar. Før periodiseringen per 31. desember.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 2 opptjeningsprinsippet: inntekt resultatføres når den er opptjent, uavhengig av fakturering."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 15-9",
+      "tekst": "Mva tidfestes etter salgsdokumentets dato, så utgående mva beregnes først ved faktureringen i januar."
+    }
+  ],
+  "forklaring": "Inntekten er opptjent i desember: K 3000 30 000. Motposten er ikke en kundefordring (det finnes ingen faktura), men **påløpt inntekt**: D 1750 30 000. Ingen mva ennå: den følger fakturaen i januar. Reverseres 1. januar.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1750",
+      "navn": "Påløpt inntekt"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "2970",
+      "navn": "Uopptjent inntekt"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1750",
+      "side": "D",
+      "belop": 30000
+    },
+    {
+      "konto": "3000",
+      "side": "K",
+      "belop": 30000
+    }
+  ]
+}

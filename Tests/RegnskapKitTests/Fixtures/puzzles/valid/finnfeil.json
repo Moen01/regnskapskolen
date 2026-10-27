@@ -1,0 +1,8 @@
+{ "id": "fx-finnfeil", "type": "finnfeil", "tema": "kontoplan", "vanskelighet": 2, "status": "godkjent",
+  "tittel": "Feil klasse", "oppgave": "Marker linjene med konto fra feil klasse.", "overskrift": "Bilagsliste",
+  "elementer": [
+    { "tekst": "Kontorrekvisita · 3000 · debet", "feil": true, "hvorfor": "Kostnad i klasse 3. Riktig er 6800." },
+    { "tekst": "Husleie · 6300 · debet", "feil": false }
+  ],
+  "lov": [{ "lov": "bokføringsloven", "paragraf": "§ 4", "tekst": "Nøyaktighet." }],
+  "forklaring": "Første siffer avslører feilen." }

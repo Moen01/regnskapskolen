@@ -1,0 +1,368 @@
+{
+  "id": "kafe-001",
+  "tittel": "Kafé Lysthuset: én måned i bøkene",
+  "selskap": "Kafé Lysthuset AS, Oslo (sone 1). Avgiftspliktig, med servering (25 %) og take-away (15 %). Utleier er frivillig registrert. Fem ukers ferie etter tariffavtale (12 %).",
+  "beskrivelse": "Selskapet starter mars 2026 med 100 000 kr i banken, 30 000 i aksjekapital og 70 000 i annen egenkapital. Før hver hendelse som et eget bilag i sandkassen. Sjekk saldobalansen mot fasiten til slutt. Alle beløp som ikke sier noe annet er eks. mva.",
+  "vanskelighet": 3,
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-2",
+      "tekst": "Næringsmidler 15 %; servering 25 %."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-40",
+      "tekst": "Driftsmidler under 30 000 kr kan kostnadsføres direkte."
+    },
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 5-12",
+      "tekst": "Skattetrekkskontoen er avviklet fra 2026; trekket betales senest første virkedag etter lønnsutbetalingen."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Sammenstillingsprinsippet: feriepenger og påløpt strøm hører til mars."
+    }
+  ],
+  "hendelser": [
+    {
+      "dato": "2026-03-01",
+      "tekst": "Åpningsbalanse: 100 000 kr i banken, finansiert med 30 000 kr aksjekapital og 70 000 kr annen egenkapital."
+    },
+    {
+      "dato": "2026-03-01",
+      "tekst": "Husleie for mars, 15 000 kr + 25 % mva, betales fra bank. Utleier er frivillig registrert.",
+      "hint": "Frivillig registrert utleier fakturerer med mva, og kafeen har fradrag."
+    },
+    {
+      "dato": "2026-03-03",
+      "tekst": "Kjøp av råvarer (mat) for 8 000 kr + 15 % mva på kreditt fra grossisten.",
+      "hint": "Næringsmidler har 15 %."
+    },
+    {
+      "dato": "2026-03-05",
+      "tekst": "Kontantsalg av take-away hele uken: 23 000 kr inkl. 15 % mva, satt inn i banken.",
+      "hint": "Regn ut netto og mva fra bruttobeløpet."
+    },
+    {
+      "dato": "2026-03-10",
+      "tekst": "Salg av servering i kafeen: 50 000 kr inkl. 25 % mva, betalt med kort til banken.",
+      "hint": "Servering er alminnelig sats selv om maten er næringsmiddel."
+    },
+    {
+      "dato": "2026-03-12",
+      "tekst": "Kjøp av ny kaffemaskin til 25 000 kr + 25 % mva på kreditt. Forventet levetid fem år.",
+      "hint": "Er kjøpet varig OG betydelig? Sjekk grensen i satser.json."
+    },
+    {
+      "dato": "2026-03-15",
+      "tekst": "Grossistfakturaen fra 3. mars betales fra bank."
+    },
+    {
+      "dato": "2026-03-25",
+      "tekst": "Lønn for mars: brutto 50 000 kr, forskuddstrekk 15 000 kr, netto utbetalt fra bank. Arbeidsgiveravgift 14,1 %.",
+      "hint": "Bruttolønn er kostnaden; trekket er gjeld til staten; arbeidsgiveravgiften er en egen kostnad og gjeld."
+    },
+    {
+      "dato": "2026-03-26",
+      "tekst": "Forskuddstrekket betales til Skatteetaten (første virkedag etter utbetalingen).",
+      "hint": "2026-regelen: ingen skattetrekkskonto."
+    },
+    {
+      "dato": "2026-03-31",
+      "tekst": "Avsetning av feriepenger (12 %) av marslønnen, og arbeidsgiveravgift (14,1 %) av feriepengene.",
+      "hint": "To kostnader, to gjeldsposter."
+    },
+    {
+      "dato": "2026-03-31",
+      "tekst": "Banken belaster 150 kr i gebyr (ingen mva)."
+    },
+    {
+      "dato": "2026-03-31",
+      "tekst": "Strømmen for mars er brukt, men fakturaen kommer i april. Anslag 3 000 kr eks. mva.",
+      "hint": "Avsetning uten mva: fradraget kommer med fakturaen."
+    }
+  ],
+  "fasitSaldobalanse": {
+    "1920": 94900,
+    "2000": -30000,
+    "2050": -70000,
+    "2400": -31250,
+    "2600": 0,
+    "2700": -13000,
+    "2710": 11200,
+    "2770": -7050,
+    "2780": -846,
+    "2940": -6000,
+    "2960": -3000,
+    "3000": -40000,
+    "3010": -20000,
+    "4300": 8000,
+    "5000": 50000,
+    "5180": 6000,
+    "5400": 7050,
+    "5405": 846,
+    "6300": 15000,
+    "6340": 3000,
+    "6540": 25000,
+    "7770": 150
+  },
+  "fasitJournal": {
+    "entries": [
+      {
+        "dato": "2026-03-01",
+        "tekst": "Åpningsbalanse",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 100000
+          },
+          {
+            "konto": "2000",
+            "side": "K",
+            "belop": 30000
+          },
+          {
+            "konto": "2050",
+            "side": "K",
+            "belop": 70000
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-01",
+        "tekst": "Husleie mars, utleier frivillig registrert",
+        "linjer": [
+          {
+            "konto": "6300",
+            "side": "D",
+            "belop": 15000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2710",
+            "side": "D",
+            "belop": 3750
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 18750
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-03",
+        "tekst": "Varekjøp mat på kreditt",
+        "linjer": [
+          {
+            "konto": "4300",
+            "side": "D",
+            "belop": 8000,
+            "mvaKode": "15"
+          },
+          {
+            "konto": "2710",
+            "side": "D",
+            "belop": 1200
+          },
+          {
+            "konto": "2400",
+            "side": "K",
+            "belop": 9200
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-05",
+        "tekst": "Kontantsalg take-away",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 23000
+          },
+          {
+            "konto": "3010",
+            "side": "K",
+            "belop": 20000,
+            "mvaKode": "15"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 3000
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-10",
+        "tekst": "Salg servering",
+        "linjer": [
+          {
+            "konto": "1920",
+            "side": "D",
+            "belop": 50000
+          },
+          {
+            "konto": "3000",
+            "side": "K",
+            "belop": 40000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2700",
+            "side": "K",
+            "belop": 10000
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-12",
+        "tekst": "Kaffemaskin, kostnadsføres (under 30 000)",
+        "linjer": [
+          {
+            "konto": "6540",
+            "side": "D",
+            "belop": 25000,
+            "mvaKode": "25"
+          },
+          {
+            "konto": "2710",
+            "side": "D",
+            "belop": 6250
+          },
+          {
+            "konto": "2400",
+            "side": "K",
+            "belop": 31250
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-15",
+        "tekst": "Betalt leverandørfaktura fra 03.03",
+        "linjer": [
+          {
+            "konto": "2400",
+            "side": "D",
+            "belop": 9200
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 9200
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-25",
+        "tekst": "Lønn mars",
+        "linjer": [
+          {
+            "konto": "5000",
+            "side": "D",
+            "belop": 50000
+          },
+          {
+            "konto": "2600",
+            "side": "K",
+            "belop": 15000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 35000
+          },
+          {
+            "konto": "5400",
+            "side": "D",
+            "belop": 7050
+          },
+          {
+            "konto": "2770",
+            "side": "K",
+            "belop": 7050
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-26",
+        "tekst": "Forskuddstrekk betalt til Skatteetaten",
+        "linjer": [
+          {
+            "konto": "2600",
+            "side": "D",
+            "belop": 15000
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 15000
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-31",
+        "tekst": "Avsetning feriepenger og aga av feriepenger",
+        "linjer": [
+          {
+            "konto": "5180",
+            "side": "D",
+            "belop": 6000
+          },
+          {
+            "konto": "2940",
+            "side": "K",
+            "belop": 6000
+          },
+          {
+            "konto": "5405",
+            "side": "D",
+            "belop": 846
+          },
+          {
+            "konto": "2780",
+            "side": "K",
+            "belop": 846
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-31",
+        "tekst": "Bankgebyr",
+        "linjer": [
+          {
+            "konto": "7770",
+            "side": "D",
+            "belop": 150
+          },
+          {
+            "konto": "1920",
+            "side": "K",
+            "belop": 150
+          }
+        ]
+      },
+      {
+        "dato": "2026-03-31",
+        "tekst": "Påløpt strøm mars, ikke fakturert",
+        "linjer": [
+          {
+            "konto": "6340",
+            "side": "D",
+            "belop": 3000
+          },
+          {
+            "konto": "2960",
+            "side": "K",
+            "belop": 3000
+          }
+        ]
+      }
+    ]
+  }
+}

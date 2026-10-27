@@ -1,0 +1,30 @@
+{
+  "id": "reskontro-regnut-001",
+  "type": "regnut",
+  "tema": "reskontro-bank",
+  "vanskelighet": 3,
+  "tags": [
+    "bankavstemming",
+    "regning"
+  ],
+  "status": "godkjent",
+  "tittel": "Differansen i bankavstemmingen",
+  "oppgave": "Kontoutskriften viser saldo 100 000 kr per 31. mars. Konto 1920 i regnskapet viser 97 000 kr. Du finner to forklaringer: en betaling på 5 000 kr til en leverandør er bokført, men ikke belastet banken ennå, og et bankgebyr på 2 000 kr står på kontoutskriften men er ikke bokført. Hvilket beløp må bokføres for at avstemmingen skal gå opp?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 11",
+      "tekst": "Dokumentasjon av balansen: bankinnskudd skal avstemmes mot kontoutskrift, og differanser skal forklares."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Nr. 2 fullstendighet: alle transaksjoner skal bokføres, også bankens egne gebyrer."
+    }
+  ],
+  "forklaring": "Bank 100 000 − betaling i transitt 5 000 = 95 000. Regnskap 97 000 − gebyr 2 000 = 95 000. Betalingen i transitt er riktig bokført og trenger ingenting; **gebyret på 2 000 kr** må bokføres (D 7770, K 1920). Da stemmer begge på 95 000.",
+  "svar": 2000,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Bare det som står på kontoutskriften og mangler i regnskapet, skal bokføres."
+}

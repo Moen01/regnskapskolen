@@ -1,0 +1,32 @@
+{
+  "id": "resultat-balanse-web-quiz-04",
+  "type": "quiz",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Konto 3000 Salgsinntekt hadde saldo −900 000 kr i 2025. Hva…",
+  "oppgave": "Konto 3000 Salgsinntekt hadde saldo −900 000 kr i 2025. Hva er IB for kontoen i 2026?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Resultatkontoer starter på 0 hvert år. Fjorårets resultat er flyttet til egenkapitalen.",
+  "alternativer": [
+    "−900 000 kr",
+    "900 000 kr",
+    "0 kr",
+    "Samme som 2050 Annen egenkapital"
+  ],
+  "svar": 2
+}

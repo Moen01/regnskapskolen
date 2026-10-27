@@ -1,0 +1,57 @@
+{
+  "id": "arsoppgjor-sorter-001",
+  "type": "klassifiser",
+  "tema": "arsoppgjor",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "oppbevaring"
+  ],
+  "status": "godkjent",
+  "tittel": "Hvor lenge skal det oppbevares?",
+  "oppgave": "Plasser hvert dokument i riktig oppbevaringstid etter bokføringsloven.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 13",
+      "tekst": "Primærdokumentasjon (årsregnskap, spesifikasjoner, bilag, bankavtaler) oppbevares i fem år; sekundærdokumentasjon (avtaler, korrespondanse, pakksedler, prisoversikter) i tre år og seks måneder."
+    }
+  ],
+  "forklaring": "**Fem år**: årsregnskap, kontospesifikasjon, bilag, bankkontoutskrifter. **3,5 år**: avtaler av betydning, korrespondanse som gir vesentlig tilleggsinformasjon, utgående pakksedler og prisoversikter. Fristen regnes fra regnskapsårets slutt. Enkelte dokumenter (for eksempel i petroleum og bank) har lengre frist i forskrift.",
+  "kategorier": [
+    "5 år",
+    "3 år og 6 måneder"
+  ],
+  "elementer": [
+    {
+      "tekst": "Leverandørfaktura (bilag)",
+      "svar": "5 år",
+      "hvorfor": "Bilag er primærdokumentasjon."
+    },
+    {
+      "tekst": "Årsregnskapet med noter",
+      "svar": "5 år",
+      "hvorfor": "Årsregnskapet er primærdokumentasjon."
+    },
+    {
+      "tekst": "Leieavtalen for kontorlokalet",
+      "svar": "3 år og 6 måneder",
+      "hvorfor": "Avtaler er sekundærdokumentasjon."
+    },
+    {
+      "tekst": "Kontospesifikasjon (hovedbok)",
+      "svar": "5 år",
+      "hvorfor": "Spesifikasjoner av pliktig regnskapsrapportering er primærdokumentasjon."
+    },
+    {
+      "tekst": "E-postutveksling om en prisreduksjon",
+      "svar": "3 år og 6 måneder",
+      "hvorfor": "Korrespondanse med vesentlig tilleggsinformasjon er sekundærdokumentasjon."
+    },
+    {
+      "tekst": "Utgående pakksedler",
+      "svar": "3 år og 6 måneder",
+      "hvorfor": "Pakksedler er sekundærdokumentasjon."
+    }
+  ]
+}

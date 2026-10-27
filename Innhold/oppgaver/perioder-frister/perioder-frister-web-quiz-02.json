@@ -1,0 +1,37 @@
+{
+  "id": "perioder-frister-web-quiz-02",
+  "type": "quiz",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hva er fristen for mva-meldingen for 3. termin 2026…",
+  "oppgave": "Hva er fristen for mva-meldingen for 3. termin 2026 (mai–juni)?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "Vanligvis er fristen 1 måned og 10 dager etter terminslutt. 3. termin har sommerfrist til 31. august.",
+  "alternativer": [
+    "10.07.2026",
+    "10.08.2026",
+    "31.08.2026",
+    "10.09.2026"
+  ],
+  "svar": 2
+}

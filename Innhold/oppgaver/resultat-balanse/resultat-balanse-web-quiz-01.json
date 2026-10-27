@@ -1,0 +1,37 @@
+{
+  "id": "resultat-balanse-web-quiz-01",
+  "type": "quiz",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hvilken rapport viser status på én bestemt dato?",
+  "oppgave": "Hvilken rapport viser status på én bestemt dato?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Balansen er et bilde: hva bedriften eier og skylder på én dato. Resultatet er en film over en periode.",
+  "alternativer": [
+    "Resultatregnskapet",
+    "Balansen",
+    "Begge",
+    "Ingen av dem"
+  ],
+  "svar": 1
+}

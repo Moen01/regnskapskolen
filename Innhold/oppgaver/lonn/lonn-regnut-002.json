@@ -1,0 +1,24 @@
+{
+  "id": "lonn-regnut-002",
+  "type": "regnut",
+  "tema": "lonn",
+  "vanskelighet": 2,
+  "tags": [
+    "arbeidsgiveravgift"
+  ],
+  "status": "godkjent",
+  "tittel": "Arbeidsgiveravgift i sone 1",
+  "oppgave": "Lønnsgrunnlaget for en måned er 80 000 kr. Bedriften ligger i Oslo (sone 1). Hvor mye blir arbeidsgiveravgiften?",
+  "lov": [
+    {
+      "lov": "folketrygdloven",
+      "paragraf": "§ 23-2",
+      "tekst": "Arbeidsgiveravgift beregnes av lønn og annen godtgjørelse for arbeid etter satsen for sonen virksomheten er registrert i."
+    }
+  ],
+  "forklaring": "Sone 1 har 14,1 %. 80 000 × 14,1 % = **11 280 kr**. Satsen avhenger av hvor virksomheten er registrert, ikke hvor den ansatte bor.",
+  "svar": 11280,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Sone 1 er 14,1 %."
+}

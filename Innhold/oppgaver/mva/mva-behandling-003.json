@@ -1,0 +1,31 @@
+{
+  "id": "mva-behandling-003",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "lav-sats",
+    "reise"
+  ],
+  "status": "godkjent",
+  "tittel": "Hotellovernatting på tjenestereise",
+  "oppgave": "Velg sats på hotellregningen og om bedriften har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-5",
+      "tekst": "Romutleie i hotellvirksomhet og lignende har redusert sats (12 %)."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Registrert avgiftssubjekt har fradrag for inngående mva på anskaffelser til bruk i den avgiftspliktige virksomheten."
+    }
+  ],
+  "forklaring": "Overnatting har **lav sats, 12 %**. Når reisen er i avgiftspliktig virksomhet, er mva på rommet fradragsberettiget. Pass på frokosten: servering (mat på restaurant/hotell) har 25 % og er avskåret fra fradrag etter § 8-3, så en regning med frokost må deles.",
+  "transaksjon": "En ansatt overnatter på hotell i Bergen på en tjenestereise for et avgiftspliktig selskap. Regningen gjelder bare rommet.",
+  "fasit": {
+    "behandling": "12",
+    "fradrag": true
+  }
+}

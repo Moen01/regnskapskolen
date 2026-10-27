@@ -1,0 +1,92 @@
+{
+  "id": "lonn-postering-001",
+  "type": "postering",
+  "tema": "lonn",
+  "vanskelighet": 3,
+  "tags": [
+    "lønn",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Lønnsbilaget: brutto, trekk og arbeidsgiveravgift",
+  "oppgave": "En ansatt har 50 000 kr i bruttolønn for oktober. Forskuddstrekket er 15 000 kr. Arbeidsgiveravgiften er 14,1 % (sone 1). Nettolønnen er ennå ikke utbetalt. Før lønnsbilaget (uten feriepenger).",
+  "lov": [
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 5-4",
+      "tekst": "Arbeidsgiver plikter å foreta forskuddstrekk i lønn."
+    },
+    {
+      "lov": "folketrygdloven",
+      "paragraf": "§ 23-2",
+      "tekst": "Arbeidsgiver skal betale arbeidsgiveravgift av lønn og annen godtgjørelse for arbeid."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-6",
+      "tekst": "Lønn skal dokumenteres per ansatt med brutto, trekk og netto."
+    }
+  ],
+  "forklaring": "Bruttolønnen er kostnaden: D 5000 50 000. Den deles i forskuddstrekk, som er gjeld til staten (K 2600 15 000), og nettolønn, som er gjeld til den ansatte til den er utbetalt (K 2910 35 000). Arbeidsgiveravgiften er en egen kostnad: 14,1 % × 50 000 = 7 050 (D 5400) mot gjeld til staten (K 2770). Når lønnen utbetales: D 2910 35 000, K 1920 35 000.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2600",
+      "navn": "Forskuddstrekk"
+    },
+    {
+      "nr": "2770",
+      "navn": "Skyldig arbeidsgiveravgift"
+    },
+    {
+      "nr": "2910",
+      "navn": "Gjeld til ansatte"
+    },
+    {
+      "nr": "5000",
+      "navn": "Lønn til ansatte"
+    },
+    {
+      "nr": "5400",
+      "navn": "Arbeidsgiveravgift"
+    },
+    {
+      "nr": "5180",
+      "navn": "Feriepenger"
+    },
+    {
+      "nr": "2940",
+      "navn": "Skyldige feriepenger"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "5000",
+      "side": "D",
+      "belop": 50000
+    },
+    {
+      "konto": "2600",
+      "side": "K",
+      "belop": 15000
+    },
+    {
+      "konto": "2910",
+      "side": "K",
+      "belop": 35000
+    },
+    {
+      "konto": "5400",
+      "side": "D",
+      "belop": 7050
+    },
+    {
+      "konto": "2770",
+      "side": "K",
+      "belop": 7050
+    }
+  ]
+}

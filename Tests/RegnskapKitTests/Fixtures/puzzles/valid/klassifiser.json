@@ -1,0 +1,9 @@
+{ "id": "fx-klassifiser", "type": "klassifiser", "tema": "kontoplan", "vanskelighet": 1, "status": "godkjent",
+  "tittel": "Kontotyper", "oppgave": "Velg kontotypen.",
+  "kategorier": ["Eiendel", "Gjeld", "Egenkapital", "Inntekt", "Kostnad"],
+  "elementer": [
+    { "tekst": "1920 Bankinnskudd", "svar": "Eiendel", "hvorfor": "Pengene eies av bedriften." },
+    { "tekst": "2400 Leverandørgjeld", "svar": "Gjeld", "hvorfor": "Bedriften skylder leverandørene." }
+  ],
+  "lov": [{ "lov": "regnskapsloven", "paragraf": "§ 6-2", "tekst": "Balansens oppstilling: eiendeler, egenkapital og gjeld." }],
+  "forklaring": "Klasse 1 er eiendeler, klasse 2 er egenkapital og gjeld." }

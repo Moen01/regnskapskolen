@@ -1,0 +1,26 @@
+{
+  "id": "mva-behandling-005",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "unntatt",
+    "helse"
+  ],
+  "status": "godkjent",
+  "tittel": "Bedriftslege",
+  "oppgave": "Velg mva-behandling på fakturaen fra legen.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-2",
+      "tekst": "Omsetning av helsetjenester er unntatt fra loven."
+    }
+  ],
+  "forklaring": "Helsetjenester er **unntatt** fra merverdiavgiftsloven. Legen fakturerer uten mva, og det er ingen inngående mva å trekke fra. Unntatt (utenfor loven) er noe annet enn fritatt (nullsats innenfor loven): den unntatte leverandøren har ingen fradragsrett for egne innkjøp.",
+  "transaksjon": "Selskapet kjøper en helsekontroll for de ansatte fra en privat legeklinikk. Fakturaen er på 8 000 kr uten mva.",
+  "fasit": {
+    "behandling": "unntatt",
+    "fradrag": null
+  }
+}

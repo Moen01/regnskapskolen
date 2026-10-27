@@ -1,0 +1,34 @@
+{
+  "id": "arsoppgjor-frist-002",
+  "type": "frist",
+  "tema": "arsoppgjor",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "frist",
+    "helg"
+  ],
+  "status": "godkjent",
+  "tittel": "Innsending av årsregnskapet for 2026",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 8-2",
+      "tekst": "Årsregnskapet sendes Regnskapsregisteret senest 31. juli."
+    },
+    {
+      "lov": "forvaltningsloven",
+      "paragraf": "§ 30",
+      "tekst": "Ender en frist på en lørdag, søndag eller helligdag, forlenges den til nærmeste virkedag."
+    }
+  ],
+  "forklaring": "31. juli 2027 er en **lørdag**. Fristen forskyves til første virkedag: **mandag 2. august 2027**. Vent likevel ikke til siste dag: Altinn-innsending som feiler fredag kveld gir ingen utsettelse.",
+  "hendelse": "Samme selskap skal sende årsregnskapet for 2026. Hva er siste frist?",
+  "fasit": "2027-08-02",
+  "fasitRegel": {
+    "type": "aarsregnskap",
+    "aar": 2026
+  },
+  "hint": "Sjekk hvilken ukedag 31. juli 2027 er."
+}

@@ -1,0 +1,37 @@
+{
+  "id": "bilag-bokforingsloven-web-quiz-03",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Et bokført bilag har feil konto, og fristen for bokføring…",
+  "oppgave": "Et bokført bilag har feil konto, og fristen for bokføring er ute. Hva er riktig, både etter bfl § 9 og i regnskapssystemet?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "Etter fristen for bokføring skal bokførte opplysninger ikke endres eller slettes (bfl § 9). Du retter med nye posteringer, slik at både feilen og rettingen kan spores. regnskapssystemet er strengere enn loven: et bokført bilag endres aldri, uansett frist. Systemet reverserer hele bilaget.",
+  "alternativer": [
+    "Rett kontoen direkte på bilaget",
+    "Slett bilaget og før det på nytt",
+    "Rett med nye, dokumenterte posteringer, for eksempel en reversering",
+    "La feilen stå"
+  ],
+  "svar": 2
+}

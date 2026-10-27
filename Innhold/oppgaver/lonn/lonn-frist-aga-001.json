@@ -1,0 +1,35 @@
+{
+  "id": "lonn-frist-aga-001",
+  "type": "frist",
+  "tema": "lonn",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "arbeidsgiveravgift",
+    "helg"
+  ],
+  "status": "godkjent",
+  "tittel": "Betalingsfrist for arbeidsgiveravgift, 5. termin",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 10-10",
+      "tekst": "Arbeidsgiveravgift forfaller til betaling den 15. i måneden etter hver tomånedlige termin."
+    },
+    {
+      "lov": "skattebetalingsloven",
+      "paragraf": "§ 10-2",
+      "tekst": "Faller forfallsdagen på en lørdag, søndag eller helligdag, forskyves fristen til første virkedag."
+    }
+  ],
+  "forklaring": "5. termin er september–oktober, med forfall 15. november. I 2026 er 15. november en søndag, så fristen er **mandag 16. november 2026**. Merk at forskuddstrekket fra 2026 *ikke* følger terminene lenger; bare arbeidsgiveravgiften gjør det.",
+  "hendelse": "Arbeidsgiveravgiften for 5. termin 2026 (september og oktober). Når er betalingsfristen?",
+  "fasit": "2026-11-16",
+  "fasitRegel": {
+    "type": "aga",
+    "termin": 5,
+    "aar": 2026
+  },
+  "hint": "Den 15. i måneden etter terminen. Sjekk kalenderen."
+}

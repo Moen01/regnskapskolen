@@ -1,0 +1,14 @@
+[
+  { "id": "grunnlag", "navn": "Dobbelt bokføring", "maal": "Lese et bilag og vite hvorfor debet alltid er lik kredit.", "rekkefolge": 1 },
+  { "id": "kontoplan", "navn": "Kontoplanen NS 4102", "maal": "Lese et kontonummer og vite klasse, gruppe og hvilken side kontoen øker på.", "rekkefolge": 2 },
+  { "id": "resultat-balanse", "navn": "Resultat og balanse", "maal": "Dele en saldobalanse i resultat og balanse og se at årsresultatet binder dem sammen.", "rekkefolge": 3 },
+  { "id": "bilag-bokforingsloven", "navn": "Bilag og bokføringsloven", "maal": "Vite hva et bilag må inneholde, hvordan det nummereres og hvor lenge det oppbevares.", "rekkefolge": 4 },
+  { "id": "perioder-frister", "navn": "Perioder og frister", "maal": "Plassere et bilag i riktig periode og kjenne fristene for mva, a-melding og årsregnskap.", "rekkefolge": 5 },
+  { "id": "mva", "navn": "Merverdiavgift", "maal": "Velge riktig sats og behandling, og bokføre mva på både salg, kjøp og kjøp fra utlandet.", "rekkefolge": 6 },
+  { "id": "lonn", "navn": "Lønn", "maal": "Bokføre et lønnsbilag med forskuddstrekk, arbeidsgiveravgift og feriepenger, og kjenne 2026-reglene for betaling.", "rekkefolge": 7 },
+  { "id": "periodisering", "navn": "Periodisering", "maal": "Flytte inntekter og kostnader til den perioden de hører hjemme i.", "rekkefolge": 8 },
+  { "id": "avskrivning", "navn": "Avskrivning og driftsmidler", "maal": "Avgjøre om et kjøp skal aktiveres, velge saldogruppe og bokføre avskrivning og salg.", "rekkefolge": 9 },
+  { "id": "arsoppgjor", "navn": "Årsoppgjør", "maal": "Disponere årsresultatet, kjenne fristene og vite hva som skal oppbevares.", "rekkefolge": 10 },
+  { "id": "reskontro-bank", "navn": "Reskontro og bank", "maal": "Holde kundefordringer og leverandørgjeld i orden, avstemme banken og håndtere purring og tap.", "rekkefolge": 11 },
+  { "id": "valuta-korrigeringer", "navn": "Valuta og korrigeringer", "maal": "Bokføre en faktura i utenlandsk valuta med kursdifferanse, og rette feil uten å slette noe.", "rekkefolge": 12 }
+]

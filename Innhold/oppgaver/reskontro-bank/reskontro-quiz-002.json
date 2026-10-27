@@ -1,0 +1,32 @@
+{
+  "id": "reskontro-quiz-002",
+  "type": "quiz",
+  "tema": "reskontro-bank",
+  "vanskelighet": 3,
+  "tags": [
+    "purregebyr"
+  ],
+  "status": "godkjent",
+  "tittel": "Purregebyr og mva",
+  "oppgave": "Regnskapsbyrået sender purring med gebyr på en forfalt faktura. Hva er riktig i 2026?",
+  "lov": [
+    {
+      "lov": "inkassoforskriften",
+      "paragraf": "§ 1-2",
+      "tekst": "Purregebyr kan høyst utgjøre en tjuedel av inkassosatsen, og kan tidligst kreves 14 dager etter forfall."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Purregebyr og forsinkelsesrenter er ikke vederlag for en vare eller tjeneste og inngår ikke i beregningsgrunnlaget for mva."
+    }
+  ],
+  "forklaring": "Purregebyret er begrenset til **1/20 av inkassosatsen** (35 kr med 2025-satsen på 700 kr), kan sendes tidligst 14 dager etter forfall, og er **uten mva**: det er ikke betaling for en vare eller tjeneste. Det samme gjelder forsinkelsesrenten.",
+  "alternativer": [
+    "Gebyret er fritt, og det skal legges 25 % mva på det",
+    "Gebyret er høyst 1/20 av inkassosatsen, og det er uten mva",
+    "Gebyret er høyst 1/10 av inkassosatsen, med 25 % mva",
+    "Purregebyr er forbudt; bare forsinkelsesrente kan kreves"
+  ],
+  "svar": 1
+}

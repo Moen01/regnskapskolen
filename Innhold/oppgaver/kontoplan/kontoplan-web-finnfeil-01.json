@@ -1,0 +1,63 @@
+{
+  "id": "kontoplan-web-finnfeil-01",
+  "type": "finnfeil",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "kontroll"
+  ],
+  "status": "utkast",
+  "tittel": "Bilagsliste, mars",
+  "oppgave": "En ny medarbeider har ført disse linjene. Klikk på linjene der kontoen er fra feil klasse. Les hendelsen først, så kontonummeret.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Det første sifferet avslører de fleste feil. En driftskostnad skal ha en konto i klasse 4–7. En finanskostnad, for eksempel renter, skal ha en konto i gruppe 81 i klasse 8. Står en driftskostnad i klasse 1, 3 eller 8, er noe galt. Når en kunde sier at «resultatet ser rart ut», er feil klasse en vanlig årsak.",
+  "overskrift": "Bilagsliste, mars",
+  "elementer": [
+    {
+      "tekst": "Kontorrekvisita fra butikken · `3000` Salgsinntekt · debet",
+      "feil": true,
+      "hvorfor": "Kontorrekvisita er en kostnad, men 3000 er klasse 3 Salgsinntekt. Riktig konto er 6800 Kontorrekvisita."
+    },
+    {
+      "tekst": "Husleie for mars · `6300` Leie lokale · debet",
+      "feil": false
+    },
+    {
+      "tekst": "Kunden betaler faktura · `1920` Bankinnskudd · debet",
+      "feil": false
+    },
+    {
+      "tekst": "Lønn til en ansatt · `1500` Kundefordringer · debet",
+      "feil": true,
+      "hvorfor": "Lønn er en kostnad i klasse 5. 1500 er en eiendel i klasse 1. Riktig konto er 5000 Lønn til ansatte."
+    },
+    {
+      "tekst": "Renter på banklånet · `8150` Rentekostnad banklån · debet",
+      "feil": false
+    },
+    {
+      "tekst": "Varer for videresalg · `4300` Innkjøp av varer for videresalg · debet",
+      "feil": false
+    },
+    {
+      "tekst": "Telefonregning · `8050` Renteinntekt bankinnskudd · debet",
+      "feil": true,
+      "hvorfor": "8050 er en finansinntekt i klasse 8. Telefon er en driftskostnad. Riktig konto er 6900 Telefon."
+    },
+    {
+      "tekst": "Gebyr fra banken · `7770` Bank- og kortgebyr · debet",
+      "feil": false
+    }
+  ]
+}

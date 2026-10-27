@@ -1,0 +1,32 @@
+{
+  "id": "arsoppgjor-quiz-001",
+  "type": "quiz",
+  "tema": "arsoppgjor",
+  "vanskelighet": 3,
+  "tags": [
+    "utbytte"
+  ],
+  "status": "godkjent",
+  "tittel": "Hva begrenser utbyttet?",
+  "oppgave": "Styret foreslår utbytte som er større enn årets overskudd, fordi selskapet har mye annen egenkapital fra tidligere år. Er det lov?",
+  "lov": [
+    {
+      "lov": "aksjeloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Selskapet kan bare dele ut utbytte så langt det etter utdelingen har tilbake netto eiendeler som gir dekning for aksjekapitalen og øvrig bundet egenkapital."
+    },
+    {
+      "lov": "aksjeloven",
+      "paragraf": "§ 3-4",
+      "tekst": "Selskapet skal til enhver tid ha en egenkapital og likviditet som er forsvarlig."
+    }
+  ],
+  "forklaring": "Ja, så langt det er **fri egenkapital** til det. Utbytte er ikke begrenset til årets resultat; tidligere års opptjent egenkapital kan deles ut. Grensene er bundet egenkapital (aksjekapital, fond) som ikke kan røres, og kravet om forsvarlig egenkapital og likviditet *etter* utdelingen (§ 3-4).",
+  "alternativer": [
+    "Nei, utbytte kan aldri overstige årets overskudd",
+    "Ja, så langt det er fri egenkapital og egenkapitalen er forsvarlig etterpå",
+    "Ja, uten begrensninger når generalforsamlingen er enig",
+    "Nei, aksjekapitalen må deles ut først"
+  ],
+  "svar": 1
+}

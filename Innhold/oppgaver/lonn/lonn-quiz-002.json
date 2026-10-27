@@ -1,0 +1,27 @@
+{
+  "id": "lonn-quiz-002",
+  "type": "quiz",
+  "tema": "lonn",
+  "vanskelighet": 1,
+  "tags": [
+    "feriepenger"
+  ],
+  "status": "godkjent",
+  "tittel": "Lovfestet feriepengesats",
+  "oppgave": "Hva er den lovfestede feriepengesatsen for en ansatt under 60 år med ferie etter ferieloven (4 uker og 1 dag)?",
+  "lov": [
+    {
+      "lov": "ferieloven",
+      "paragraf": "§ 10",
+      "tekst": "Feriepenger utgjør 10,2 prosent av feriepengegrunnlaget."
+    }
+  ],
+  "forklaring": "Ferieloven gir **10,2 %**. 12 % gjelder bare når tariffavtale eller arbeidsavtale gir fem ukers ferie. Ansatte som fyller 60 i ferieåret får 2,3 prosentpoeng i tillegg (12,5 % eller 14,3 %), men bare av grunnlag inntil 6 G.",
+  "alternativer": [
+    "10,2 %",
+    "12 %",
+    "12,5 %",
+    "14,1 %"
+  ],
+  "svar": 0
+}

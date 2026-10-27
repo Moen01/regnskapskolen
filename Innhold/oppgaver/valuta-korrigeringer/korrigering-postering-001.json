@@ -1,0 +1,56 @@
+{
+  "id": "korrigering-postering-001",
+  "type": "postering",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 2,
+  "tags": [
+    "ompostering",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Ompostering til riktig konto",
+  "oppgave": "Et kjøp av en kontorstol til 2 000 kr (eks. mva) ble ved en feil ført på 6800 Kontorrekvisita. Riktig konto er 6540 Inventar. Før omposteringen.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes; feil rettes med et nytt bilag som viser til det opprinnelige."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Nr. 7 sporbarhet: rettelsen skal kunne følges fra det gale bilaget til det riktige."
+    }
+  ],
+  "forklaring": "Flytt beløpet: D 6540 2 000, K 6800 2 000. Mva-linjen var riktig (2710) og røres ikke. Det opprinnelige bilaget blir stående; omposteringen henviser til det. Å redigere det bokførte bilaget direkte bryter bfl. § 9.",
+  "kontoer": [
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift"
+    },
+    {
+      "nr": "6540",
+      "navn": "Inventar"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6540",
+      "side": "D",
+      "belop": 2000
+    },
+    {
+      "konto": "6800",
+      "side": "K",
+      "belop": 2000
+    }
+  ]
+}

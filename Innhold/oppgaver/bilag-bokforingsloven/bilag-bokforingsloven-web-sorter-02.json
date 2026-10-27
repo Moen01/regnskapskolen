@@ -1,0 +1,59 @@
+{
+  "id": "bilag-bokforingsloven-web-sorter-02",
+  "type": "klassifiser",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Velg riktig handling for hver situasjon i regnskapssystemet.",
+  "oppgave": "Velg riktig handling for hver situasjon i regnskapssystemet.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Reverser",
+    "Deaktiver",
+    "Rett i kladden",
+    "Si nei og forklar",
+    "Ikke gjør noe"
+  ],
+  "elementer": [
+    {
+      "tekst": "Et bokført bilag fra forrige måned har feil konto",
+      "svar": "Reverser",
+      "hvorfor": "Et bokført bilag endres ikke (bokføringsloven § 9). Du reverserer det og fører et nytt, riktig bilag."
+    },
+    {
+      "tekst": "Et bilag som ikke er bokført ennå, har feil beløp",
+      "svar": "Rett i kladden",
+      "hvorfor": "En kladd er ikke bokført. Den har ikke bilagsnummer og ingen posteringer i hovedboka. Du kan rette den direkte."
+    },
+    {
+      "tekst": "En leverandør med gamle fakturaer brukes ikke lenger",
+      "svar": "Deaktiver",
+      "hvorfor": "Leverandøren har bokførte posteringer. Deaktiver skjuler den fra lister, men historikken blir værende."
+    },
+    {
+      "tekst": "Bedriften har sluttet å selge et produkt",
+      "svar": "Deaktiver",
+      "hvorfor": "Produkter deaktiveres. Gamle fakturaer viser fortsatt produktet."
+    },
+    {
+      "tekst": "En kladd ble slettet. Kunden spør om det blir hull i bilagsnummerserien",
+      "svar": "Ikke gjør noe",
+      "hvorfor": "En kladd får ikke bilagsnummer. Systemet setter nummeret først når bilaget bokføres. Derfor gir en slettet kladd ikke hull, og det er ingenting å rette."
+    },
+    {
+      "tekst": "Kunden vil slette PDF-vedlegget på et bokført bilag fra i fjor for å rydde",
+      "svar": "Si nei og forklar",
+      "hvorfor": "Vedlegget er dokumentasjonen for bilaget. En faktura skal oppbevares i 5 år etter slutten av regnskapsåret. Si nei, og forklar kunden at vedlegget må bli værende."
+    }
+  ]
+}

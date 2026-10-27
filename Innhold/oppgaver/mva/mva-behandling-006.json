@@ -1,0 +1,31 @@
+{
+  "id": "mva-behandling-006",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "fritatt",
+    "eksport"
+  ],
+  "status": "godkjent",
+  "tittel": "Salg av varer til Danmark",
+  "oppgave": "Velg mva-behandling på salget og om selgeren beholder fradragsretten.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 6-21",
+      "tekst": "Omsetning av varer ut av merverdiavgiftsområdet (eksport) er fritatt for merverdiavgift."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Fradragsrett for inngående mva på anskaffelser til avgiftspliktig virksomhet, fritatt omsetning medregnet."
+    }
+  ],
+  "forklaring": "Eksport er **fritatt (0 %)**: salget er innenfor loven, men med nullsats. Selgeren fakturerer uten mva, rapporterer salget som avgiftsfri omsetning (3100) og beholder full fradragsrett for inngående mva. Dokumentasjon av utførselen (tolldeklarasjon) må oppbevares.",
+  "transaksjon": "Et norsk AS selger varer for 50 000 kr til en kunde i Danmark. Varene sendes fra Oslo til København.",
+  "fasit": {
+    "behandling": "0",
+    "fradrag": true
+  }
+}

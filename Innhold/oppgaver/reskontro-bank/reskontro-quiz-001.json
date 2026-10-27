@@ -1,0 +1,28 @@
+{
+  "id": "reskontro-quiz-001",
+  "type": "quiz",
+  "tema": "reskontro-bank",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "tap-på-fordring"
+  ],
+  "status": "godkjent",
+  "tittel": "Når er et tap konstatert?",
+  "oppgave": "En faktura forfalt for fire måneder siden. Kunden svarer ikke på to purringer. Kan fordringen føres som konstatert tap med mva-korreksjon nå?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsforskriften",
+      "paragraf": "§ 4-7-1",
+      "tekst": "En fordring anses konstatert tapt når det er foretatt tvangsinndrivelse eller inkasso uten resultat, ved konkurs eller gjeldsforhandling, eller når fordringen er forfalt med mer enn seks måneder, det er sendt tre purringer med normale intervaller og fordringen er fulgt opp."
+    }
+  ],
+  "forklaring": "Nei. Uten konkurs eller forgjeves inkasso krever forskriften **over seks måneder etter forfall, minst tre purringer** og videre oppfølging. Fire måneder og to purringer holder ikke. Fordringen kan i mellomtiden vurderes som usikker og avsettes regnskapsmessig (1580), men mva korrigeres først når tapet er konstatert.",
+  "alternativer": [
+    "Ja, to purringer uten svar er nok",
+    "Nei, det kreves over seks måneder etter forfall og minst tre purringer, eller inkasso/konkurs",
+    "Ja, hvis beløpet er under 10 000 kr",
+    "Nei, tap på fordringer kan aldri korrigere mva"
+  ],
+  "svar": 1
+}

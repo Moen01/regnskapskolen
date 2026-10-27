@@ -1,0 +1,16 @@
+{
+  "id": "mva-quiz-001",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": ["fritatt", "satser"],
+  "status": "godkjent",
+  "tittel": "Mva på bøker",
+  "oppgave": "En bokhandel selger en roman til en privatkunde. Hvilken mva-behandling er riktig?",
+  "alternativer": ["25 %, alminnelig sats", "15 %, redusert sats", "0 %, fritatt med fradragsrett", "Unntatt fra merverdiavgiftsloven"],
+  "svar": 2,
+  "lov": [
+    { "lov": "merverdiavgiftsloven", "paragraf": "§ 6-4", "tekst": "Omsetning av bøker er fritatt for merverdiavgift i siste omsetningsledd." }
+  ],
+  "forklaring": "Bøker er **fritatt** (nullsats) i siste omsetningsledd. Fritatt er ikke det samme som unntatt: bokhandelen er innenfor loven, beregner 0 % utgående mva på salget og beholder full fradragsrett for inngående mva på husleie, strøm og innkjøp. Inntekten føres på 3100 Salgsinntekt, avgiftsfri."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "bilag-bokforingsloven-web-sak-01",
+  "type": "sak",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "sak",
+    "sporbarhet"
+  ],
+  "status": "utkast",
+  "tittel": "Kan en gammel leverandør slettes?",
+  "oppgave": "Les meldingen og velg riktig behandling.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Nr. 7 sporbarhet: det skal være toveis kontrollspor mellom dokumentasjon, spesifikasjoner og pliktig regnskapsrapportering."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 13",
+      "tekst": "Oppbevaringsplikt i fem år for bilag, spesifikasjoner og årsregnskap."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt."
+    }
+  ],
+  "forklaring": "Leverandøren har bokførte posteringer: fakturaer, betalinger og linjer i leverandørreskontroen. Kravet om **sporbarhet** (bfl. § 4 nr. 7) og reglene om **oppbevaring** (bfl. § 13, fem år) krever at denne historikken blir værende, med koblingen til leverandøren intakt.\n\nSlettes leverandøren, mister gamle bilag og rapporter koblingen, og en spesifikasjon av leverandørgjeld (bokføringsforskriften § 3-1) kan ikke lenger reproduseres. Derfor finnes bare *Deaktiver*: det skjuler leverandøren fra lister, men historikken består. En PDF-eksport (D) erstatter ikke kravet om at bokføringen kan spesifiseres på nytt.",
+  "fra": "Kunde av regnskapsbyrået",
+  "melding": "Vi har en gammel leverandør vi ikke bruker lenger. Jeg finner ikke Slett, bare Deaktiver. Hvordan sletter jeg den?",
+  "valg": [
+    {
+      "nokkel": "A",
+      "tekst": "Deaktiver leverandøren. En leverandør med bokførte posteringer kan ikke slettes."
+    },
+    {
+      "nokkel": "B",
+      "tekst": "Slett leverandøren og de gamle bilagene; de er fra i fjor og er allerede rapportert."
+    },
+    {
+      "nokkel": "C",
+      "tekst": "Slett leverandøren, men behold bilagene uten leverandørkobling."
+    },
+    {
+      "nokkel": "D",
+      "tekst": "Eksporter regnskapet til PDF først, så kan alt slettes."
+    }
+  ],
+  "svar": "A",
+  "sporsmal": [
+    "Har leverandøren bokførte posteringer?",
+    "Vil kunden bare skjule leverandøren fra listene?"
+  ],
+  "forslag": "Leverandører som har bokførte posteringer, kan ikke slettes. Bokføringsloven krever at historikken kan spores i fem år, og gamle bilag og rapporter peker på leverandøren. Bruk Deaktiver i stedet: da forsvinner leverandøren fra lister og valg når du fører nye bilag, mens gamle bilag og rapporter er uendret. Den kan aktiveres igjen senere."
+}

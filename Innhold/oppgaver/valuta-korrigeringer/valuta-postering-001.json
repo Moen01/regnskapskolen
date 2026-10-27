@@ -1,0 +1,70 @@
+{
+  "id": "valuta-postering-001",
+  "type": "postering",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 3,
+  "tags": [
+    "valuta",
+    "eksport",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Faktura i euro",
+  "oppgave": "Du fakturerer en tysk kunde 1 000 EUR for varer sendt fra Norge. Kursen på fakturadagen er 11,50. Før fakturaen i norske kroner.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal skje i norske kroner, med mindre annet er fastsatt i forskrift."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 6-21",
+      "tekst": "Eksport av varer er fritatt for mva."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Transaksjonsprinsippet: transaksjonen regnskapsføres til verdien av vederlaget på transaksjonstidspunktet."
+    }
+  ],
+  "forklaring": "1 000 EUR × 11,50 = 11 500 kr. Eksport er fritatt, så ingen mva: D 1500 11 500, K 3100 11 500. Fordringen står i euro i reskontroen, men i kroner i hovedboken til dagens kurs.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    },
+    {
+      "nr": "3100",
+      "navn": "Salgsinntekt, avgiftsfri"
+    },
+    {
+      "nr": "8060",
+      "navn": "Valutagevinst (agio)"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1500",
+      "side": "D",
+      "belop": 11500
+    },
+    {
+      "konto": "3100",
+      "side": "K",
+      "belop": 11500
+    }
+  ]
+}

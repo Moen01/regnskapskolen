@@ -1,0 +1,28 @@
+{
+  "id": "arsoppgjor-frist-003",
+  "type": "frist",
+  "tema": "arsoppgjor",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "skattemelding"
+  ],
+  "status": "godkjent",
+  "tittel": "Skattemeldingen for 2025",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-2-3",
+      "tekst": "Skattemelding for selskap og næringsdrivende leveres innen 31. mai året etter inntektsåret."
+    }
+  ],
+  "forklaring": "31. mai 2026 er en **søndag**, så fristen blir **mandag 1. juni 2026**. Merk at fristen for skattemeldingen (31. mai) kommer før fristen for årsregnskapet (31. juli): skatteberegningen må være klar først.",
+  "hendelse": "Et AS skal levere skattemeldingen for inntektsåret 2025. Hva er siste frist?",
+  "fasit": "2026-06-01",
+  "fasitRegel": {
+    "type": "skattemelding",
+    "aar": 2025
+  },
+  "hint": "31. mai, men sjekk ukedagen."
+}

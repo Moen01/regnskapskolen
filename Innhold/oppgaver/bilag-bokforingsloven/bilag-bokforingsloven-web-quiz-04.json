@@ -1,0 +1,37 @@
+{
+  "id": "bilag-bokforingsloven-web-quiz-04",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hva mangler på en faktura der det står «Org.nr. 123 456…",
+  "oppgave": "Hva mangler på en faktura der det står «Org.nr. 123 456 789» for en mva-registrert selger?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Er selgeren mva-registrert, skal det stå `MVA` etter organisasjonsnummeret (bff § 5-1-1).",
+  "alternativer": [
+    "Ingenting",
+    "Bokstavene MVA etter nummeret",
+    "Kjøperens personnummer",
+    "Bankens navn"
+  ],
+  "svar": 1
+}

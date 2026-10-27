@@ -1,0 +1,29 @@
+{
+  "id": "avskrivning-quiz-002",
+  "type": "quiz",
+  "tema": "avskrivning",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "driftsmiddel",
+    "grense"
+  ],
+  "status": "godkjent",
+  "tittel": "Tre PC-er kjøpt samtidig",
+  "oppgave": "Selskapet kjøper tre like PC-er til 25 000 kr hver på samme faktura, 75 000 kr til sammen. Hva er riktig skattemessig behandling?",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-40",
+      "tekst": "Grensen på 30 000 kr vurderes per driftsmiddel. Gjenstander som ikke utgjør en funksjonell enhet, vurderes hver for seg."
+    }
+  ],
+  "forklaring": "Hver PC er et **selvstendig driftsmiddel** som fungerer alene, så grensen vurderes per PC: 25 000 kr er under 30 000, og alle tre kan kostnadsføres direkte. Det er ikke fakturasummen som avgjør. Hadde det vært deler som bare fungerer sammen (for eksempel et møbelsett eller en maskin levert i deler), ville de blitt vurdert samlet.",
+  "alternativer": [
+    "Aktiveres samlet fordi fakturaen er over 30 000 kr",
+    "Kostnadsføres direkte, grensen gjelder per PC",
+    "Én aktiveres, to kostnadsføres",
+    "Aktiveres fordi de er kjøpt samtidig"
+  ],
+  "svar": 1
+}

@@ -1,0 +1,32 @@
+{
+  "id": "grunnlag-web-quiz-05",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hva er regnskapsligningen?",
+  "oppgave": "Hva er regnskapsligningen?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Alt bedriften eier, er finansiert med andres penger (gjeld) eller eiernes penger (egenkapital).",
+  "alternativer": [
+    "Inntekt = Kostnad + Resultat",
+    "Eiendeler = Gjeld + Egenkapital",
+    "Debet = Kredit + Mva",
+    "Bank = Kundefordringer"
+  ],
+  "svar": 1
+}

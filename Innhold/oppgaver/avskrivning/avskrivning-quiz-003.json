@@ -1,0 +1,33 @@
+{
+  "id": "avskrivning-quiz-003",
+  "type": "quiz",
+  "tema": "avskrivning",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "påkostning"
+  ],
+  "status": "godkjent",
+  "tittel": "Vedlikehold eller påkostning?",
+  "oppgave": "Selskapet bytter ut det gamle taket på lagerbygget med et nytt av samme standard for 250 000 kr. Hva er riktig?",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 6-11",
+      "tekst": "Kostnader til vedlikehold av driftsmidler fradragsføres direkte."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-40",
+      "tekst": "Påkostning som gir driftsmidlet en høyere standard eller lengre levetid enn opprinnelig, aktiveres på saldoen."
+    }
+  ],
+  "forklaring": "Å erstatte taket med et av **samme standard** er **vedlikehold**: det holder bygget i den stand det var, og kostnadsføres direkte uansett beløp. Hadde det nye taket vært av vesentlig høyere standard (for eksempel med isolasjon bygget ikke hadde), ville merkostnaden vært en **påkostning** som aktiveres, selv om den er under 30 000 kr.",
+  "alternativer": [
+    "Påkostning, fordi beløpet er over 30 000 kr",
+    "Vedlikehold, fordi standarden er den samme",
+    "Påkostning, fordi et tak varer over tre år",
+    "Vedlikehold bare hvis bygget er under ti år gammelt"
+  ],
+  "svar": 1
+}

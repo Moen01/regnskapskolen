@@ -1,0 +1,62 @@
+{
+  "id": "resultat-balanse-web-finnfeil-01",
+  "type": "finnfeil",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "kontroll"
+  ],
+  "status": "utkast",
+  "tittel": "Balanse per 31.12.2026 (utkast)",
+  "oppgave": "En kollega har laget et utkast til balansen. To linjer hører ikke hjemme her. Klikk på dem.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Regelen er enkel: klasse 1–2 i balansen, klasse 3–8 i resultatet. Inntekter og kostnader påvirker balansen bare gjennom årsresultatet, som flyttes til egenkapitalen.",
+  "overskrift": "Balanse per 31.12.2026 (utkast)",
+  "elementer": [
+    {
+      "tekst": "1250 Inventar",
+      "feil": false
+    },
+    {
+      "tekst": "1500 Kundefordringer",
+      "feil": false
+    },
+    {
+      "tekst": "1920 Bankinnskudd",
+      "feil": false
+    },
+    {
+      "tekst": "3000 Salgsinntekt",
+      "feil": true,
+      "hvorfor": "Klasse 3 er inntekt. Den hører til resultatregnskapet."
+    },
+    {
+      "tekst": "2050 Annen egenkapital",
+      "feil": false
+    },
+    {
+      "tekst": "2400 Leverandørgjeld",
+      "feil": false
+    },
+    {
+      "tekst": "6800 Kontorrekvisita",
+      "feil": true,
+      "hvorfor": "Klasse 6 er kostnad. Den hører til resultatregnskapet."
+    },
+    {
+      "tekst": "2700 Utgående mva",
+      "feil": false
+    }
+  ]
+}

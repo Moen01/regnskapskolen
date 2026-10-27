@@ -1,0 +1,32 @@
+{
+  "id": "kontoplan-web-quiz-05",
+  "type": "quiz",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hvorfor kan en konto ikke slettes i regnskapssystemet?",
+  "oppgave": "Hvorfor kan en konto ikke slettes i regnskapssystemet?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    }
+  ],
+  "forklaring": "Regnskapet skal kunne spores bakover. Derfor deaktiverer vi kontoen i stedet. Den gamle historikken blir stående.",
+  "alternativer": [
+    "Fordi databasen ikke støtter sletting",
+    "Fordi bokførte linjer peker på kontoen og må kunne spores",
+    "Fordi NS 4102 forbyr nye kontoer",
+    "Fordi kontoer koster penger"
+  ],
+  "svar": 1
+}

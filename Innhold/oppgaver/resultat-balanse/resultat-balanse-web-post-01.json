@@ -1,0 +1,67 @@
+{
+  "id": "resultat-balanse-web-post-01",
+  "type": "postering",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Årsavslutning",
+  "oppgave": "Bedriften fra dag 1 har et overskudd på 200 kr. Før overskuddet fra resultatregnskapet til egenkapitalen.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Egenkapital øker på kredit, så 2050 får kredit 200. Motposten føres i resultatregnskapet. I NS 4102 viser 8800 Årsresultat selve resultatet, og overføringen føres på 8960 Overføringer annen egenkapital. Systemene gjør dette litt ulikt, så 8800 godtas også. regnskapssystemet flytter resultatet til årsavslutningskontoen som er satt i kontoplanen. Banken endrer seg ikke. Pengene er allerede der. Flyttingen endrer bare *hvem* de tilhører i regnskapet: nå står de som eiernes kapital.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2050",
+      "navn": "Annen egenkapital"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt"
+    },
+    {
+      "nr": "8800",
+      "navn": "Årsresultat"
+    },
+    {
+      "nr": "8960",
+      "navn": "Overføringer annen egenkapital"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "8960",
+      "side": "D",
+      "belop": 200,
+      "alt": [
+        "8800"
+      ]
+    },
+    {
+      "konto": "2050",
+      "side": "K",
+      "belop": 200
+    }
+  ]
+}

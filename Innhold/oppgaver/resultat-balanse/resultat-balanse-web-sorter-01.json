@@ -1,0 +1,86 @@
+{
+  "id": "resultat-balanse-web-sorter-01",
+  "type": "klassifiser",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Hvilken rapport havner kontoen i? Se på det første sifferet.",
+  "oppgave": "Hvilken rapport havner kontoen i? Se på det første sifferet.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "Resultat",
+    "Balanse"
+  ],
+  "elementer": [
+    {
+      "tekst": "1920 Bankinnskudd",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 1 er eiendeler. Banken har en saldo på en bestemt dato."
+    },
+    {
+      "tekst": "3000 Salgsinntekt",
+      "svar": "Resultat",
+      "hvorfor": "Klasse 3 er inntekter. Salget skjer gjennom perioden."
+    },
+    {
+      "tekst": "6300 Leie lokale",
+      "svar": "Resultat",
+      "hvorfor": "Klasse 6 er driftskostnader."
+    },
+    {
+      "tekst": "2400 Leverandørgjeld",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 2 er gjeld og egenkapital. Det bedriften skylder, er status på en dato."
+    },
+    {
+      "tekst": "1500 Kundefordringer",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 1. Det kundene skylder bedriften, er en eiendel."
+    },
+    {
+      "tekst": "5000 Lønn til ansatte",
+      "svar": "Resultat",
+      "hvorfor": "Klasse 5 er lønnskostnader."
+    },
+    {
+      "tekst": "2050 Annen egenkapital",
+      "svar": "Balanse",
+      "hvorfor": "Egenkapital er en del av klasse 2. Her ender overskuddet ved årsslutt."
+    },
+    {
+      "tekst": "4300 Innkjøp av varer for videresalg",
+      "svar": "Resultat",
+      "hvorfor": "Klasse 4 er varekostnad."
+    },
+    {
+      "tekst": "1250 Inventar",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 1. Møbler og utstyr er eiendeler som varer i flere år."
+    },
+    {
+      "tekst": "2710 Inngående mva",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 2, selv om saldoen står på debet. Det er mva bedriften får trekke fra i gjelden til staten."
+    },
+    {
+      "tekst": "8150 Annen rentekostnad",
+      "svar": "Resultat",
+      "hvorfor": "Klasse 8 er finansposter. Renter er en kostnad i perioden."
+    },
+    {
+      "tekst": "2220 Gjeld til kredittinstitusjoner",
+      "svar": "Balanse",
+      "hvorfor": "Klasse 2. Et banklån er gjeld."
+    }
+  ]
+}

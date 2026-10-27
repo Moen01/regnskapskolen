@@ -1,0 +1,25 @@
+{
+  "id": "mva-regnut-001",
+  "type": "regnut",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "regning",
+    "brutto"
+  ],
+  "status": "godkjent",
+  "tittel": "Mva av et bruttobeløp med 15 %",
+  "oppgave": "En kvittering fra matbutikken lyder på 1 150 kr inkl. 15 % mva. Hvor mye er mva?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-2",
+      "tekst": "Næringsmidler: 15 %."
+    }
+  ],
+  "forklaring": "Netto = 1 150 / 1,15 = 1 000 kr. Mva = 1 150 − 1 000 = **150 kr**. Vanlig feil: 15 % *av* bruttobeløpet (172,50) er galt, fordi mva regnes av nettobeløpet.",
+  "svar": 150,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Mva regnes av nettobeløpet. Del bruttobeløpet på 1,15 først."
+}

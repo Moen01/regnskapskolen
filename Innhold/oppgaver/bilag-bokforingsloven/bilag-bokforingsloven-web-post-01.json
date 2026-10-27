@@ -1,0 +1,69 @@
+{
+  "id": "bilag-bokforingsloven-web-post-01",
+  "type": "postering",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Reverser bilaget",
+  "oppgave": "En kontorstol for 1 000 kr inkl. mva er bokført slik:\nD 6800 800, D 2710 200, K 2400 1 000.\nStolen er inventar og skulle vært ført på 6540 Inventar. Bilaget er bokført, og i regnskapssystemet endres et bokført bilag ikke. Før reverseringen: et bilag som nuller ut det gamle.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    }
+  ],
+  "forklaring": "Reverseringen har de samme linjene som originalen, men med debet og kredit byttet om. Nå står 6800, 2710 og 2400 i null for dette kjøpet. Originalen er fortsatt synlig i regnskapet. Det er poenget: ingen spor forsvinner.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående mva"
+    },
+    {
+      "nr": "6540",
+      "navn": "Inventar"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "2400",
+      "side": "D",
+      "belop": 1000
+    },
+    {
+      "konto": "6800",
+      "side": "K",
+      "belop": 800
+    },
+    {
+      "konto": "2710",
+      "side": "K",
+      "belop": 200
+    }
+  ]
+}

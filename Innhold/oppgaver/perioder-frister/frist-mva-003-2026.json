@@ -1,0 +1,18 @@
+{
+  "id": "frist-mva-003-2026",
+  "type": "frist",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": ["mva", "edge-case", "sommerfrist"],
+  "status": "godkjent",
+  "tittel": "Fristen for 3. mva-termin",
+  "hendelse": "Bedriften leverer mva-melding annenhver måned. Når er fristen for å levere og betale for 3. termin 2026 (mai og juni)?",
+  "oppgave": "Velg datoen.",
+  "fasit": "2026-08-31",
+  "fasitRegel": { "type": "mva", "termin": 3, "aar": 2026 },
+  "hint": "Hovedregelen er 1 måned og 10 dager etter terminens slutt, men én termin har en egen sommerfrist.",
+  "lov": [
+    { "lov": "skatteforvaltningsforskriften", "paragraf": "§ 8-3-10", "tekst": "Mva-meldingen leveres innen én måned og ti dager etter utløpet av terminen. Fristen for 3. termin er 31. august." }
+  ],
+  "forklaring": "Hovedregelen ville gitt 10. august. For 3. termin (mai–juni) er fristen flyttet til **31. august** på grunn av ferien. Betalingsfristen følger leveringsfristen."
+}

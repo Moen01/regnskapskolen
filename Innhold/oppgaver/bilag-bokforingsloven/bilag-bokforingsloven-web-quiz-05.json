@@ -1,0 +1,32 @@
+{
+  "id": "bilag-bokforingsloven-web-quiz-05",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hva endrer seg 1. januar 2027?",
+  "oppgave": "Hva endrer seg 1. januar 2027?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Fra 1.1.2027 skal bokføringspliktige sende e-faktura (bfl § 10). Fram til 2030 gjelder det i praksis når kjøperen er registrert i ELMA/Peppol. Plikten til å motta e-faktura gjelder fra 1.1.2030. En PDF-kopi av en EHF oppfyller ikke kravet om originalformat (bfl § 13).",
+  "alternativer": [
+    "Bokføringspliktige skal sende e-faktura, i praksis når kjøperen kan ta imot den, og e-fakturaen skal oppbevares i originalformat",
+    "Oppbevaringstiden for fakturaer blir 10 år",
+    "Alle papirbilag skal skannes til PDF",
+    "Bokførte bilag kan endres de første 30 dagene"
+  ],
+  "svar": 0
+}

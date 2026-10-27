@@ -1,0 +1,26 @@
+{
+  "id": "lonn-regnut-001",
+  "type": "regnut",
+  "tema": "lonn",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "feriepenger",
+    "over-60"
+  ],
+  "status": "godkjent",
+  "tittel": "Feriepenger for en ansatt over 60",
+  "oppgave": "En ansatt fyller 61 år i ferieåret. Feriepengegrunnlaget fra i fjor er 400 000 kr (under 6 G). Bedriften følger ferieloven (4 uker og 1 dag). Hvor mye feriepenger har hen krav på?",
+  "lov": [
+    {
+      "lov": "ferieloven",
+      "paragraf": "§ 10",
+      "tekst": "Arbeidstaker over 60 år har krav på 2,3 prosentpoeng ekstra feriepenger av grunnlag inntil 6 ganger folketrygdens grunnbeløp."
+    }
+  ],
+  "forklaring": "Lovfestet sats 10,2 % + 2,3 prosentpoeng for den ekstra ferieuken = 12,5 %. 400 000 × 12,5 % = **50 000 kr**. Tillegget gjelder bare grunnlag opp til 6 G; av beløp over 6 G er satsen 10,2 %.",
+  "svar": 50000,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "10,2 % pluss tillegget for ansatte over 60."
+}

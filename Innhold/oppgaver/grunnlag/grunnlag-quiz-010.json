@@ -1,0 +1,28 @@
+{
+  "id": "grunnlag-quiz-010",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "kontoplan"
+  ],
+  "status": "godkjent",
+  "tittel": "2710 står i klasse 2, men…",
+  "oppgave": "Konto 2710 Inngående merverdiavgift ligger i klasse 2 (egenkapital og gjeld). Likevel har den normalt debetsaldo. Hvorfor?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Kontospesifikasjonen følger kontoplanen; NS 4102 plasserer mva-kontoene i gruppe 27 selv om inngående mva er et krav på staten."
+    }
+  ],
+  "forklaring": "Inngående mva er et **krav på staten** (en fordring), og fordringer øker på debet. NS 4102 plasserer likevel 2710 sammen med 2700 i gruppe 27 for at terminoppgjøret skal være samlet. Kontoklasse sier hvor kontoen står i rapporten, ikke alltid hvilken side den øker på: 2710 og 1580 er de vanlige unntakene.",
+  "alternativer": [
+    "Det er en feil i NS 4102",
+    "Inngående mva er et krav på staten, og den står i gruppe 27 bare for å samle mva-oppgjøret",
+    "Fordi mva alltid er debet",
+    "Fordi klasse 2 øker på debet"
+  ],
+  "svar": 1
+}

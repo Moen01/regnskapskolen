@@ -1,0 +1,30 @@
+{
+  "id": "perioder-frist-mva-004-2026",
+  "type": "frist",
+  "tema": "perioder-frister",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "mva",
+    "helg"
+  ],
+  "status": "godkjent",
+  "tittel": "Fristen for 4. mva-termin 2026",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt."
+    }
+  ],
+  "forklaring": "4. termin er juli–august, med frist 10. oktober. I 2026 er 10. oktober en **lørdag**, så fristen forskyves til **mandag 12. oktober 2026**.",
+  "hendelse": "Når er fristen for mva-meldingen for 4. termin 2026 (juli og august)?",
+  "fasit": "2026-10-12",
+  "fasitRegel": {
+    "type": "mva",
+    "termin": 4,
+    "aar": 2026
+  },
+  "hint": "10. oktober, men sjekk ukedagen."
+}

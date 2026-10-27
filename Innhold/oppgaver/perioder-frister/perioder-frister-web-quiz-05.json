@@ -1,0 +1,32 @@
+{
+  "id": "perioder-frister-web-quiz-05",
+  "type": "quiz",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hvorfor skal en periode låses etter at den er rapportert?",
+  "oppgave": "Hvorfor skal en periode låses etter at den er rapportert?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "Bokføringsforskriften § 7-6 krever at perioder låses når fristen for rapportering er ute. Feil rettes med en ny postering, ikke ved å endre det gamle bilaget.",
+  "alternativer": [
+    "For at databasen skal gå raskere",
+    "For at tallene i regnskapet skal stemme med det som er rapportert til staten",
+    "For at kunden ikke skal kunne lage nye bilag",
+    "Fordi regnskapsbyrået fakturerer per periode"
+  ],
+  "svar": 1
+}

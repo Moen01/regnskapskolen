@@ -1,0 +1,75 @@
+{
+  "id": "mva-postering-001",
+  "type": "postering",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "omvendt-avgiftsplikt",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Omvendt avgiftsplikt: fire linjer",
+  "oppgave": "Selskapet mottar en faktura på 10 000 kr uten mva fra en svensk konsulent for rådgivning levert digitalt. Selskapet er fullt avgiftspliktig. Før bilaget med både beregnet utgående og fradragsberettiget inngående mva.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-30",
+      "tekst": "Fjernleverbare tjenester fra utlandet: mottaker beregner mva."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Den beregnede avgiften er fradragsberettiget inngående mva når tjenesten brukes i avgiftspliktig virksomhet."
+    }
+  ],
+  "forklaring": "Kostnaden er 10 000 kr (D 6790) mot leverandørgjeld (K 2400). I tillegg beregnes 25 % mva: K 2700 2 500 (utgående, som skal rapporteres) og D 2710 2 500 (inngående, fradrag). Netto å betale til staten er null, men begge beløp skal stå i mva-meldingen. Hadde selskapet vært delvis unntatt, ville 2710-linjen vært mindre, og differansen en reell kostnad.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift"
+    },
+    {
+      "nr": "6790",
+      "navn": "Annen fremmed tjeneste"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6790",
+      "side": "D",
+      "belop": 10000
+    },
+    {
+      "konto": "2400",
+      "side": "K",
+      "belop": 10000
+    },
+    {
+      "konto": "2710",
+      "side": "D",
+      "belop": 2500
+    },
+    {
+      "konto": "2700",
+      "side": "K",
+      "belop": 2500
+    }
+  ]
+}

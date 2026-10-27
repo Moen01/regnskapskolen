@@ -1,0 +1,51 @@
+{
+  "id": "avskrivning-postering-001",
+  "type": "postering",
+  "tema": "avskrivning",
+  "vanskelighet": 2,
+  "tags": [
+    "bilag",
+    "lineær"
+  ],
+  "status": "godkjent",
+  "tittel": "Årets avskrivning",
+  "oppgave": "En maskin ble kjøpt 1. januar for 120 000 kr og avskrives lineært over 5 år i regnskapet. Før årets avskrivning per 31. desember.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 5-3",
+      "tekst": "Anleggsmidler med begrenset økonomisk levetid skal avskrives etter en fornuftig avskrivningsplan."
+    }
+  ],
+  "forklaring": "Lineært: 120 000 / 5 = 24 000 kr per år. Kostnaden føres D 6010 24 000, og maskinens bokførte verdi reduseres K 1200 24 000. Regnskapsmessig avskrivning (rskl.) og skattemessig saldoavskrivning (sktl.) er to ulike regnestykker; forskjellen gir midlertidige forskjeller og utsatt skatt.",
+  "kontoer": [
+    {
+      "nr": "1200",
+      "navn": "Maskiner og anlegg"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "6010",
+      "navn": "Avskrivning på transportmidler, maskiner og inventar"
+    },
+    {
+      "nr": "8150",
+      "navn": "Annen rentekostnad"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6010",
+      "side": "D",
+      "belop": 24000
+    },
+    {
+      "konto": "1200",
+      "side": "K",
+      "belop": 24000
+    }
+  ]
+}

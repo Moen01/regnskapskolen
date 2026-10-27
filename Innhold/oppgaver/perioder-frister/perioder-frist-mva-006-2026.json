@@ -1,0 +1,29 @@
+{
+  "id": "perioder-frist-mva-006-2026",
+  "type": "frist",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "mva",
+    "årsskifte"
+  ],
+  "status": "godkjent",
+  "tittel": "Fristen for 6. mva-termin 2026",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt."
+    }
+  ],
+  "forklaring": "6. termin er november–desember 2026. Fristen er én måned og ti dager etter 31. desember: **10. februar 2027**. Fristen hører til året etter, selv om terminen hører til 2026.",
+  "hendelse": "Når er fristen for mva-meldingen for 6. termin 2026 (november og desember)?",
+  "fasit": "2027-02-10",
+  "fasitRegel": {
+    "type": "mva",
+    "termin": 6,
+    "aar": 2026
+  },
+  "hint": "Terminen slutter 31. desember."
+}

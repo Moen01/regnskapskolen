@@ -1,0 +1,32 @@
+{
+  "id": "grunnlag-web-quiz-03",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Kunden betaler en faktura som allerede er bokført. Hva er…",
+  "oppgave": "Kunden betaler en faktura som allerede er bokført. Hva er riktig postering?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Inntekten ble ført da fakturaen ble laget. Betalingen gjør bare om fordringen til penger i banken. Velger du det første alternativet, blir inntekten ført to ganger. Den feilen ser vi i ekte regnskap.",
+  "alternativer": [
+    "Debet bank, kredit salgsinntekt",
+    "Debet bank, kredit kundefordringer",
+    "Debet kundefordringer, kredit bank",
+    "Debet salgsinntekt, kredit bank"
+  ],
+  "svar": 1
+}

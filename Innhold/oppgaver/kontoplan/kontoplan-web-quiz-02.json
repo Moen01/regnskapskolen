@@ -1,0 +1,32 @@
+{
+  "id": "kontoplan-web-quiz-02",
+  "type": "quiz",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "I hvilken rapport havner 7770 Bank- og kortgebyr?",
+  "oppgave": "I hvilken rapport havner 7770 Bank- og kortgebyr?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Klasse 3–8 havner i resultatregnskapet. Gebyret er en kostnad. Bankkontoen selv (1920) er i balansen.",
+  "alternativer": [
+    "Balansen, fordi det handler om banken",
+    "Resultatregnskapet, fordi klasse 7 er driftskostnad",
+    "Mva-meldingen",
+    "Ingen rapport"
+  ],
+  "svar": 1
+}

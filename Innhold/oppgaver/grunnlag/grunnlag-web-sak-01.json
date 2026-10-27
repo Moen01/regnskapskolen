@@ -1,0 +1,54 @@
+{
+  "id": "grunnlag-web-sak-01",
+  "type": "sak",
+  "tema": "grunnlag",
+  "vanskelighet": 2,
+  "tags": [
+    "sak",
+    "edge-case",
+    "dato"
+  ],
+  "status": "utkast",
+  "tittel": "Bilaget balanserer, men ikke per dato",
+  "oppgave": "Les meldingen og velg riktig behandling.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Nr. 4 nøyaktighet: opplysninger skal bokføres og spesifiseres korrekt. Hvert bilag må gå i null, også per dato."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour per periode; en linje med feil dato havner i feil periode."
+    }
+  ],
+  "forklaring": "Bilaget går i null **totalt**, men ikke **per dato**. Systemet sjekker begge deler, og meldingen nevner datoen, så det er den andre sjekken som slår til.\n\nNesten alltid har én linje fått en annen dato enn resten, for eksempel etter kopiering. Hvorfor må hver dato balansere? Hver dato havner i en regnskapsperiode. Hvis debet står 30.09 og kredit står 01.10, går ikke september i null, og saldobalansen for september stemmer ikke.\n\nEn avrundingslinje (B) skjuler feilen og bryter nøyaktighetskravet i bokføringsloven § 4. Les feilmeldingen ordrett: «på dato» er hele ledetråden.",
+  "fra": "Kollega på regnskapsavdelingen",
+  "melding": "Jeg får feilmeldingen «Sum debet er ikke lik sum kredit på dato 22.09.2025» når jeg prøver å bokføre et bilag. Men bilaget ser helt balansert ut: sum debet og sum kredit er like. Hva gjør jeg?",
+  "valg": [
+    {
+      "nokkel": "A",
+      "tekst": "Sjekk datoen på hver linje. Linjene med samme dato må balansere for seg."
+    },
+    {
+      "nokkel": "B",
+      "tekst": "Legg til en avrundingslinje på 1900 Kontanter, så bilaget går i null."
+    },
+    {
+      "nokkel": "C",
+      "tekst": "Bilaget er balansert, så feilen ligger i systemet. Be leverandøren rette den."
+    },
+    {
+      "nokkel": "D",
+      "tekst": "Bokfør bilaget i et annet system uten datokontroll."
+    }
+  ],
+  "svar": "A",
+  "sporsmal": [
+    "Har alle linjene i bilaget samme dato?",
+    "Er det et sammensatt bilag med flere datoer?",
+    "Er linjene kopiert fra et annet bilag?"
+  ],
+  "forslag": "Feilmeldingen betyr at bilaget balanserer totalt, men ikke for datoen 22.09.2025. Hver dato i et bilag må gå i null for seg, fordi hver dato hører til en regnskapsperiode. Sjekk datokolonnen: sannsynligvis har én linje fått en annen dato enn resten. Rett datoen, så kan bilaget bokføres."
+}

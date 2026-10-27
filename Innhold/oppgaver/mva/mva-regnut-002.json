@@ -1,0 +1,25 @@
+{
+  "id": "mva-regnut-002",
+  "type": "regnut",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "forholdsmessig"
+  ],
+  "status": "godkjent",
+  "tittel": "Forholdsmessig fradrag",
+  "oppgave": "En bedrift driver både avgiftspliktig salg (60 % av omsetningen) og unntatt undervisning (40 %). Regnskapsføreren fakturerer 10 000 kr + 2 500 kr mva for arbeid som gjelder hele virksomheten. Hvor mye inngående mva kan trekkes fra?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-2",
+      "tekst": "Anskaffelser til bruk både i avgiftspliktig og unntatt virksomhet gir fradrag bare for den delen som gjelder den avgiftspliktige virksomheten. Fordelingen kan bygge på omsetningen."
+    }
+  ],
+  "forklaring": "Fellesanskaffelser fordeles etter bruk, normalt etter omsetningsfordelingen: 2 500 × 60 % = **1 500 kr**. Resten (1 000 kr) er kostnad. Anskaffelser som bare gjelder den unntatte delen gir ingen fradrag; anskaffelser som bare gjelder den avgiftspliktige delen gir fullt fradrag.",
+  "svar": 1500,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Bare den avgiftspliktige andelen av mva-beløpet kan trekkes fra."
+}

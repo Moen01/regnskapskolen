@@ -1,0 +1,1099 @@
+{
+  "standard": "NS 4102",
+  "klasser": {
+    "1": "Eiendeler",
+    "2": "Egenkapital og gjeld",
+    "3": "Salgs- og driftsinntekt",
+    "4": "Varekostnad",
+    "5": "Lønnskostnad",
+    "6": "Annen driftskostnad, av- og nedskrivning",
+    "7": "Annen driftskostnad",
+    "8": "Finansinntekt og finanskostnad, skatt, årsresultat"
+  },
+  "grupper": {
+    "10": "Immaterielle eiendeler",
+    "11": "Tomter, bygninger og annen fast eiendom",
+    "12": "Transportmidler, inventar og maskiner",
+    "13": "Finansielle anleggsmidler",
+    "14": "Varelager og forskudd til leverandører",
+    "15": "Kortsiktige fordringer",
+    "16": "Merverdiavgift, opptjente offentlige tilskudd o.l.",
+    "17": "Forskuddsbetalt kostnad, påløpt inntekt o.l.",
+    "18": "Kortsiktige finansinvesteringer",
+    "19": "Bankinnskudd, kontanter og lignende",
+    "20": "Egenkapital",
+    "21": "Avsetning for forpliktelser",
+    "22": "Annen langsiktig gjeld",
+    "23": "Kortsiktige konvertible lån, obligasjonslån og gjeld til kredittinstitusjoner",
+    "24": "Leverandørgjeld",
+    "25": "Betalbar skatt",
+    "26": "Skattetrekk og andre trekk",
+    "27": "Skyldige offentlige avgifter",
+    "28": "Utbytte",
+    "29": "Annen kortsiktig gjeld",
+    "30": "Salgsinntekt, avgiftspliktig",
+    "31": "Salgsinntekt, avgiftsfri",
+    "32": "Salgsinntekt utenfor avgiftsområdet",
+    "33": "Offentlig tilskudd/refusjon",
+    "36": "Leieinntekt",
+    "37": "Provisjonsinntekt",
+    "38": "Gevinst ved avgang av anleggsmidler",
+    "39": "Annen driftsrelatert inntekt",
+    "40": "Forbruk av råvarer og innkjøpte halvfabrikata",
+    "43": "Innkjøp av varer for videresalg",
+    "45": "Fremmedytelse og underentreprise",
+    "49": "Beholdningsendring",
+    "50": "Lønn til ansatte",
+    "51": "Lønn til ansatte (annet)",
+    "52": "Fordel i arbeidsforhold",
+    "53": "Annen oppgavepliktig godtgjørelse",
+    "54": "Arbeidsgiveravgift og pensjonskostnad",
+    "55": "Annen kostnadsgodtgjørelse",
+    "57": "Offentlig tilskudd vedrørende arbeidskraft",
+    "58": "Offentlig refusjon vedrørende arbeidskraft",
+    "59": "Annen personalkostnad",
+    "60": "Av- og nedskrivning",
+    "61": "Frakt og transportkostnad vedrørende salg",
+    "62": "Energi, brensel og vann vedrørende produksjon",
+    "63": "Kostnad lokaler",
+    "64": "Leie maskiner, inventar o.l.",
+    "65": "Verktøy, inventar og driftsmateriale som ikke skal aktiveres",
+    "66": "Reparasjon og vedlikehold",
+    "67": "Fremmed tjeneste",
+    "68": "Kontorkostnad, trykksak o.l.",
+    "69": "Telefon, porto o.l.",
+    "70": "Kostnad transportmidler",
+    "71": "Kostnad og godtgjørelse for reise, diett, bil o.l.",
+    "72": "Provisjonskostnad",
+    "73": "Salgs-, reklame- og representasjonskostnad",
+    "74": "Kontingent og gave",
+    "75": "Forsikringspremie, garanti- og servicekostnad",
+    "76": "Lisens- og patentkostnad",
+    "77": "Annen kostnad",
+    "78": "Tap o.l.",
+    "79": "Periodiseringskonto",
+    "80": "Finansinntekt",
+    "81": "Finanskostnad",
+    "83": "Skattekostnad på ordinært resultat",
+    "84": "Ekstraordinær inntekt",
+    "85": "Ekstraordinær kostnad",
+    "88": "Årsresultat",
+    "89": "Overføringer og disponeringer"
+  },
+  "kontoer": [
+    {
+      "nr": "1000",
+      "navn": "Forskning og utvikling",
+      "klasse": 1,
+      "gruppe": "10",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1080",
+      "navn": "Goodwill",
+      "klasse": 1,
+      "gruppe": "10",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1100",
+      "navn": "Bygninger",
+      "klasse": 1,
+      "gruppe": "11",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1150",
+      "navn": "Tomter",
+      "klasse": 1,
+      "gruppe": "11",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1200",
+      "navn": "Maskiner og anlegg",
+      "klasse": 1,
+      "gruppe": "12",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1230",
+      "navn": "Biler",
+      "klasse": 1,
+      "gruppe": "12",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1250",
+      "navn": "Inventar",
+      "klasse": 1,
+      "gruppe": "12",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1280",
+      "navn": "Kontormaskiner",
+      "klasse": 1,
+      "gruppe": "12",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1290",
+      "navn": "Andre driftsmidler",
+      "klasse": 1,
+      "gruppe": "12",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1350",
+      "navn": "Investeringer i aksjer og andeler",
+      "klasse": 1,
+      "gruppe": "13",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1400",
+      "navn": "Varelager",
+      "klasse": 1,
+      "gruppe": "14",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1460",
+      "navn": "Innkjøpte varer for videresalg",
+      "klasse": 1,
+      "gruppe": "14",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer",
+      "klasse": 1,
+      "gruppe": "15",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse",
+      "merknad": "Kontrollkonto for kundereskontroen."
+    },
+    {
+      "nr": "1570",
+      "navn": "Andre kortsiktige fordringer",
+      "klasse": 1,
+      "gruppe": "15",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1580",
+      "navn": "Avsetning tap på fordringer",
+      "klasse": 1,
+      "gruppe": "15",
+      "type": "eiendel",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Negativ eiendel: reduserer 1500 i balansen."
+    },
+    {
+      "nr": "1600",
+      "navn": "Utgående merverdiavgift (fordring)",
+      "klasse": 1,
+      "gruppe": "16",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse",
+      "merknad": "Brukes sjelden; mva ligger normalt på 2700/2710."
+    },
+    {
+      "nr": "1700",
+      "navn": "Forskuddsbetalt leiekostnad",
+      "klasse": 1,
+      "gruppe": "17",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1710",
+      "navn": "Forskuddsbetalt rentekostnad",
+      "klasse": 1,
+      "gruppe": "17",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1740",
+      "navn": "Forskuddsbetalt kostnad",
+      "klasse": 1,
+      "gruppe": "17",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1750",
+      "navn": "Påløpt inntekt",
+      "klasse": 1,
+      "gruppe": "17",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1900",
+      "navn": "Kontanter",
+      "klasse": 1,
+      "gruppe": "19",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd",
+      "klasse": 1,
+      "gruppe": "19",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "1950",
+      "navn": "Bankinnskudd for skattetrekk",
+      "klasse": 1,
+      "gruppe": "19",
+      "type": "eiendel",
+      "okerPa": "D",
+      "rapport": "balanse",
+      "merknad": "Skattetrekkskontoen ble avviklet 1. januar 2026. Kontoen står igjen for eldre regnskap."
+    },
+    {
+      "nr": "2000",
+      "navn": "Aksjekapital",
+      "klasse": 2,
+      "gruppe": "20",
+      "type": "egenkapital",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2020",
+      "navn": "Overkursfond",
+      "klasse": 2,
+      "gruppe": "20",
+      "type": "egenkapital",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2050",
+      "navn": "Annen egenkapital",
+      "klasse": 2,
+      "gruppe": "20",
+      "type": "egenkapital",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2080",
+      "navn": "Udekket tap",
+      "klasse": 2,
+      "gruppe": "20",
+      "type": "egenkapital",
+      "okerPa": "D",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2099",
+      "navn": "Udisponert årsresultat",
+      "klasse": 2,
+      "gruppe": "20",
+      "type": "egenkapital",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Fylles av årsavslutningen, ikke av løpende bilag."
+    },
+    {
+      "nr": "2100",
+      "navn": "Pensjonsforpliktelser",
+      "klasse": 2,
+      "gruppe": "21",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2120",
+      "navn": "Utsatt skatt",
+      "klasse": 2,
+      "gruppe": "21",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2220",
+      "navn": "Gjeld til kredittinstitusjoner",
+      "klasse": 2,
+      "gruppe": "22",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Langsiktig lån."
+    },
+    {
+      "nr": "2240",
+      "navn": "Pantelån",
+      "klasse": 2,
+      "gruppe": "22",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2380",
+      "navn": "Kassekreditt",
+      "klasse": 2,
+      "gruppe": "23",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld",
+      "klasse": 2,
+      "gruppe": "24",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Kontrollkonto for leverandørreskontroen."
+    },
+    {
+      "nr": "2500",
+      "navn": "Betalbar skatt, ikke fastsatt",
+      "klasse": 2,
+      "gruppe": "25",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2600",
+      "navn": "Forskuddstrekk",
+      "klasse": 2,
+      "gruppe": "26",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Fra 2026 betales trekket til Skatteetaten senest første virkedag etter lønnsutbetalingen."
+    },
+    {
+      "nr": "2610",
+      "navn": "Påleggstrekk",
+      "klasse": 2,
+      "gruppe": "26",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift",
+      "klasse": 2,
+      "gruppe": "27",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift",
+      "klasse": 2,
+      "gruppe": "27",
+      "type": "gjeld",
+      "okerPa": "D",
+      "rapport": "balanse",
+      "merknad": "Står i klasse 2, men har debetsaldo: et krav på staten."
+    },
+    {
+      "nr": "2740",
+      "navn": "Oppgjørskonto merverdiavgift",
+      "klasse": 2,
+      "gruppe": "27",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse",
+      "merknad": "Saldo etter terminoppgjøret: kredit = å betale, debet = til gode."
+    },
+    {
+      "nr": "2770",
+      "navn": "Skyldig arbeidsgiveravgift",
+      "klasse": 2,
+      "gruppe": "27",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2780",
+      "navn": "Påløpt arbeidsgiveravgift av feriepenger",
+      "klasse": 2,
+      "gruppe": "27",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2800",
+      "navn": "Avsatt utbytte",
+      "klasse": 2,
+      "gruppe": "28",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2900",
+      "navn": "Forskudd fra kunder",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2910",
+      "navn": "Gjeld til ansatte",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2940",
+      "navn": "Skyldige feriepenger",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2960",
+      "navn": "Påløpt kostnad",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2970",
+      "navn": "Uopptjent inntekt",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "2990",
+      "navn": "Annen kortsiktig gjeld",
+      "klasse": 2,
+      "gruppe": "29",
+      "type": "gjeld",
+      "okerPa": "K",
+      "rapport": "balanse"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats",
+      "klasse": 3,
+      "gruppe": "30",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "25 %."
+    },
+    {
+      "nr": "3010",
+      "navn": "Salgsinntekt, avgiftspliktig, middels sats",
+      "klasse": 3,
+      "gruppe": "30",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "15 %, næringsmidler."
+    },
+    {
+      "nr": "3020",
+      "navn": "Salgsinntekt, avgiftspliktig, lav sats",
+      "klasse": 3,
+      "gruppe": "30",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "12 %, persontransport, overnatting, kino m.m."
+    },
+    {
+      "nr": "3100",
+      "navn": "Salgsinntekt, avgiftsfri",
+      "klasse": 3,
+      "gruppe": "31",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "Fritatt (nullsats) med fradragsrett: eksport, bøker, aviser."
+    },
+    {
+      "nr": "3200",
+      "navn": "Salgsinntekt utenfor avgiftsområdet",
+      "klasse": 3,
+      "gruppe": "32",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "Unntatt uten fradragsrett: helse, undervisning, finans."
+    },
+    {
+      "nr": "3600",
+      "navn": "Leieinntekt fast eiendom",
+      "klasse": 3,
+      "gruppe": "36",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "Unntatt mva med mindre utleier er frivillig registrert."
+    },
+    {
+      "nr": "3700",
+      "navn": "Provisjonsinntekt",
+      "klasse": 3,
+      "gruppe": "37",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "3800",
+      "navn": "Gevinst ved avgang av anleggsmidler",
+      "klasse": 3,
+      "gruppe": "38",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "3900",
+      "navn": "Annen driftsrelatert inntekt",
+      "klasse": 3,
+      "gruppe": "39",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "4000",
+      "navn": "Forbruk av råvarer og innkjøpte halvfabrikata",
+      "klasse": 4,
+      "gruppe": "40",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "4300",
+      "navn": "Innkjøp av varer for videresalg",
+      "klasse": 4,
+      "gruppe": "43",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "4500",
+      "navn": "Fremmedytelse og underentreprise",
+      "klasse": 4,
+      "gruppe": "45",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "4900",
+      "navn": "Beholdningsendring",
+      "klasse": 4,
+      "gruppe": "49",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Fortegn følger om lageret øker eller minker."
+    },
+    {
+      "nr": "5000",
+      "navn": "Lønn til ansatte",
+      "klasse": 5,
+      "gruppe": "50",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "5180",
+      "navn": "Feriepenger",
+      "klasse": 5,
+      "gruppe": "51",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Kostnadsføres samme måned som lønnen, mot 2940."
+    },
+    {
+      "nr": "5400",
+      "navn": "Arbeidsgiveravgift",
+      "klasse": 5,
+      "gruppe": "54",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "5405",
+      "navn": "Arbeidsgiveravgift av feriepenger",
+      "klasse": 5,
+      "gruppe": "54",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "5420",
+      "navn": "Pensjonskostnad",
+      "klasse": 5,
+      "gruppe": "54",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "5900",
+      "navn": "Gaver til ansatte",
+      "klasse": 5,
+      "gruppe": "59",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "5990",
+      "navn": "Annen personalkostnad",
+      "klasse": 5,
+      "gruppe": "59",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6000",
+      "navn": "Avskrivning på bygninger og annen fast eiendom",
+      "klasse": 6,
+      "gruppe": "60",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6010",
+      "navn": "Avskrivning på transportmidler, maskiner og inventar",
+      "klasse": 6,
+      "gruppe": "60",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6100",
+      "navn": "Frakt og transportkostnad vedrørende salg",
+      "klasse": 6,
+      "gruppe": "61",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6300",
+      "navn": "Leie lokale",
+      "klasse": 6,
+      "gruppe": "63",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6340",
+      "navn": "Lys og varme",
+      "klasse": 6,
+      "gruppe": "63",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6400",
+      "navn": "Leie maskiner",
+      "klasse": 6,
+      "gruppe": "64",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6540",
+      "navn": "Inventar",
+      "klasse": 6,
+      "gruppe": "65",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Kjøp under 30 000 kr eller med levetid under 3 år kostnadsføres her i stedet for å aktiveres på 1250."
+    },
+    {
+      "nr": "6560",
+      "navn": "Rekvisita",
+      "klasse": 6,
+      "gruppe": "65",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6600",
+      "navn": "Reparasjon og vedlikehold bygninger",
+      "klasse": 6,
+      "gruppe": "66",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6700",
+      "navn": "Revisjons- og regnskapshonorar",
+      "klasse": 6,
+      "gruppe": "67",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6790",
+      "navn": "Annen fremmed tjeneste",
+      "klasse": 6,
+      "gruppe": "67",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita",
+      "klasse": 6,
+      "gruppe": "68",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6860",
+      "navn": "Møte, kurs, oppdatering o.l.",
+      "klasse": 6,
+      "gruppe": "68",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6900",
+      "navn": "Telefon",
+      "klasse": 6,
+      "gruppe": "69",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "6940",
+      "navn": "Porto",
+      "klasse": 6,
+      "gruppe": "69",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7000",
+      "navn": "Drivstoff",
+      "klasse": 7,
+      "gruppe": "70",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7020",
+      "navn": "Vedlikehold transportmidler",
+      "klasse": 7,
+      "gruppe": "70",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7100",
+      "navn": "Bilgodtgjørelse, oppgavepliktig",
+      "klasse": 7,
+      "gruppe": "71",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7140",
+      "navn": "Reisekostnad, ikke oppgavepliktig",
+      "klasse": 7,
+      "gruppe": "71",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7320",
+      "navn": "Reklamekostnad",
+      "klasse": 7,
+      "gruppe": "73",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7350",
+      "navn": "Representasjon, fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "73",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Enkel bevertning innenfor satsen per person."
+    },
+    {
+      "nr": "7360",
+      "navn": "Representasjon, ikke fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "73",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Ingen skattemessig fradragsrett og ingen mva-fradrag."
+    },
+    {
+      "nr": "7400",
+      "navn": "Kontingent, fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "74",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7410",
+      "navn": "Kontingent, ikke fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "74",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7420",
+      "navn": "Gave, fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "74",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7430",
+      "navn": "Gave, ikke fradragsberettiget",
+      "klasse": 7,
+      "gruppe": "74",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7500",
+      "navn": "Forsikringspremie",
+      "klasse": 7,
+      "gruppe": "75",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7770",
+      "navn": "Bank- og kortgebyr",
+      "klasse": 7,
+      "gruppe": "77",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7790",
+      "navn": "Annen kostnad",
+      "klasse": 7,
+      "gruppe": "77",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "7830",
+      "navn": "Tap på fordringer",
+      "klasse": 7,
+      "gruppe": "78",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Konstatert tap, med mva-justering etter mval. § 4-7."
+    },
+    {
+      "nr": "8050",
+      "navn": "Annen renteinntekt",
+      "klasse": 8,
+      "gruppe": "80",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8060",
+      "navn": "Valutagevinst (agio)",
+      "klasse": 8,
+      "gruppe": "80",
+      "type": "inntekt",
+      "okerPa": "K",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8150",
+      "navn": "Annen rentekostnad",
+      "klasse": 8,
+      "gruppe": "81",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8160",
+      "navn": "Valutatap (disagio)",
+      "klasse": 8,
+      "gruppe": "81",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8170",
+      "navn": "Annen finanskostnad",
+      "klasse": 8,
+      "gruppe": "81",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8300",
+      "navn": "Betalbar skatt",
+      "klasse": 8,
+      "gruppe": "83",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8320",
+      "navn": "Endring utsatt skatt",
+      "klasse": 8,
+      "gruppe": "83",
+      "type": "kostnad",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8800",
+      "navn": "Årsresultat",
+      "klasse": 8,
+      "gruppe": "88",
+      "type": "disponering",
+      "okerPa": "K",
+      "rapport": "resultat",
+      "merknad": "Overskudd krediteres, underskudd debiteres. Nulles ut mot gruppe 89."
+    },
+    {
+      "nr": "8920",
+      "navn": "Avsatt utbytte",
+      "klasse": 8,
+      "gruppe": "89",
+      "type": "disponering",
+      "okerPa": "D",
+      "rapport": "resultat"
+    },
+    {
+      "nr": "8960",
+      "navn": "Overføringer annen egenkapital",
+      "klasse": 8,
+      "gruppe": "89",
+      "type": "disponering",
+      "okerPa": "D",
+      "rapport": "resultat",
+      "merknad": "Motpost til 2050 ved disponering av overskudd."
+    },
+    {
+      "nr": "8990",
+      "navn": "Udekket tap",
+      "klasse": 8,
+      "gruppe": "89",
+      "type": "disponering",
+      "okerPa": "K",
+      "rapport": "resultat"
+    }
+  ]
+}

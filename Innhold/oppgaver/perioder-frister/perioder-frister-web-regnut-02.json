@@ -1,0 +1,29 @@
+{
+  "id": "perioder-frister-web-regnut-02",
+  "type": "regnut",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "regning"
+  ],
+  "status": "utkast",
+  "tittel": "4. termin 2026 (juli–august) har frist 1 måned og 10 dager…",
+  "oppgave": "4. termin 2026 (juli–august) har frist 1 måned og 10 dager etter terminslutt. Det gir 10. oktober 2026, som er en **lørdag**. Fristen flyttes til neste virkedag. Hvilken dato i oktober er den faktiske fristen?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "Lørdag 10. og søndag 11. oktober er ikke virkedager. Fristen blir **mandag 12. oktober**. Derfor må kode aldri anta at fristen er «den 10.».",
+  "svar": 12,
+  "toleranse": 0,
+  "enhet": "(dag i oktober)",
+  "hint": "Lørdag og søndag er ikke virkedager. Hvilken dag er den første mandagen etter 10. oktober?"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "resultat-balanse-web-regnut-01",
+  "type": "regnut",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "regning"
+  ],
+  "status": "utkast",
+  "tittel": "Hva er årsresultatet? Skriv et overskudd som et positivt…",
+  "oppgave": "Hva er årsresultatet? Skriv et overskudd som et positivt tall.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Inntekter: 120 000. Kostnader: 60 000 + 35 000 + 10 000 = 105 000. Årsresultat: 120 000 − 105 000 = **15 000 kr** i overskudd.\nKontroll: eiendeler 50 000 mot gjeld 5 000 + egenkapital 30 000 = 35 000. Det mangler 15 000, akkurat årsresultatet.",
+  "svar": 15000,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Bruk bare klasse 3–8. Inntekter står med minus, kostnader med pluss. Årsresultat = inntekter − kostnader."
+}

@@ -1,0 +1,66 @@
+{
+  "id": "reskontro-postering-002",
+  "type": "postering",
+  "tema": "reskontro-bank",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "tap-på-fordring",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Konstatert tap med mva-korreksjon",
+  "oppgave": "En kundefordring på 12 500 kr inkl. 25 % mva er konstatert tapt: kunden er konkurs og boet melder at det ikke blir dividende. Før tapet.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 4-7",
+      "tekst": "Beregningsgrunnlaget kan korrigeres når en utestående fordring er konstatert tapt på grunn av skyldnerens manglende betalingsevne."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Tap på utestående fordringer i næring er fradragsberettiget når tapet er endelig konstatert."
+    }
+  ],
+  "forklaring": "Tapet er nettobeløpet: D 7830 10 000. Mvaen som ble innrapportert ved salget, får du tilbake ved å redusere utgående mva: D 2700 2 500. Fordringen tas ut: K 1500 12 500. Vanlig feil: å føre hele 12 500 som tap og glemme mva-korreksjonen. Merk: tapet må være *konstatert* (konkurs, forgjeves tvangsinndrivelse, eller forfalt over seks måneder med minst tre purringer); et usikkert krav avsettes på 1580 uten mva-korreksjon.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1580",
+      "navn": "Avsetning tap på fordringer"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    },
+    {
+      "nr": "7830",
+      "navn": "Tap på fordringer"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "7830",
+      "side": "D",
+      "belop": 10000
+    },
+    {
+      "konto": "2700",
+      "side": "D",
+      "belop": 2500
+    },
+    {
+      "konto": "1500",
+      "side": "K",
+      "belop": 12500
+    }
+  ]
+}

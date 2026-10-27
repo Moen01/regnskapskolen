@@ -1,0 +1,34 @@
+{
+  "id": "mva-quiz-006",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "unntatt",
+    "frivillig-registrering"
+  ],
+  "status": "utkast",
+  "tittel": "Utleie av kontorlokaler med frivillig registrering",
+  "oppgave": "Fjordbygg Eiendom AS eier et kontorbygg og leier det ut til et reklamebyrå, som selv er avgiftspliktig. Leien er 100 000 kr per måned uten mva. Fjordbygg har frivillig registrert utleien i Mva-registeret og har nylig fått en byggefaktura med 50 000 kr i inngående mva. Hva er riktig behandling?",
+  "alternativer": [
+    "Leien er unntatt; ingen mva på leien og ingen fradrag for byggefakturaen",
+    "Leien er fritatt med 0 %; ingen mva på leien, men fradrag for byggefakturaen",
+    "Fjordbygg beregner 25 000 kr i mva på leien og har fradrag for mvaen på byggefakturaen",
+    "Reklamebyrået beregner 25 000 kr i mva etter omvendt avgiftsplikt"
+  ],
+  "svar": 2,
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-11",
+      "tekst": "Utleie av fast eiendom er unntatt fra loven."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 2-3",
+      "tekst": "Utleie av fast eiendom kan bringes inn i loven ved frivillig registrering når leietakeren er avgiftspliktig."
+    }
+  ],
+  "forklaring": "Utleie av fast eiendom er som hovedregel **unntatt**, uten fradragsrett. Med **frivillig registrering** kommer utleien inn i loven. Da beregner utleier 25 % mva på leien: 100 000 × 25 % = 25 000 kr per måned. Utleier får også fradrag for inngående mva på bygget, her 50 000 kr. Det gjelder bare når leietakeren bruker lokalene i avgiftspliktig virksomhet. Utleie som er unntatt, gir ikke fradrag. Utleie med frivillig registrering er heller ikke fritatt (0 %), for den har 25 % mva."
+}

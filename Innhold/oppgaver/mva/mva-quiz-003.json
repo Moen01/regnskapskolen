@@ -1,0 +1,29 @@
+{
+  "id": "mva-quiz-003",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "elbil",
+    "2026"
+  ],
+  "status": "godkjent",
+  "tittel": "Mva på elbil i 2026",
+  "oppgave": "Selskapet kjøper en ny elbil (personkjøretøy) til 420 000 kr i 2026. Hvilken del av prisen er fritatt for mva?",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 6-6",
+      "tekst": "Omsetning av kjøretøy som bare bruker elektrisitet til framdrift er fritatt for mva opp til en beløpsgrense; fra 1. januar 2026 er grensen 300 000 kr."
+    }
+  ],
+  "forklaring": "Fra 2026 er bare de første **300 000 kr** fritatt (ned fra 500 000). De resterende 120 000 kr får 25 % mva, altså 30 000 kr. Og siden det er et personkjøretøy, har selskapet ikke fradrag for den (mval. § 8-4). Fritaket skal fases helt ut i 2027–2028.",
+  "alternativer": [
+    "Hele beløpet",
+    "De første 500 000 kr",
+    "De første 300 000 kr",
+    "Ingenting, elbilfritaket er opphevet"
+  ],
+  "svar": 2
+}

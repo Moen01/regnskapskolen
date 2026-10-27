@@ -1,0 +1,80 @@
+{
+  "id": "perioder-frister-web-sorter-01",
+  "type": "klassifiser",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "kontoplan"
+  ],
+  "status": "utkast",
+  "tittel": "Velg mva-terminen for hver dato. Det er transaksjonsdatoen…",
+  "oppgave": "Velg mva-terminen for hver dato. Det er transaksjonsdatoen som teller.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "Hver konto hører til én kontotype. Se begrunnelsen på hvert element.",
+  "kategorier": [
+    "1. termin",
+    "2. termin",
+    "3. termin",
+    "4. termin",
+    "5. termin",
+    "6. termin"
+  ],
+  "elementer": [
+    {
+      "tekst": "Faktura datert 14.01.2026",
+      "svar": "1. termin",
+      "hvorfor": "Januar hører til 1. termin (januar–februar)."
+    },
+    {
+      "tekst": "Faktura datert 28.02.2026, registrert i systemet 03.03.2026",
+      "svar": "1. termin",
+      "hvorfor": "Transaksjonsdatoen er i februar. Registreringsdagen bestemmer ikke terminen."
+    },
+    {
+      "tekst": "Kvittering datert 01.03.2026",
+      "svar": "2. termin",
+      "hvorfor": "Mars er den første måneden i 2. termin (mars–april)."
+    },
+    {
+      "tekst": "Leverandørfaktura datert 30.06.2026",
+      "svar": "3. termin",
+      "hvorfor": "Juni er den siste måneden i 3. termin (mai–juni)."
+    },
+    {
+      "tekst": "Salg datert 31.07.2026",
+      "svar": "4. termin",
+      "hvorfor": "Juli hører til 4. termin (juli–august)."
+    },
+    {
+      "tekst": "Faktura datert 01.09.2026",
+      "svar": "5. termin",
+      "hvorfor": "September er den første måneden i 5. termin (september–oktober)."
+    },
+    {
+      "tekst": "Kvittering datert 31.10.2026",
+      "svar": "5. termin",
+      "hvorfor": "Oktober er den siste måneden i 5. termin."
+    },
+    {
+      "tekst": "Faktura datert 15.12.2026",
+      "svar": "6. termin",
+      "hvorfor": "Desember hører til 6. termin (november–desember)."
+    }
+  ]
+}

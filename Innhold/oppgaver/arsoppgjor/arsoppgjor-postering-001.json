@@ -1,0 +1,74 @@
+{
+  "id": "arsoppgjor-postering-001",
+  "type": "postering",
+  "tema": "arsoppgjor",
+  "vanskelighet": 4,
+  "tags": [
+    "disponering",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Disponering av årsresultatet",
+  "oppgave": "Årsresultatet er et overskudd på 150 000 kr. Generalforsamlingen vedtar 40 000 kr i utbytte; resten overføres til annen egenkapital. Før disponeringsbilaget.",
+  "lov": [
+    {
+      "lov": "aksjeloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Utbytte kan bare deles ut av fri egenkapital etter at generalforsamlingen har fastsatt årsregnskapet."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Årsresultatet disponeres gjennom overføringer og avsetninger som vises etter resultatlinjen (gruppe 89 i NS 4102)."
+    }
+  ],
+  "forklaring": "Utbyttet avsettes som kortsiktig gjeld til aksjonærene: D 8920 40 000, K 2800 40 000. Resten overføres til egenkapitalen: D 8960 110 000, K 2050 110 000. Gruppe 89 er «disponeringskontoer»: de viser hvor overskuddet tok veien, og summerer seg til årsresultatet på 8800.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2050",
+      "navn": "Annen egenkapital"
+    },
+    {
+      "nr": "2800",
+      "navn": "Avsatt utbytte"
+    },
+    {
+      "nr": "8800",
+      "navn": "Årsresultat"
+    },
+    {
+      "nr": "8920",
+      "navn": "Avsatt utbytte"
+    },
+    {
+      "nr": "8960",
+      "navn": "Overføringer annen egenkapital"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "8920",
+      "side": "D",
+      "belop": 40000
+    },
+    {
+      "konto": "2800",
+      "side": "K",
+      "belop": 40000
+    },
+    {
+      "konto": "8960",
+      "side": "D",
+      "belop": 110000
+    },
+    {
+      "konto": "2050",
+      "side": "K",
+      "belop": 110000
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "verifisert": "2026-10-26",
+  "merknad": "Satser og frister som oppgavene og appen bruker. Endre her, aldri i oppgavetekstene. Hver post har en kilde og datoen den gjelder fra.",
+  "kilder": {
+    "skatteetaten-mva": "https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/",
+    "skatteetaten-mva-registrere": "https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/registrere/",
+    "skatteetaten-aga-2026": "https://www.skatteetaten.no/en/rettskilder/type/skattedirektoratets-meldinger/arbeidsgiveravgift-til-folketrygden-for-2026/",
+    "regjeringen-skattesatser-2026": "https://www.regjeringen.no/no/tema/okonomi-og-budsjett/skatter-og-avgifter/skatte-og-avgiftssatser/skattesatser-2026/id3121978/",
+    "lovdata-skatteloven-14-43": "https://lovdata.no/lov/1999-03-26-14/%C2%A714-43",
+    "lovdata-skatteloven-14-40": "https://lovdata.no/lov/1999-03-26-14/%C2%A714-40",
+    "lovdata-ferieloven-10": "https://lovdata.no/lov/1988-04-29-21/%C2%A710",
+    "lovdata-bokforingsloven-13": "https://lovdata.no/lov/2004-11-19-73/%C2%A713",
+    "lovdata-regnskapsloven-8-2": "https://lovdata.no/lov/1998-07-17-56/%C2%A78-2",
+    "lovdata-skattebetalingsloven": "https://lovdata.no/lov/2005-06-17-67",
+    "finanstilsynet-forsinkelsesrente": "https://www.finanstilsynet.no/analyser-og-statistikk/forsinkelsesrente-og-standardkompensasjon/forsinkelsesrente/",
+    "revisorforeningen-satser-2026": "https://www.revisorforeningen.no/fag/nyheter/satser-for-inntektsaret-2026/",
+    "skatteetaten-amelding": "https://www.skatteetaten.no/bedrift-og-organisasjon/arbeidsgiver/a-meldingen/"
+  },
+  "mva": {
+    "gjelderFra": "2026-01-01",
+    "kilde": "skatteetaten-mva",
+    "lov": "mval. § 5-1 til § 5-11, § 6-1 flg., § 3-2 flg.",
+    "satser": [
+      { "kode": "25", "navn": "Alminnelig sats", "prosent": 25, "fradrag": true, "eksempler": ["de fleste varer og tjenester", "konsulenttjenester", "kontorrekvisita"] },
+      { "kode": "15", "navn": "Redusert sats, næringsmidler", "prosent": 15, "fradrag": true, "eksempler": ["mat og drikke fra butikk", "take-away uten servering"] },
+      { "kode": "12", "navn": "Lav sats", "prosent": 12, "fradrag": true, "eksempler": ["persontransport", "overnatting", "kino", "museer", "idrettsarrangement", "allmennkringkasting"] },
+      { "kode": "0", "navn": "Fritatt (nullsats)", "prosent": 0, "fradrag": true, "eksempler": ["eksport av varer og tjenester", "bøker og aviser i siste omsetningsledd", "brukte kjøretøy", "elbiler inntil beløpsgrensen"] },
+      { "kode": "unntatt", "navn": "Unntatt fra loven", "prosent": null, "fradrag": false, "eksempler": ["helsetjenester", "undervisning", "finansielle tjenester", "utleie av fast eiendom (uten frivillig registrering)", "kunst fra opphavsmannen"] },
+      { "kode": "omvendt", "navn": "Omvendt avgiftsplikt", "prosent": 25, "fradrag": true, "eksempler": ["fjernleverbare tjenester kjøpt fra utlandet (mval. § 3-30)", "klimakvoter og gull innenlands (§ 11-1)"] }
+    ],
+    "registreringsgrense": 50000,
+    "registreringsgrenseVeldedig": 140000,
+    "registreringsgrenseLov": "mval. § 2-1",
+    "terminer": {
+      "lov": "skatteforvaltningsforskriften § 8-3-10, mval. § 15-8",
+      "lengdeMaaneder": 2,
+      "fristRegel": "1 måned og 10 dager etter terminens slutt; 3. termin har frist 31. august",
+      "liste": [
+        { "nr": 1, "maaneder": [1, 2], "frist": { "dag": 10, "maaned": 4, "aar": "samme" } },
+        { "nr": 2, "maaneder": [3, 4], "frist": { "dag": 10, "maaned": 6, "aar": "samme" } },
+        { "nr": 3, "maaneder": [5, 6], "frist": { "dag": 31, "maaned": 8, "aar": "samme" } },
+        { "nr": 4, "maaneder": [7, 8], "frist": { "dag": 10, "maaned": 10, "aar": "samme" } },
+        { "nr": 5, "maaneder": [9, 10], "frist": { "dag": 10, "maaned": 12, "aar": "samme" } },
+        { "nr": 6, "maaneder": [11, 12], "frist": { "dag": 10, "maaned": 2, "aar": "neste" } }
+      ],
+      "aarligFrist": { "dag": 10, "maaned": 3, "aar": "neste" },
+      "aarligGrense": 1000000
+    }
+  },
+  "lonn": {
+    "gjelderFra": "2026-01-01",
+    "kilde": "skatteetaten-amelding",
+    "ameldingFristDag": 5,
+    "ameldingLov": "a-opplysningsloven § 4, a-opplysningsforskriften § 2-1",
+    "forskuddstrekk": {
+      "regel": "foerste-virkedag-etter-utbetaling",
+      "beskrivelse": "Forskuddstrekket betales til Skatteetaten senest første virkedag etter at lønnen er utbetalt. Skattetrekkskontoen og bankgarantien er avviklet.",
+      "gjelderFra": "2026-01-01",
+      "lov": "skattebetalingsloven § 5-12 opphevet fra 1.1.2026; § 10-10",
+      "tidligereRegel": "Til og med 2025: innsetting på skattetrekkskonto ved hver lønnskjøring og betaling den 15. i januar, mars, mai, juli, september og november (annenhver måned).",
+      "kilde": "lovdata-skattebetalingsloven"
+    },
+    "arbeidsgiveravgift": {
+      "lov": "folketrygdloven § 23-2, Stortingets vedtak om avgifter til folketrygden",
+      "kilde": "skatteetaten-aga-2026",
+      "soner": [
+        { "sone": "1", "prosent": 14.1 },
+        { "sone": "1a", "prosent": 10.6, "merknad": "10,6 % innenfor fribeløpet på 850 000 kr, deretter 14,1 %" },
+        { "sone": "2", "prosent": 10.6 },
+        { "sone": "3", "prosent": 6.4 },
+        { "sone": "4", "prosent": 5.1 },
+        { "sone": "4a", "prosent": 7.9 },
+        { "sone": "5", "prosent": 0 }
+      ],
+      "terminer": [
+        { "nr": 1, "maaneder": [1, 2], "frist": { "dag": 15, "maaned": 3, "aar": "samme" } },
+        { "nr": 2, "maaneder": [3, 4], "frist": { "dag": 15, "maaned": 5, "aar": "samme" } },
+        { "nr": 3, "maaneder": [5, 6], "frist": { "dag": 15, "maaned": 7, "aar": "samme" } },
+        { "nr": 4, "maaneder": [7, 8], "frist": { "dag": 15, "maaned": 9, "aar": "samme" } },
+        { "nr": 5, "maaneder": [9, 10], "frist": { "dag": 15, "maaned": 11, "aar": "samme" } },
+        { "nr": 6, "maaneder": [11, 12], "frist": { "dag": 15, "maaned": 1, "aar": "neste" } }
+      ]
+    },
+    "feriepenger": {
+      "lov": "ferieloven § 10",
+      "kilde": "lovdata-ferieloven-10",
+      "lovfestet": 10.2,
+      "tariff": 12.0,
+      "tilleggOver60": 2.3,
+      "over60Tak": "6G",
+      "merknad": "10,2 % for 4 uker og 1 dag etter ferieloven; 12 % ved 5 uker etter tariffavtale. Arbeidstakere over 60 år får 2,3 prosentpoeng ekstra av grunnlaget inntil 6 G."
+    }
+  },
+  "skatt": {
+    "gjelderFra": "2026-01-01",
+    "kilde": "regjeringen-skattesatser-2026",
+    "selskapsskatt": 22,
+    "skattemeldingFrist": { "dag": 31, "maaned": 5, "aar": "neste", "gjelder": "aksjeselskap og enkeltpersonforetak" },
+    "saldogrupper": {
+      "lov": "skatteloven § 14-41 og § 14-43",
+      "kilde": "lovdata-skatteloven-14-43",
+      "liste": [
+        { "gruppe": "a", "navn": "Kontormaskiner og lignende", "prosent": 30 },
+        { "gruppe": "b", "navn": "Ervervet forretningsverdi (goodwill)", "prosent": 20 },
+        { "gruppe": "c", "navn": "Vogntog, lastebiler, busser, varebiler, drosjebiler og kjøretøy for transport av funksjonshemmede", "prosent": 24, "merknad": "Elektriske varebiler: 30 %" },
+        { "gruppe": "d", "navn": "Personbiler, traktorer, maskiner, redskap, instrumenter, inventar m.v.", "prosent": 20 },
+        { "gruppe": "e", "navn": "Skip, fartøyer, rigger m.v.", "prosent": 14 },
+        { "gruppe": "f", "navn": "Fly og helikopter", "prosent": 12 },
+        { "gruppe": "g", "navn": "Anlegg for overføring og distribusjon av elektrisk kraft m.v.", "prosent": 5 },
+        { "gruppe": "h", "navn": "Bygg og anlegg, hoteller, losjihus, bevertningssteder m.v.", "prosent": 4, "merknad": "6 % for husdyrbygg i landbruket; 10 % for enkle bygg med kort levetid" },
+        { "gruppe": "i", "navn": "Forretningsbygg", "prosent": 2 },
+        { "gruppe": "j", "navn": "Fast teknisk installasjon i bygninger", "prosent": 10 }
+      ]
+    },
+    "driftsmiddel": {
+      "lov": "skatteloven § 14-40",
+      "kilde": "lovdata-skatteloven-14-40",
+      "grense": 30000,
+      "levetidAar": 3,
+      "gjelderFra": "2024-01-01",
+      "merknad": "Varige (levetid minst 3 år) og betydelige (kostpris 30 000 kr eller mer) driftsmidler aktiveres og avskrives. Under grensen kan kostnaden fradragsføres direkte. Grensen var 15 000 kr til og med 2023."
+    },
+    "representasjon": {
+      "lov": "skatteloven § 6-21, takseringsreglene § 2-3-6",
+      "kilde": "revisorforeningen-satser-2026",
+      "bevertningPerPerson": 592,
+      "gjelderFra": "2026-01-01",
+      "merknad": "Representasjon er ikke fradragsberettiget. Unntak: enkel bevertning av forretningsforbindelser i arbeidstiden inntil satsen per person, uten alkohol, i tilknytning til forhandlinger o.l."
+    }
+  },
+  "regnskap": {
+    "gjelderFra": "2026-01-01",
+    "kilde": "lovdata-regnskapsloven-8-2",
+    "aarsregnskap": {
+      "lov": "regnskapsloven § 3-1, § 8-2 og § 8-3; aksjeloven § 5-5",
+      "fastsettesInnenMaaneder": 6,
+      "sendesInnen": { "dag": 31, "maaned": 7, "aar": "neste" },
+      "merknad": "Årsregnskapet fastsettes av generalforsamlingen innen 6 måneder etter regnskapsårets slutt (30. juni) og sendes Regnskapsregisteret innen én måned etter fastsettelsen, senest 31. juli. Forsinkelsesgebyr etter rskl. § 8-3 fra 1. august."
+    },
+    "oppbevaring": {
+      "lov": "bokføringsloven § 13",
+      "kilde": "lovdata-bokforingsloven-13",
+      "primaerAar": 5,
+      "sekundaerAar": 3.5,
+      "merknad": "Primærdokumentasjon (årsregnskap, spesifikasjoner, bilag, bankavtaler) oppbevares 5 år etter regnskapsårets slutt; sekundærdokumentasjon (avtaler, korrespondanse, pakksedler) 3 år og 6 måneder. Enkelte dokumenter har lengre frist i forskrift."
+    }
+  },
+  "inndrivelse": {
+    "gjelderFra": "2026-07-01",
+    "kilde": "finanstilsynet-forsinkelsesrente",
+    "lov": "forsinkelsesrenteloven § 3, inkassoforskriften § 1-2",
+    "forsinkelsesrente": [
+      { "fra": "2026-01-01", "prosent": 12.0 },
+      { "fra": "2026-07-01", "prosent": 12.25 }
+    ],
+    "standardkompensasjon": 430,
+    "inkassosats": 700,
+    "purregebyr": 35,
+    "purregebyrMerknad": "Maksimalt purregebyr er 1/20 av inkassosatsen. Inkassosatsen for 2026 må sjekkes hos Finanstilsynet; 700 kr er 2025-satsen."
+  }
+}

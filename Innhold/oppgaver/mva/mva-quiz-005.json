@@ -1,0 +1,34 @@
+{
+  "id": "mva-quiz-005",
+  "type": "quiz",
+  "tema": "mva",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "omvendt",
+    "unntatt"
+  ],
+  "status": "utkast",
+  "tittel": "Utenlandsk programvare til en unntatt virksomhet",
+  "oppgave": "Nordlys Tannlegesenter AS driver helsetjenester (unntatt fra loven) og er registrert i Mva-registeret for en liten avgiftspliktig kursvirksomhet. Klinikken kjøper journalprogramvare fra et irsk firma for 80 000 kr. Fakturaen har ingen norsk mva, og programvaren brukes bare i helsevirksomheten. Hva er riktig behandling?",
+  "alternativer": [
+    "Ingen mva, for den utenlandske selgeren fakturerer uten norsk mva",
+    "Klinikken beregner 20 000 kr utgående mva og trekker fra 20 000 kr inngående; netto null",
+    "Klinikken beregner 20 000 kr utgående mva og har ikke fradrag; mvaen er en kostnad",
+    "Klinikken beregner ingen mva, fordi virksomheten er unntatt fra loven"
+  ],
+  "svar": 2,
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-30",
+      "tekst": "Fjernleverbare tjenester kjøpt fra utlandet: mottakeren beregner mva."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Fradrag gjelder bare for anskaffelser til bruk i den avgiftspliktige virksomheten."
+    }
+  ],
+  "forklaring": "Programvare er en fjernleverbar tjeneste, så **kjøperen** beregner 25 % norsk mva: 80 000 × 25 % = 20 000 kr. Reglen gjelder også når kjøperen er unntatt. Fradragsretten avhenger av bruken. Programvaren brukes bare i den unntatte helsevirksomheten, så klinikken har **ingen fradrag**, og de 20 000 kr blir en reell kostnad. Netto null gjelder bare en kjøper som bruker tjenesten i avgiftspliktig virksomhet. Det er hele poenget med omvendt avgiftsplikt: utenlandsk og norsk selger skal stilles likt."
+}

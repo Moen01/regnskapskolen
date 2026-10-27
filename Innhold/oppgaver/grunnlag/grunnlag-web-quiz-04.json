@@ -1,0 +1,32 @@
+{
+  "id": "grunnlag-web-quiz-04",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "En kunde vil slette et bokført bilag med en feil i. Hva er…",
+  "oppgave": "En kunde vil slette et bokført bilag med en feil i. Hva er riktig i regnskapssystemet?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    }
+  ],
+  "forklaring": "Et bokført bilag skal kunne spores. Derfor lager vi en motpostering som nuller ut det gamle, og fører et nytt, riktig bilag.",
+  "alternativer": [
+    "Slette bilaget i databasen",
+    "Endre beløpet direkte på bilaget",
+    "Reversere (motpostere) bilaget og føre et nytt",
+    "Ignorere feilen"
+  ],
+  "svar": 2
+}

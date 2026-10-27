@@ -1,0 +1,25 @@
+{
+  "id": "periodisering-regnut-001",
+  "type": "regnut",
+  "tema": "periodisering",
+  "vanskelighet": 2,
+  "tags": [
+    "regning",
+    "forskuddsbetalt"
+  ],
+  "status": "godkjent",
+  "tittel": "Årets forsikringskostnad",
+  "oppgave": "Selskapet betalte 12 000 kr den 1. mars for en forsikring som dekker 1. mars til 28. februar neste år. Hvor stor er forsikringskostnaden i regnskapsåret (kalenderåret)?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 3 sammenstillingsprinsippet."
+    }
+  ],
+  "forklaring": "Ti av tolv måneder (mars–desember) hører til i år: 12 000 × 10/12 = **10 000 kr**. De siste 2 000 kr er forskuddsbetalt kostnad (1740) i balansen ved årsslutt.",
+  "svar": 10000,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Tell månedene fra 1. mars til 31. desember."
+}

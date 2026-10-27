@@ -1,0 +1,37 @@
+{
+  "id": "bilag-bokforingsloven-web-quiz-01",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "En leverandørfaktura er datert 15.05.2026. Regnskapsåret…",
+  "oppgave": "En leverandørfaktura er datert 15.05.2026. Regnskapsåret følger kalenderåret. Hvor lenge skal fakturaen minst oppbevares?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "En faktura er primærdokumentasjon: 5 år. Fristen regnes fra slutten av regnskapsåret, 31.12.2026. Altså til og med 31.12.2031.",
+  "alternativer": [
+    "Til 15.05.2029",
+    "Til og med 31.12.2029",
+    "Til og med 31.12.2031",
+    "Til 15.05.2036"
+  ],
+  "svar": 2
+}

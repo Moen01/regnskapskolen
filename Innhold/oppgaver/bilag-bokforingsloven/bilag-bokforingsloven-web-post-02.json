@@ -1,0 +1,69 @@
+{
+  "id": "bilag-bokforingsloven-web-post-02",
+  "type": "postering",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 2,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Før kjøpet på riktig konto",
+  "oppgave": "Reverseringen er bokført. Før nå kjøpet av kontorstolen på nytt: 1 000 kr inkl. 200 kr mva, på faktura fra leverandøren. Bruk riktig kostnadskonto.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Bokførte opplysninger skal være dokumentert med bilag som viser opplysningenes berettigelse."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene er utløpt; feil rettes med korreksjonsbilag."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    }
+  ],
+  "forklaring": "Nå er det tre bilag: originalen, reverseringen og det riktige bilaget. Summen av de tre gir det samme som om kjøpet hadde vært riktig ført fra start. Forskjellen er at revisor kan se både feilen og rettingen.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående mva"
+    },
+    {
+      "nr": "6540",
+      "navn": "Inventar"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6540",
+      "side": "D",
+      "belop": 800
+    },
+    {
+      "konto": "2710",
+      "side": "D",
+      "belop": 200
+    },
+    {
+      "konto": "2400",
+      "side": "K",
+      "belop": 1000
+    }
+  ]
+}

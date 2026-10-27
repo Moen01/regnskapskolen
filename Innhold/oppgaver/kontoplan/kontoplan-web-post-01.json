@@ -1,0 +1,77 @@
+{
+  "id": "kontoplan-web-post-01",
+  "type": "postering",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Varer for videresalg, med mva",
+  "oppgave": "En butikk kjøper varer som den skal selge videre. Fakturaen er på **2 000 kr + 25 % mva**, til sammen 2 500 kr. Butikken betaler senere. Butikken har fradrag for mvaen.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "- **4300** (klasse 4 Varekostnad) får debet 2 000. Varer for videresalg er varekostnad, ikke kontorkostnad.\n- **2710** får debet 500. Mvaen på kjøpet trekkes fra mvaen bedriften skylder staten.\n- **2400** (gruppe 24 Leverandørgjeld) får kredit 2 500. Fakturaen er ikke betalt ennå.\n2700 er mva på *salg*. Den passer ikke her.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift, høy sats"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående merverdiavgift, høy sats"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt handelsvarer, avgiftspliktig, høy sats"
+    },
+    {
+      "nr": "4300",
+      "navn": "Innkjøp av varer for videresalg, høy sats"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "4300",
+      "side": "D",
+      "belop": 2000
+    },
+    {
+      "konto": "2710",
+      "side": "D",
+      "belop": 500
+    },
+    {
+      "konto": "2400",
+      "side": "K",
+      "belop": 2500
+    }
+  ]
+}

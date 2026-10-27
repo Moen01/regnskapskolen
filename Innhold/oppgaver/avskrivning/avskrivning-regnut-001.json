@@ -1,0 +1,30 @@
+{
+  "id": "avskrivning-regnut-001",
+  "type": "regnut",
+  "tema": "avskrivning",
+  "vanskelighet": 3,
+  "tags": [
+    "saldo",
+    "regning"
+  ],
+  "status": "godkjent",
+  "tittel": "Saldoavskrivning år 2",
+  "oppgave": "En maskin (saldogruppe d, 20 %) ble kjøpt for 120 000 kr i fjor. Hvor stor blir den skattemessige saldoavskrivningen i år (år 2)?",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-43",
+      "tekst": "Saldogruppe d (personbiler, maskiner, inventar m.v.) avskrives med inntil 20 %."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 14-42",
+      "tekst": "Saldoavskrivning beregnes av saldoen ved årets slutt, etter fjorårets avskrivning."
+    }
+  ],
+  "forklaring": "År 1: 120 000 × 20 % = 24 000, saldo 96 000. År 2: 96 000 × 20 % = **19 200 kr**. Saldoavskrivning gir synkende beløp, i motsetning til lineær avskrivning som gir samme beløp hvert år.",
+  "svar": 19200,
+  "toleranse": 0,
+  "enhet": "kr",
+  "hint": "Trekk fra fjorårets avskrivning før du regner 20 %."
+}

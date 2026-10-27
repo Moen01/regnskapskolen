@@ -1,0 +1,27 @@
+{
+  "id": "periodisering-quiz-001",
+  "type": "quiz",
+  "tema": "periodisering",
+  "vanskelighet": 2,
+  "tags": [
+    "prinsipper"
+  ],
+  "status": "godkjent",
+  "tittel": "Hvilket prinsipp?",
+  "oppgave": "Lønnen for desember utbetales 5. januar. Regnskapsføreren kostnadsfører den likevel i desember. Hvilket prinsipp i regnskapsloven begrunner det?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Grunnleggende regnskapsprinsipper: 1 transaksjonsprinsippet, 2 opptjeningsprinsippet, 3 sammenstillingsprinsippet, 4 forsiktighetsprinsippet, 5 sikring."
+    }
+  ],
+  "forklaring": "**Sammenstillingsprinsippet** (rskl. § 4-1 nr. 3): utgifter skal kostnadsføres i samme periode som tilhørende inntekt. Arbeidet i desember bidro til desembers inntekter, så kostnaden hører til desember uansett når pengene går ut. Kontantprinsippet, som følger betalingen, gjelder ikke for regnskapspliktige.",
+  "alternativer": [
+    "Transaksjonsprinsippet",
+    "Opptjeningsprinsippet",
+    "Sammenstillingsprinsippet",
+    "Kontantprinsippet"
+  ],
+  "svar": 2
+}

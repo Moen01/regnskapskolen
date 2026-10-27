@@ -1,0 +1,33 @@
+{
+  "id": "bilag-quiz-010",
+  "type": "quiz",
+  "tema": "bilag-bokforingsloven",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "kontant"
+  ],
+  "status": "godkjent",
+  "tittel": "Betalt kontant: 12 000 kr",
+  "oppgave": "En leverandørfaktura på 12 000 kr inkl. mva betales kontant med sedler. Fakturaen er i orden. Hva er konsekvensen?",
+  "lov": [
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 6-51",
+      "tekst": "Fradrag gis bare for kostnader på 10 000 kr eller mer når betalingen skjer via bank. Betales det kontant, nektes fradraget."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-8",
+      "tekst": "Fradrag for inngående mva på kjøp over 10 000 kr gis bare når betalingen skjer via bank."
+    }
+  ],
+  "forklaring": "Både **skattefradraget** (sktl. § 6-51) og **mva-fradraget** (mval. § 8-8) faller bort når betaling av 10 000 kr eller mer skjer kontant. Beløpsgrensen gjelder samlet for flere betalinger for samme leveranse. Regnskapsføreren må bokføre kostnaden, men tilbakeføre fradragene i skattemeldingen og mva-meldingen.",
+  "alternativer": [
+    "Ingen, fakturaen er i orden",
+    "Skattefradrag og mva-fradrag nektes fordi beløpet er 10 000 kr eller mer og betalt kontant",
+    "Bare mva-fradraget faller bort",
+    "Kjøpet må reverseres"
+  ],
+  "svar": 1
+}

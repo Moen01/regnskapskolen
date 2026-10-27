@@ -1,0 +1,71 @@
+{
+  "id": "valuta-postering-002",
+  "type": "postering",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 4,
+  "tags": [
+    "edge-case",
+    "valuta",
+    "agio",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Betalingen kommer til en annen kurs",
+  "oppgave": "Kunden betaler 1 000 EUR to måneder senere. Banken veksler til 11,80 og setter inn 11 800 kr. Fordringen står bokført til 11 500 kr. Før innbetalingen.",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 5-9",
+      "tekst": "Pengeposter i utenlandsk valuta vurderes etter kursen ved regnskapsårets slutt; realisert kursdifferanse ved oppgjør er finansinntekt eller finanskostnad."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Transaksjonsprinsippet: fordringen ble ført til kursen på fakturadagen; forskjellen ved betaling er en kursdifferanse, ikke mer salg."
+    }
+  ],
+  "forklaring": "Innbetalingen er 11 800 kr (D 1920). Fordringen lukkes med det beløpet den ble ført til: K 1500 11 500. Differansen på 300 kr er en **valutagevinst (agio)**: K 8060. Den er finansinntekt, ikke salgsinntekt, og skal ikke på 3100. Hadde kursen falt, ville differansen vært valutatap på 8160.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "3100",
+      "navn": "Salgsinntekt, avgiftsfri"
+    },
+    {
+      "nr": "8050",
+      "navn": "Annen renteinntekt"
+    },
+    {
+      "nr": "8060",
+      "navn": "Valutagevinst (agio)"
+    },
+    {
+      "nr": "8160",
+      "navn": "Valutatap (disagio)"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1920",
+      "side": "D",
+      "belop": 11800
+    },
+    {
+      "konto": "1500",
+      "side": "K",
+      "belop": 11500
+    },
+    {
+      "konto": "8060",
+      "side": "K",
+      "belop": 300
+    }
+  ]
+}

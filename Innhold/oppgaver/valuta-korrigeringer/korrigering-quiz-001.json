@@ -1,0 +1,27 @@
+{
+  "id": "korrigering-quiz-001",
+  "type": "quiz",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 1,
+  "tags": [
+    "sletting"
+  ],
+  "status": "godkjent",
+  "tittel": "Kan et bokført bilag slettes?",
+  "oppgave": "Du oppdager at et bokført bilag har feil beløp. Hva gjør du?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Bokførte opplysninger skal ikke endres eller slettes etter at fristene i § 7 er utløpt. Feil rettes ved nytt bilag."
+    }
+  ],
+  "forklaring": "Et bokført bilag **slettes ikke**. Feilen rettes med et korreksjonsbilag (reversering og nytt bilag, eller ompostering) som henviser til det gale. Slik beholdes kontrollsporet, og bilagsnummerrekken får ingen hull.",
+  "alternativer": [
+    "Slett bilaget og før et nytt",
+    "Rett beløpet direkte i det bokførte bilaget",
+    "Før et korreksjonsbilag som henviser til det gale",
+    "Ignorer det hvis beløpet er lite"
+  ],
+  "svar": 2
+}

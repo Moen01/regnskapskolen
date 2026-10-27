@@ -1,0 +1,52 @@
+{
+  "id": "reskontro-sak-001",
+  "type": "sak",
+  "tema": "reskontro-bank",
+  "vanskelighet": 3,
+  "tags": [
+    "sak",
+    "dobbeltbetaling"
+  ],
+  "status": "godkjent",
+  "tittel": "Kunden betalte to ganger",
+  "oppgave": "Les meldingen og velg riktig behandling.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Nr. 3 realitet: bokførte opplysninger skal være resultat av faktisk inntrufne hendelser. En dobbeltbetaling er ikke inntekt."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 4-1",
+      "tekst": "Nr. 2 opptjeningsprinsippet: inntekt resultatføres når den er opptjent, ikke når penger kommer inn."
+    }
+  ],
+  "forklaring": "Den andre innbetalingen er ikke inntekt, men **gjeld til kunden**: den føres mot kundens reskontro (K 1500), som da får en kreditsaldo (forskudd/overbetaling). Beløpet betales tilbake (D 1500, K 1920) eller, etter avtale, avregnes mot neste faktura. Å føre det som inntekt (B) gir feil resultat og feil mva; å la det ligge på 1920 uten motpost (D) går ikke, bilaget må balansere.",
+  "fra": "Regnskapsmedarbeider",
+  "melding": "Kunde 1043 har betalt faktura 2001 to ganger, 12 500 kr hver gang. Begge innbetalingene står på kontoutskriften. Hva gjør jeg med den andre?",
+  "valg": [
+    {
+      "nokkel": "A",
+      "tekst": "Før den mot kundens reskontro som overbetaling og betal tilbake, eller avregn mot neste faktura etter avtale"
+    },
+    {
+      "nokkel": "B",
+      "tekst": "Før den som salgsinntekt med mva, kunden har jo betalt"
+    },
+    {
+      "nokkel": "C",
+      "tekst": "Før den på 3900 Annen driftsinntekt uten mva"
+    },
+    {
+      "nokkel": "D",
+      "tekst": "La den stå på bankkontoen uten bilag til kunden spør"
+    }
+  ],
+  "svar": "A",
+  "sporsmal": [
+    "Er begge innbetalingene merket med samme KID eller fakturanummer?",
+    "Har kunden andre åpne fakturaer beløpet kan avregnes mot?"
+  ],
+  "forslag": "Den andre innbetalingen føres mot kundens reskontro, slik at kunden får en kreditsaldo på 12 500 kr. Ta kontakt med kunden: enten betaler vi tilbake, eller så trekker vi beløpet fra neste faktura. Beløpet er aldri inntekt."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "perioder-frist-mva-aarlig-2026",
+  "type": "frist",
+  "tema": "perioder-frister",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "mva",
+    "årlig"
+  ],
+  "status": "godkjent",
+  "tittel": "Årlig mva-melding",
+  "oppgave": "Velg datoen.",
+  "lov": [
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Avgiftssubjekt med årlig skattleggingsperiode leverer mva-meldingen innen 10. mars året etter."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 15-3",
+      "tekst": "Avgiftssubjekt med omsetning under 1 million kroner kan søke om årlig skattleggingsperiode."
+    }
+  ],
+  "forklaring": "En virksomhet med årlig termin (omsetning under 1 million kr, etter søknad) leverer én melding for hele 2026, med frist **10. mars 2027**. Ikke 10. februar, som gjelder 6. termin for dem med tomånedlige terminer.",
+  "hendelse": "En liten virksomhet har årlig mva-termin. Når er fristen for mva-meldingen for 2026?",
+  "fasit": "2027-03-10",
+  "fasitRegel": {
+    "type": "mva-aarlig",
+    "aar": 2026
+  },
+  "hint": "Årlig termin har en egen frist i mars."
+}

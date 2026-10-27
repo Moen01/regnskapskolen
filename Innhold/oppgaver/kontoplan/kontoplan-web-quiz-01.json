@@ -1,0 +1,32 @@
+{
+  "id": "kontoplan-web-quiz-01",
+  "type": "quiz",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hva forteller det første sifferet i 2400 Leverandørgjeld?",
+  "oppgave": "Hva forteller det første sifferet i 2400 Leverandørgjeld?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Det første sifferet er kontoklassen. Klasse 2 er egenkapital og gjeld, og havner i balansen.",
+  "alternativer": [
+    "At kontoen er en kostnad",
+    "At kontoen er i klasse 2, egenkapital og gjeld",
+    "At kontoen er en mva-konto",
+    "At det er den andre kontoen i kontoplanen"
+  ],
+  "svar": 1
+}

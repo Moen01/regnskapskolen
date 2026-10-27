@@ -1,0 +1,71 @@
+{
+  "id": "grunnlag-web-post-02",
+  "type": "postering",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "bilag"
+  ],
+  "status": "utkast",
+  "tittel": "Husleie for mars",
+  "oppgave": "Du betaler husleie for kontoret, 8 000 kr, fra bankkontoen. I dette eksempelet er det ingen mva på leien.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-1",
+      "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester. Alminnelig sats er 25 % (§ 5-1)."
+    }
+  ],
+  "forklaring": "Leie er en kostnad, og en kostnad øker på debet. Pengene går ut av banken, så 1920 minker på kredit.\n\nUtleie av lokaler er som regel unntatt fra mva. Derfor har bilaget bare to linjer.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående mva"
+    },
+    {
+      "nr": "2710",
+      "navn": "Inngående mva"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt"
+    },
+    {
+      "nr": "6300",
+      "navn": "Leie lokale"
+    },
+    {
+      "nr": "6800",
+      "navn": "Kontorrekvisita"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "6300",
+      "side": "D",
+      "belop": 8000
+    },
+    {
+      "konto": "1920",
+      "side": "K",
+      "belop": 8000
+    }
+  ]
+}

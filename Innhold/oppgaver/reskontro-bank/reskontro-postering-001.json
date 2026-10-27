@@ -1,0 +1,65 @@
+{
+  "id": "reskontro-postering-001",
+  "type": "postering",
+  "tema": "reskontro-bank",
+  "vanskelighet": 2,
+  "tags": [
+    "kreditnota",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Kreditnota på hele fakturaen",
+  "oppgave": "Kunden returnerer varen, og du utsteder kreditnota for hele fakturaen på 12 500 kr inkl. 25 % mva. Før kreditnotaen.",
+  "lov": [
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-2-7",
+      "tekst": "En kreditnota skal utstedes som nytt salgsdokument som henviser til den opprinnelige fakturaen; den opprinnelige endres ikke."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 4-7",
+      "tekst": "Beregningsgrunnlaget korrigeres når vederlaget settes ned ved kreditnota."
+    }
+  ],
+  "forklaring": "Kreditnotaen er speilbildet av fakturaen: inntekten reduseres (D 3000 10 000), utgående mva reduseres (D 2700 2 500), og kundens fordring forsvinner (K 1500 12 500). Fakturaen slettes aldri; kreditnotaen er et nytt bilag som viser til den.",
+  "kontoer": [
+    {
+      "nr": "1500",
+      "navn": "Kundefordringer"
+    },
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2700",
+      "navn": "Utgående merverdiavgift"
+    },
+    {
+      "nr": "3000",
+      "navn": "Salgsinntekt, avgiftspliktig, høy sats"
+    },
+    {
+      "nr": "7830",
+      "navn": "Tap på fordringer"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "3000",
+      "side": "D",
+      "belop": 10000
+    },
+    {
+      "konto": "2700",
+      "side": "D",
+      "belop": 2500
+    },
+    {
+      "konto": "1500",
+      "side": "K",
+      "belop": 12500
+    }
+  ]
+}

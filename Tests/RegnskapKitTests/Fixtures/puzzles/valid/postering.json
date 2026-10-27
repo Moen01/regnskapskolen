@@ -1,0 +1,31 @@
+{
+  "id": "grunnlag-001",
+  "type": "postering",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": ["salg", "mva"],
+  "status": "godkjent",
+  "tittel": "Kontantsalg av en tjeneste",
+  "oppgave": "Du selger en tjeneste for 2 000 kr + 25 % mva. Kunden betaler hele beløpet til bankkontoen med en gang. Før bilaget.",
+  "kontoer": [
+    { "nr": "1500", "navn": "Kundefordringer" },
+    { "nr": "1920", "navn": "Bankinnskudd" },
+    { "nr": "2400", "navn": "Leverandørgjeld" },
+    { "nr": "2700", "navn": "Utgående merverdiavgift" },
+    { "nr": "2710", "navn": "Inngående merverdiavgift" },
+    { "nr": "3000", "navn": "Salgsinntekt, avgiftspliktig, høy sats" },
+    { "nr": "6300", "navn": "Leie lokale" },
+    { "nr": "6800", "navn": "Kontorrekvisita" }
+  ],
+  "fasit": [
+    { "konto": "1920", "side": "D", "belop": 2500 },
+    { "konto": "3000", "side": "K", "belop": 2000 },
+    { "konto": "2700", "side": "K", "belop": 500 }
+  ],
+  "lov": [
+    { "lov": "merverdiavgiftsloven", "paragraf": "§ 3-1", "tekst": "Det skal beregnes merverdiavgift ved omsetning av varer og tjenester." },
+    { "lov": "merverdiavgiftsloven", "paragraf": "§ 5-1", "tekst": "Alminnelig sats er 25 % etter Stortingets avgiftsvedtak." },
+    { "lov": "bokføringsloven", "paragraf": "§ 4", "tekst": "Grunnleggende prinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null." }
+  ],
+  "forklaring": "Kunden betaler 2 500 kr, så banken øker med 2 500 på debet. Inntekten er 2 000 kr uten mva, og den står på kredit på 3000.\n\nMvaen på 500 kr er ikke bedriftens penger. Den skal betales til staten, så den står på kredit på 2700 Utgående mva. Debet 2 500 = kredit 2 000 + 500."
+}

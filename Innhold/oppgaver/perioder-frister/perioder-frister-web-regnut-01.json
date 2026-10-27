@@ -1,0 +1,29 @@
+{
+  "id": "perioder-frister-web-regnut-01",
+  "type": "regnut",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "regning"
+  ],
+  "status": "utkast",
+  "tittel": "2. termin 2026 slutter 30. april. Fristen er 1 måned og 10…",
+  "oppgave": "2. termin 2026 slutter 30. april. Fristen er 1 måned og 10 dager etter at terminen er slutt. Den dagen er en vanlig virkedag. Hvilken dato i **juni** er fristen?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "skatteforvaltningsforskriften",
+      "paragraf": "§ 8-3-10",
+      "tekst": "Mva-meldingen leveres innen én måned og ti dager etter terminens slutt; 3. termin har frist 31. august."
+    }
+  ],
+  "forklaring": "30. april + 1 måned = 31. mai. 31. mai + 10 dager = **10. juni**.",
+  "svar": 10,
+  "toleranse": 0,
+  "enhet": "(dag i juni)",
+  "hint": "Legg først til én måned fra 30. april. Da er du på slutten av mai. Legg så til 10 dager."
+}

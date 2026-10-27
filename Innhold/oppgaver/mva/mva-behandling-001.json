@@ -1,0 +1,31 @@
+{
+  "id": "mva-behandling-001",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "omvendt-avgiftsplikt",
+    "utland"
+  ],
+  "status": "godkjent",
+  "tittel": "Konsulent fra Sverige",
+  "oppgave": "Velg mva-behandling og om kjøperen har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-30",
+      "tekst": "Fjernleverbare tjenester kjøpt fra utlandet er avgiftspliktige i Norge; mottakeren beregner og betaler mva (omvendt avgiftsplikt)."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 11-3",
+      "tekst": "Ved kjøp av fjernleverbare tjenester fra utlandet skal mottakeren beregne og betale merverdiavgift."
+    }
+  ],
+  "forklaring": "Rådgivning levert digitalt er en **fjernleverbar tjeneste**. Det svenske firmaet fakturerer uten norsk mva. Det norske AS-et beregner selv 25 % utgående mva på 10 000 kr (2 500 kr), og har samtidig fradrag for samme beløp som inngående mva når tjenesten brukes i avgiftspliktig virksomhet. Netto blir null, men begge linjene skal rapporteres i mva-meldingen.",
+  "transaksjon": "Et norsk AS kjøper rådgivning fra et svensk konsulentfirma for 10 000 kr. Tjenesten leveres over e-post og videomøter. Fakturaen er uten mva.",
+  "fasit": {
+    "behandling": "omvendt",
+    "fradrag": true
+  }
+}

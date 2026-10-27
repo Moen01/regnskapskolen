@@ -1,0 +1,32 @@
+{
+  "id": "kontoplan-web-quiz-04",
+  "type": "quiz",
+  "tema": "kontoplan",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "En regnskapsfører (ikke admin) prøver å endre navnet på…",
+  "oppgave": "En regnskapsfører (ikke admin) prøver å endre navnet på 1920 Bankinnskudd og får `urn:ca:account:cannotChangeSystemAccount`. Hva betyr det?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 5",
+      "tekst": "Bokføringen skal kunne spesifiseres per konto (kontospesifikasjon). NS 4102 er standard kontoplan i Norge."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering."
+    }
+  ],
+  "forklaring": "Systemkontoer er låst for alle som ikke er admin. Navn, beskrivelse og aktiv-status kan ikke endres. Det står i `account.validation.ts:241–251`.",
+  "alternativer": [
+    "Kontoen finnes ikke",
+    "Kontoen er en systemkonto, og navnet er låst for vanlige brukere",
+    "Brukeren mangler tilgang til regnskapet",
+    "Kontonummeret er ugyldig"
+  ],
+  "svar": 1
+}

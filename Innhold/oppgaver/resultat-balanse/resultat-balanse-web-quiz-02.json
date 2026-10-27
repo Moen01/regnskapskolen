@@ -1,0 +1,32 @@
+{
+  "id": "resultat-balanse-web-quiz-02",
+  "type": "quiz",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Inntekter 500 000 kr og kostnader 420 000 kr. Hva skjer med…",
+  "oppgave": "Inntekter 500 000 kr og kostnader 420 000 kr. Hva skjer med egenkapitalen når årsresultatet er flyttet?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Årsresultat = 500 000 − 420 000 = 80 000 kr i overskudd. Et overskudd tilhører eierne, så egenkapitalen øker.",
+  "alternativer": [
+    "Den øker med 80 000 kr",
+    "Den minker med 80 000 kr",
+    "Den øker med 500 000 kr",
+    "Den endrer seg ikke"
+  ],
+  "svar": 0
+}

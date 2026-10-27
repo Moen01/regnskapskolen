@@ -1,0 +1,31 @@
+{
+  "id": "mva-behandling-009",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 2,
+  "tags": [
+    "lav-sats",
+    "persontransport"
+  ],
+  "status": "godkjent",
+  "tittel": "Taxi til kundemøte",
+  "oppgave": "Velg sats på taxikvitteringen og om bedriften har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 5-3",
+      "tekst": "Persontransport har redusert sats (12 %)."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-1",
+      "tekst": "Fradragsrett for anskaffelser til bruk i avgiftspliktig virksomhet."
+    }
+  ],
+  "forklaring": "Persontransport har **12 %**. Når reisen gjelder avgiftspliktig virksomhet, er mva på taxi, tog og fly fradragsberettiget. Forveksles ofte med § 8-4 (personkjøretøy), som gjelder bedriftens *egne* personbiler, ikke kjøp av transporttjenester.",
+  "transaksjon": "En selger tar taxi fra kontoret til et kundemøte. Kvitteringen er på 448 kr inkl. mva.",
+  "fasit": {
+    "behandling": "12",
+    "fradrag": true
+  }
+}

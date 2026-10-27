@@ -1,0 +1,31 @@
+{
+  "id": "mva-behandling-010",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "gave",
+    "fradrag"
+  ],
+  "status": "godkjent",
+  "tittel": "Julegave til en kunde",
+  "oppgave": "Velg sats på fakturaen for gaven og om bedriften har fradragsrett.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 8-3",
+      "tekst": "Fradragsretten omfatter ikke gaver og varer til utdeling i reklameøyemed, med mindre verdien er bagatellmessig."
+    },
+    {
+      "lov": "skatteloven",
+      "paragraf": "§ 6-21",
+      "tekst": "Gaver til forretningsforbindelser regnes som representasjon uten fradragsrett, med unntak for enkle oppmerksomheter."
+    }
+  ],
+  "forklaring": "Vinhandelen fakturerer **25 %**. Gaver til kunder er avskåret fra mva-fradrag etter § 8-3 første ledd bokstav f, med unntak for varer av bagatellmessig verdi (under 100 kr). 1 500 kr er langt over, så hele beløpet inkl. mva føres som representasjon (7360).",
+  "transaksjon": "Selskapet kjøper en vinkasse til 1 500 kr inkl. mva som julegave til en viktig kunde.",
+  "fasit": {
+    "behandling": "25",
+    "fradrag": false
+  }
+}

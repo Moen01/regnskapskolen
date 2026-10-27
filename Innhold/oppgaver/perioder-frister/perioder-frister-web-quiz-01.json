@@ -1,0 +1,32 @@
+{
+  "id": "perioder-frister-web-quiz-01",
+  "type": "quiz",
+  "tema": "perioder-frister",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "En leverandørfaktura er datert 28.06.2026. Regnskapsføreren…",
+  "oppgave": "En leverandørfaktura er datert 28.06.2026. Regnskapsføreren registrerer den 03.07.2026. Hvilken periode hører den til?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering, og aldri senere enn fire måneder etter periodens slutt."
+    },
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 5-1-1",
+      "tekst": "Et salgsdokument skal inneholde nummer, dato, partene, ytelsens art og omfang, tidspunkt og sted for levering, vederlag og betalingsforfall, og mva."
+    }
+  ],
+  "forklaring": "Transaksjonsdatoen bestemmer perioden. Registreringstidspunktet lagres for seg (`system_entry_time`) og påvirker ikke perioden.",
+  "alternativer": [
+    "Juni",
+    "Juli",
+    "Den perioden brukeren velger",
+    "Både juni og juli"
+  ],
+  "svar": 0
+}

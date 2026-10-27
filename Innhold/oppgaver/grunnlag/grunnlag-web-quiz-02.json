@@ -1,0 +1,32 @@
+{
+  "id": "grunnlag-web-quiz-02",
+  "type": "quiz",
+  "tema": "grunnlag",
+  "vanskelighet": 1,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Hvorfor føres inntekter på kredit?",
+  "oppgave": "Hvorfor føres inntekter på kredit?",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 4",
+      "tekst": "Grunnleggende bokføringsprinsipper: fullstendighet, realitet og nøyaktighet. Hvert bilag må gå i null."
+    },
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-2",
+      "tekst": "Balansen viser eiendeler mot egenkapital og gjeld; resultatregnskapet (§ 6-1) viser inntekter og kostnader."
+    }
+  ],
+  "forklaring": "Overskuddet tilhører eierne. Inntekt øker derfor egenkapitalen, og egenkapital øker på kredit.",
+  "alternativer": [
+    "Fordi inntekt er gjeld",
+    "Fordi inntekt øker egenkapitalen, og egenkapital øker på kredit",
+    "Fordi det er tradisjon",
+    "Fordi banken alltid står på debet"
+  ],
+  "svar": 1
+}

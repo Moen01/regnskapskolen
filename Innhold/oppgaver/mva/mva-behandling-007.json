@@ -1,0 +1,32 @@
+{
+  "id": "mva-behandling-007",
+  "type": "mva",
+  "tema": "mva",
+  "vanskelighet": 3,
+  "tags": [
+    "edge-case",
+    "fast-eiendom",
+    "unntatt"
+  ],
+  "status": "godkjent",
+  "tittel": "Husleie uten frivillig registrering",
+  "oppgave": "Velg mva-behandling på husleiefakturaen leietakeren mottar.",
+  "lov": [
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 3-11",
+      "tekst": "Omsetning og utleie av fast eiendom er unntatt fra loven."
+    },
+    {
+      "lov": "merverdiavgiftsloven",
+      "paragraf": "§ 2-3",
+      "tekst": "Utleier kan frivillig registreres for utleie til avgiftspliktige leietakere, og da beregnes 25 % mva på leien."
+    }
+  ],
+  "forklaring": "Utleie av fast eiendom er **unntatt** med mindre utleier er **frivillig registrert**. Her er utleier ikke registrert, så fakturaen er uten mva, og leietakeren har ingenting å trekke fra. Hadde utleier vært frivillig registrert, ville leien hatt 25 % mva med fradragsrett for en avgiftspliktig leietaker.",
+  "transaksjon": "En avgiftspliktig butikk leier lokale av en privat gårdeier som ikke er frivillig registrert i Merverdiavgiftsregisteret. Husleien er 20 000 kr per måned.",
+  "fasit": {
+    "behandling": "unntatt",
+    "fradrag": null
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "reskontro-finnfeil-001",
+  "type": "finnfeil",
+  "tema": "reskontro-bank",
+  "vanskelighet": 3,
+  "tags": [
+    "kontroll",
+    "reskontro"
+  ],
+  "status": "godkjent",
+  "tittel": "Reskontro mot hovedbok",
+  "oppgave": "Ved månedsslutt sammenligner du kundereskontroen med konto 1500 i hovedboken. Marker postene som avslører at noe er ført feil.",
+  "lov": [
+    {
+      "lov": "bokføringsforskriften",
+      "paragraf": "§ 3-1",
+      "tekst": "Kundespesifikasjonen skal vise alle kunder med saldo og bevegelse, og summen skal stemme med kontrollkontoen i hovedboken."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 11",
+      "tekst": "Dokumentasjon av balansen: kundefordringer avstemmes mot reskontro."
+    }
+  ],
+  "forklaring": "Summen av reskontroen skal alltid være lik saldoen på 1500. En innbetaling ført rett på 1500 uten kunde, og en faktura ført på 3000 mot 1920 i stedet for 1500, gir differanse. En kunde med kreditsaldo kan være riktig (forskudd eller overbetaling), og en faktura som ikke er forfalt er helt normalt.",
+  "overskrift": "Avstemming 31.03",
+  "elementer": [
+    {
+      "tekst": "Sum kundereskontro 412 000 · Saldo 1500 i hovedbok 400 000",
+      "feil": true,
+      "hvorfor": "Reskontro og kontrollkonto skal være like. Differansen på 12 000 må finnes."
+    },
+    {
+      "tekst": "Innbetaling 12 000 bokført D 1920 / K 1500 uten kunde",
+      "feil": true,
+      "hvorfor": "Alle posteringer på 1500 skal ha en kunde. Dette er differansen."
+    },
+    {
+      "tekst": "Kunde 2001 har kreditsaldo 5 000",
+      "feil": false
+    },
+    {
+      "tekst": "Faktura 1099 på 25 000 forfaller 15.04",
+      "feil": false
+    },
+    {
+      "tekst": "Faktura 1098 bokført D 1920 / K 3000 direkte",
+      "feil": true,
+      "hvorfor": "En faktura går via 1500. Føres salget rett mot bank, mangler fordringen i reskontroen fram til betaling, og mva kan være utelatt."
+    }
+  ]
+}

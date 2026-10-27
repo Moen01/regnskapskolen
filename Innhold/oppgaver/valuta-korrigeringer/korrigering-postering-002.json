@@ -1,0 +1,56 @@
+{
+  "id": "korrigering-postering-002",
+  "type": "postering",
+  "tema": "valuta-korrigeringer",
+  "vanskelighet": 2,
+  "tags": [
+    "reversering",
+    "bilag"
+  ],
+  "status": "godkjent",
+  "tittel": "Reverser et bilag som ble ført to ganger",
+  "oppgave": "Husleien for mars, 10 000 kr uten mva, ble bokført to ganger (D 6300, K 1920). Før reverseringen av det ene bilaget.",
+  "lov": [
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 9",
+      "tekst": "Feil rettes med korreksjonsbilag; det gale bilaget slettes ikke."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 10",
+      "tekst": "Korreksjonsbilaget skal dokumentere hva som rettes og hvorfor."
+    }
+  ],
+  "forklaring": "Reverseringen er speilbildet: D 1920 10 000, K 6300 10 000. Begge de opprinnelige bilagene blir stående med sine bilagsnumre; reverseringen viser til det som var feil. Hull i bilagsnummerrekken skal aldri oppstå.",
+  "kontoer": [
+    {
+      "nr": "1920",
+      "navn": "Bankinnskudd"
+    },
+    {
+      "nr": "2400",
+      "navn": "Leverandørgjeld"
+    },
+    {
+      "nr": "6300",
+      "navn": "Leie lokale"
+    },
+    {
+      "nr": "8150",
+      "navn": "Annen rentekostnad"
+    }
+  ],
+  "fasit": [
+    {
+      "konto": "1920",
+      "side": "D",
+      "belop": 10000
+    },
+    {
+      "konto": "6300",
+      "side": "K",
+      "belop": 10000
+    }
+  ]
+}

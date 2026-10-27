@@ -1,0 +1,32 @@
+{
+  "id": "resultat-balanse-web-quiz-05",
+  "type": "quiz",
+  "tema": "resultat-balanse",
+  "vanskelighet": 2,
+  "tags": [
+    "quiz"
+  ],
+  "status": "utkast",
+  "tittel": "Skjermbildet viser én saldo på en konto, og Excel-eksporten…",
+  "oppgave": "Skjermbildet viser én saldo på en konto, og Excel-eksporten for samme periode viser en annen. Hva er mest sannsynlig?",
+  "lov": [
+    {
+      "lov": "regnskapsloven",
+      "paragraf": "§ 6-1",
+      "tekst": "Resultatregnskapet viser inntekter og kostnader; § 6-2 viser balansens oppstilling av eiendeler, egenkapital og gjeld."
+    },
+    {
+      "lov": "bokføringsloven",
+      "paragraf": "§ 7",
+      "tekst": "Bokføringen skal være à jour innen fristene for pliktig regnskapsrapportering."
+    }
+  ],
+  "forklaring": "To visninger av de samme posteringene skal gi samme svar. Er de uenige, er det et rødt flagg for en feil hos oss. Sjekk likevel at perioden og filtrene er de samme.",
+  "alternativer": [
+    "Kunden har ført feil",
+    "Banken har sendt feil data",
+    "En feil hos oss",
+    "Kunden har valgt feil periode i Excel"
+  ],
+  "svar": 2
+}
