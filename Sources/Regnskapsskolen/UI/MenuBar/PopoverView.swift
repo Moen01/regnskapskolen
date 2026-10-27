@@ -29,6 +29,13 @@ struct PopoverView: View {
                 }
             }
             Spacer(minLength: 0)
+            if let update = store.availableUpdate, !AppUpdater.isDevelopmentBuild {
+                Button { Task { await store.installUpdate() } } label: {
+                    Label(store.isUpdating ? "Oppdaterer…" : "Oppdater til \(update.version)", systemImage: "arrow.down.circle.fill").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent).tint(.skole)
+                .disabled(store.isUpdating || update.assetURL == nil)
+            }
             HStack {
                 Button(store.remainingToday > 0 ? "Åpne dagens oppgaver" : "Åpne Regnskapsskolen") {
                     AppDelegate.shared?.showMainWindow(section: .today)

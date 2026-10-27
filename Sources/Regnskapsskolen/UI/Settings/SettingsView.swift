@@ -42,8 +42,31 @@ struct SettingsView: View {
                 if let error = store.loadError { Text(error).font(.caption).foregroundStyle(Color.bad) }
                 Toggle("Vis utkast (oppgaver som ikke er godkjent, også de Claude lager)", isOn: $settings.showDrafts)
             }
+            Section("Oppdateringer") {
+                LabeledContent("Versjon") { Text(AppUpdater.currentVersion).monospacedDigit() }
+                if AppUpdater.isDevelopmentBuild {
+                    Text("Dette er et utviklingsbygg og oppdaterer ikke seg selv.").font(.caption).foregroundStyle(.secondary)
+                } else {
+                    if let update = store.availableUpdate {
+                        HStack {
+                            Label("Versjon \(update.version) er klar", systemImage: "arrow.down.circle.fill").foregroundStyle(Color.skole)
+                            Spacer()
+                            Button(store.isUpdating ? "Oppdaterer…" : "Oppdater og start på nytt") { Task { await store.installUpdate() } }
+                                .buttonStyle(.borderedProminent).tint(.skole)
+                                .disabled(store.isUpdating || update.assetURL == nil)
+                        }
+                        if !update.notes.isEmpty { MarkdownText(update.notes).font(.caption).frame(maxHeight: 160) }
+                    }
+                    if let state = store.updateState { Text(state).font(.caption).foregroundStyle(.secondary) }
+                    HStack {
+                        Button("Sjekk nå") { Task { await store.checkForAppUpdate(userInitiated: true) } }
+                        Spacer()
+                        Button("Utgivelser på GitHub") { NSWorkspace.shared.open(AppUpdater.releasesPage) }.buttonStyle(.borderless)
+                    }
+                    Toggle("Se etter oppdateringer", isOn: $settings.checkForUpdates)
+                }
+            }
             Section("Om") {
-                LabeledContent("Versjon", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "utvikling")
                 LabeledContent("Fremdrift lagres i", value: ProgressStore.defaultURL.deletingLastPathComponent().path)
                 Button("Kjør oppsett igjen") { navigation.showOnboarding = true }
             }
