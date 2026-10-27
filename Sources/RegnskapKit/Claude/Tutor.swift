@@ -105,9 +105,7 @@ public final class Tutor: @unchecked Sendable {
         guard let structured = reply.structured else { throw ClaudeError.badOutput }
         let made: SandboxCase
         do { made = try JSONDecoder().decode(SandboxCase.self, from: structured.data) } catch { throw ClaudeError.invalidPuzzle([ContentLibrary.describe(error)]) }
-        guard let journal = made.fasitJournal else { throw ClaudeError.invalidPuzzle(["fasitJournal mangler"]) }
-        var problems = JournalValidator.problems(journal, chart: library.chart, rates: library.rates).map(\.message)
-        problems += made.compare(journal: journal, chart: library.chart).map { "konto \($0.konto): fasitSaldobalanse \($0.forventet) ≠ journalen \($0.faktisk)" }
+        let problems = SandboxCaseValidator.problems(made, chart: library.chart, rates: library.rates)
         guard problems.isEmpty else { throw ClaudeError.invalidPuzzle(problems) }
         return made
     }

@@ -10,11 +10,7 @@ final class SandboxCaseTests: XCTestCase {
         for c in cases {
             XCTAssertFalse(c.hendelser.isEmpty, c.id)
             XCTAssertFalse(c.lov.isEmpty, c.id)
-            let model = try XCTUnwrap(c.fasitJournal, "\(c.id) mangler fasitJournal")
-            XCTAssertTrue(JournalValidator.problems(model, chart: Self.library.chart, rates: Self.library.rates).isEmpty, c.id)
-            let diffs = c.compare(journal: model, chart: Self.library.chart)
-            XCTAssertTrue(diffs.isEmpty, "\(c.id): " + diffs.map { "\($0.konto) forventet \($0.forventet) fikk \($0.faktisk)" }.joined(separator: "; "))
-            for nr in c.fasitSaldobalanse.keys { XCTAssertTrue(Self.library.chart.contains(nr), "\(c.id): konto \(nr)") }
+            XCTAssertEqual(SandboxCaseValidator.problems(c, chart: Self.library.chart, rates: Self.library.rates), [], c.id)
         }
     }
 
