@@ -11,8 +11,8 @@ Treningsapp for norske regnskapsførere: macOS-app i menylinjen (`Sources/Regnsk
 | `Innhold/satser.json` | Satser og frister. Den eneste kilden til tall. |
 | `Innhold/sandkasse/*.json` | Caser til sandkassen, med `fasitJournal` som må stemme med `fasitSaldobalanse`, og `kontoutskrift` som må stemme med journalen. |
 | `Innhold/prompter/*.md` | Systemprompter (`veileder`, `forfatter`, `sandkasse`). |
-| `Sources/RegnskapKit` | Innhold, validator, sjekkere, Leitner-planlegger, sandkasse, Claude-kjører. Importerer aldri SwiftUI/AppKit. |
-| `Sources/Regnskapsskolen` | AppDelegate (statusikon, popover, vindu), AppStore, skjermene. |
+| `Sources/RegnskapKit` | Innhold, validator, sjekkere, Leitner-planlegger, sandkasse, Claude-kjører, og spillene under `Games/` (XP, merker, Lynrunde, Debet/kredit, med injisert klokke og seed). Importerer aldri SwiftUI/AppKit. |
+| `Sources/Regnskapsskolen` | AppDelegate (statusikon, popover, vindu), AppStore, skjermene, inkludert Spill (`UI/Game/`, `AppStore+Games`). |
 | `Tests/RegnskapKitTests` | XCTest. `ContentValidatorTests` validerer alt innhold i repoet. |
 | `docs/` | `innhold.md`, `claude.md`, `regler.md`, `engineering-notes.md`. |
 

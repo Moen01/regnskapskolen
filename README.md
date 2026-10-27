@@ -45,7 +45,8 @@ Det som sendes er oppgaven, fasiten, svaret ditt, regelkortene for temaet og sat
 
 - **I dag**: dagens sett. Riktig på første forsøk flytter oppgaven opp en boks; feil sender den til boks 0.
 - **Øv**: alle temaer med mestringsgrad. Oppgaver her teller for boksene, ikke for dagens sett.
-- **Sandkasse**: før en hel måned for en kafé, se saldobalanse, resultat og balanse, T-konto og mva-oppgjør, og sjekk mot fasiten.
+- **Spill**: to korte runder. *Lynrunde* er 90 sekunder med quiz, mva og saker der riktige svar bygger combo og feil viser forklaringen; svarene teller i boksene som ellers. *Debet eller kredit?* er 60 sekunder med kontoer fra kontoplanen, piltaster eller D og K. Begge gir XP og nivåer (Lærling til Partner) og merker. Ingen lyd.
+- **Sandkasse**: før en hel måned for en kafé eller en nettbutikk, se saldobalanse, resultat og balanse, T-konto og mva-oppgjør, avstem banken i Bank-fanen, og sjekk mot fasiten.
 - **Regler**: korte kort om lovene oppgavene bygger på, med lenker til Lovdata.
 - **Statistikk**: rekke, bokser og mestring per tema.
 - **Innstillinger**: påminnelse, antall oppgaver, Claude-modell, innholdsmappe, utkast.
