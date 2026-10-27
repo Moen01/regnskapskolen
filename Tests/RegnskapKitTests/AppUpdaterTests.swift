@@ -127,6 +127,18 @@ final class AppUpdaterTests: XCTestCase {
         XCTAssertEqual(marker(installed), "old")
     }
 
+    func testInstallArchiveRejectsACorruptZip() async throws {
+        let dir = tempDir()
+        let installed = dir.appendingPathComponent("Installed/Dummy.app")
+        try await makeApp(at: installed, marker: "old", signed: true)
+        let corrupt = dir.appendingPathComponent("Dummy.zip")
+        try Data((0..<2048).map { _ in UInt8.random(in: 0...255) }).write(to: corrupt)
+        do { try await AppUpdater.installArchive(corrupt.path, over: installed.path); XCTFail("expected badArchive") }
+        catch UpdateError.badArchive { }
+        XCTAssertEqual(marker(installed), "old")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: installed.path + ".previous"))
+    }
+
     func testInstallRefusesAReadOnlyFolderAndAMissingAsset() async throws {
         let release = AppRelease(tag: "v9.9.9", name: "x", notes: "", publishedAt: nil, url: URL(string: "https://example.com")!, assetName: nil, assetURL: nil)
         do { try await updater().install(release, over: "/tmp/whatever.app"); XCTFail("expected noAsset") } catch UpdateError.noAsset { }

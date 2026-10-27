@@ -47,7 +47,12 @@ public struct AppUpdater: Sendable {
 
     public init(repo: String = AppUpdater.repo,
                 fetch: @escaping Fetch = { try await URLSession.shared.data(for: $0) },
-                download: @escaping Download = { try await URLSession.shared.download(from: $0).0 }) {
+                download: @escaping Download = { url in
+                    // A 404 page saved as "Regnskapsskolen-x.zip" would only fail later, in ditto; refuse it here.
+                    let (file, response) = try await URLSession.shared.download(from: url)
+                    if let status = (response as? HTTPURLResponse)?.statusCode, !(200..<300).contains(status) { throw UpdateError.http(status) }
+                    return file
+                }) {
         self.repo = repo; self.fetch = fetch; self.download = download
     }
 
@@ -105,7 +110,8 @@ public struct AppUpdater: Sendable {
         let work = (zipPath as NSString).deletingLastPathComponent
         let unpacked = (work as NSString).appendingPathComponent("unpacked-\(UUID().uuidString.prefix(6))")
         defer { try? FileManager.default.removeItem(atPath: unpacked) }
-        _ = try await ProcessRunner.output("/usr/bin/ditto", ["-x", "-k", zipPath, unpacked], timeout: 120)
+        // A corrupt or truncated download is "could not unpack", not a shell error for the user to read.
+        do { _ = try await ProcessRunner.output("/usr/bin/ditto", ["-x", "-k", zipPath, unpacked], timeout: 120) } catch { throw UpdateError.badArchive }
         guard let app = try FileManager.default.contentsOfDirectory(atPath: unpacked).first(where: { $0.hasSuffix(".app") }) else { throw UpdateError.badArchive }
         let newApp = (unpacked as NSString).appendingPathComponent(app)
 

@@ -20,7 +20,8 @@ extension AppStore {
             }
             if AppUpdater.isNewer(latest.version, than: AppUpdater.currentVersion) {
                 availableUpdate = latest
-                updateState = nil
+                // A release whose build is still running has no zip yet; say so instead of showing a dead button.
+                updateState = latest.assetURL == nil ? UpdateError.noAsset.errorDescription : nil
                 if !userInitiated, settings.lastNotifiedUpdate != latest.tag {
                     settings.lastNotifiedUpdate = latest.tag
                     Reminder.shared.notifyUpdate(version: latest.version)

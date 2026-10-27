@@ -16,6 +16,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      # checkout leaves a lightweight copy of the tag; the annotated one carries the release notes.
+      - name: Fetch the annotated tag
+        run: |
+          git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          [[ "$(git cat-file -t "$GITHUB_REF_NAME")" == tag ]] || { echo "Push an annotated tag: git tag -a $GITHUB_REF_NAME -m \"…\""; exit 1; }
       - name: Select the newest Xcode
         run: sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)/Contents/Developer"
       - uses: actions/cache@v4
