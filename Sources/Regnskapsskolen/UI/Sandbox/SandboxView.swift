@@ -9,11 +9,23 @@ struct SandboxView: View {
 
     var body: some View {
         // Proportional panes: the journal needs its lines on one row, the reports four money columns.
-        GeometryReader { geometry in
+        @Bindable var store = store
+        return GeometryReader { geometry in
             HStack(spacing: 0) {
                 casePanel.frame(width: max(200, geometry.size.width * 0.21)).clipped()
                 Divider()
-                JournalEditor().clipped()
+                VStack(spacing: 0) {
+                    Picker("Visning", selection: $store.sandboxPane) {
+                        ForEach(SandboxPane.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                    }
+                    .pickerStyle(.segmented).labelsHidden().controlSize(.small)
+                    .padding(.horizontal, 16).padding(.top, 10)
+                    switch store.sandboxPane {
+                    case .journal: JournalEditor()
+                    case .bank: BankView()
+                    }
+                }
+                .clipped()
                 Divider()
                 ReportsView().frame(width: max(320, geometry.size.width * 0.36)).clipped()
             }
@@ -68,6 +80,14 @@ struct SandboxView: View {
                             .padding(8)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 6))
+                        }
+                        if let rates = sandboxCase.valutakurser {
+                            Text("Kurser i casen").font(.subheadline.weight(.semibold)).padding(.top, 4)
+                            ForEach(rates.keys.sorted(), id: \.self) { currency in
+                                ForEach(rates[currency] ?? [], id: \.self) { rate in
+                                    Text("\(currency) \(NorwegianFormat.date(rate.dato.date)): \(NorwegianFormat.kroner(rate.kurs))").font(.callout.monospacedDigit())
+                                }
+                            }
                         }
                         ForEach(sandboxCase.lov, id: \.self) { LawBadge(law: $0) }
                     }

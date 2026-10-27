@@ -23,6 +23,10 @@ enum Screenshots {
             store.openPuzzle = nil
             await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("\(section.rawValue).png"))
         }
+        store.sandboxPane = .bank
+        navigation.section = .sandbox
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("sandbox-bank.png"))
+        store.sandboxPane = .journal
         navigation.section = .today
         for kind in PuzzleKind.allCases {
             guard let puzzle = store.pool.first(where: { $0.kind == kind }) else { continue }
