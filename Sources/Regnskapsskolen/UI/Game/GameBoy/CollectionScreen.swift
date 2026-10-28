@@ -27,7 +27,7 @@ struct CollectionScreen: View {
         case .badges:
             return Badges.all.map { badge in
                 let held = store.progress.game.badges[badge.id] != nil
-                return PanelRow.fitting(id: badge.id, (held ? "[x] " : "[ ] ") + badge.navn, columns: AnswerPanel.columns, marked: held)
+                return PanelRow.fitting(id: badge.id, (held ? "[x] " : "[ ] ") + badge.navn, columns: AnswerPanel.columns)
             }
         case .creatures(let tema):
             guard let region = regions.first(where: { $0.tema == tema }) else { return [] }

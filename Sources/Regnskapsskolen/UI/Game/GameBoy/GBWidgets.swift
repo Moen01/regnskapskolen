@@ -87,10 +87,12 @@ struct GBList: View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(visible), id: \.self) { index in
                 let hit = index == highlight
+                // A marked row is dimmed: locked, done, or otherwise not the thing to pick next.
+                let color = hit ? GBPalette.lightest : (rows[index].marked ? GBPalette.dark : GBPalette.darkest)
                 Button { onClick(index) } label: {
                     HStack(spacing: 0) {
-                        GBText(index == cursor ? "▶" : " ", color: hit ? GBPalette.lightest : GBPalette.darkest).frame(width: 8 * scale)
-                        GBText(rows[index].text, color: hit ? GBPalette.lightest : GBPalette.darkest)
+                        GBText(index == cursor ? "▶" : " ", color: color).frame(width: 8 * scale)
+                        GBText(rows[index].text, color: color)
                         Spacer(minLength: 0)
                     }
                     .frame(height: 12 * scale)
