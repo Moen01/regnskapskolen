@@ -1,0 +1,23 @@
+{
+  "id": "legekontoret",
+  "navn": "Legekontoret",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "sentrum", "tilX": 24, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "klient-legekontoret-bryggen", "rolle": "klient", "x": 4, "y": 2, "klient": "legekontoret-bryggen", "tekst": [] },
+    { "id": "folk-pasient", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Jeg venter på legen. Det tar tid."] }
+  ]
+}

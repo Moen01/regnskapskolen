@@ -1,0 +1,30 @@
+[
+  {
+    "id": "helse",
+    "navn": "Helse",
+    "temaer": ["mva"],
+    "regelkort": ["mva-fritatt-unntatt"],
+    "setning": "Lege og tannlege selger helsetjenester."
+  },
+  {
+    "id": "nettbutikk",
+    "navn": "Nettbutikk",
+    "temaer": ["mva", "valuta-korrigeringer"],
+    "regelkort": ["mva-omvendt-avgiftsplikt", "valuta-korrigeringer"],
+    "setning": "Nettbutikken handler med utlandet."
+  },
+  {
+    "id": "servering",
+    "navn": "Servering",
+    "temaer": ["mva"],
+    "regelkort": ["mva-satser"],
+    "setning": "Kafeen selger mat i salen og til å ta med."
+  },
+  {
+    "id": "verksted",
+    "navn": "Verksted",
+    "temaer": ["avskrivning", "mva"],
+    "regelkort": ["avskrivning-saldogrupper", "mva-fradrag-begrensninger"],
+    "setning": "Verkstedet bruker maskiner og biler i driften."
+  }
+]

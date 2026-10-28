@@ -1,0 +1,50 @@
+{
+  "id": "sentrum",
+  "navn": "Sentrum",
+  "bredde": 30,
+  "hoyde": 24,
+  "ruter": [
+    "##############################",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,^^^^^^,,,,^^^^^^,,,,^^^^^^,#",
+    "#,^^^^^^,,,,^^^^^^,,,,^^^^^^,#",
+    "#,##D###,,,,##D###,,,,##D###,#",
+    "#............................#",
+    "#............................#",
+    "#,^^^^^^....^^^^^^....^^^^^^,#",
+    "#,^^^^^^....^^^^^^....^^^^^^,#",
+    "#,##D###....##D###....##D###,#",
+    "#............................#",
+    "#............................#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,,,,,,,#",
+    "#............................#",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  ],
+  "dorer": [
+    { "x": 4, "y": 4, "til": "restauranten", "tilX": 4, "tilY": 6 },
+    { "x": 14, "y": 4, "til": "kontoret", "tilX": 6, "tilY": 7 },
+    { "x": 24, "y": 4, "til": "legekontoret", "tilX": 4, "tilY": 6 },
+    { "x": 4, "y": 9, "til": "nettbutikken", "tilX": 4, "tilY": 6 },
+    { "x": 14, "y": 9, "til": "banken", "tilX": 4, "tilY": 6 },
+    { "x": 24, "y": 9, "til": "verkstedet", "tilX": 4, "tilY": 6 }
+  ],
+  "folk": [
+    { "id": "skilt-restauranten", "rolle": "skilt", "x": 5, "y": 5, "tekst": ["Kafé Lysthuset"] },
+    { "id": "skilt-kontoret", "rolle": "skilt", "x": 15, "y": 5, "tekst": ["Regnskapskontoret"] },
+    { "id": "skilt-legekontoret", "rolle": "skilt", "x": 25, "y": 5, "tekst": ["Legekontoret på Bryggen"] },
+    { "id": "skilt-nettbutikken", "rolle": "skilt", "x": 5, "y": 10, "tekst": ["Pixel Nettbutikk. Lager og kontor."] },
+    { "id": "skilt-banken", "rolle": "skilt", "x": 15, "y": 10, "tekst": ["Hovedbok Sparebank"] },
+    { "id": "skilt-verkstedet", "rolle": "skilt", "x": 25, "y": 10, "tekst": ["Motor & Mek. Bil og maskin."] },
+    { "id": "folk-kaia", "rolle": "folk", "x": 9, "y": 18, "tekst": ["Båtene legger til ved kaia om morgenen."] },
+    { "id": "folk-torget", "rolle": "folk", "x": 20, "y": 14, "tekst": ["Kontoret ditt er huset midt i gata."] }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "restauranten",
+  "navn": "Kafé Lysthuset",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "sentrum", "tilX": 4, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "klient-kafe-lysthuset", "rolle": "klient", "x": 4, "y": 2, "klient": "kafe-lysthuset", "tekst": [] },
+    { "id": "folk-gjest", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Kaffen her er god. Kakene også."] }
+  ]
+}

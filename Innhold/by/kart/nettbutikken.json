@@ -1,0 +1,23 @@
+{
+  "id": "nettbutikken",
+  "navn": "Pixel Nettbutikk",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "sentrum", "tilX": 4, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-nettbutikken-pixel", "rolle": "klient", "x": 4, "y": 2, "klient": "nettbutikken-pixel", "tekst": [] },
+    { "id": "folk-pakker", "rolle": "folk", "x": 7, "y": 4, "tekst": ["Pakkene skal ut før posten stenger."] }
+  ]
+}
