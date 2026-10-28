@@ -1,0 +1,228 @@
+import XCTest
+@testable import RegnskapKit
+
+final class TownValidatorTests: XCTestCase {
+    static let library = try! ContentLibrary(root: ContentLocator.repoContent)
+
+    /// Loads the fixture town after editing one of its JSON files. `file` is relative to `Fixtures/by`.
+    private func town(editing file: String? = nil, adding extra: [String: Any] = [:], edit: (inout [String: Any]) -> Void = { _ in }) throws -> TownContent {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        if let file {
+            let url = folder.appendingPathComponent(file)
+            var json = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [String: Any]
+            edit(&json)
+            try JSONSerialization.data(withJSONObject: json).write(to: url)
+        }
+        for (path, json) in extra {
+            try JSONSerialization.data(withJSONObject: json).write(to: folder.appendingPathComponent(path))
+        }
+        return try TownContent.load(folder: folder)
+    }
+
+    private func messages(_ town: TownContent) -> [String] {
+        ContentValidator.validateTown(town, library: Self.library).flatMap { p in p.messages.map { "\(p.id): \($0)" } }
+    }
+
+    private func assertOneProblem(_ town: TownContent, id: String, contains: String, file: StaticString = #filePath, line: UInt = #line) {
+        let all = messages(town)
+        XCTAssertEqual(all.count, 1, all.joined(separator: "\n"), file: file, line: line)
+        XCTAssertTrue(all.first?.hasPrefix(id) == true && all.first?.contains(contains) == true, all.joined(separator: "\n"), file: file, line: line)
+    }
+
+    private func person(_ id: String, x: Int, y: Int, rolle: String = "folk", extra: [String: Any] = [:]) -> [String: Any] {
+        ["id": id, "rolle": rolle, "x": x, "y": y, "tekst": ["Hei."]].merging(extra) { $1 }
+    }
+
+    func testValidFixtureTownHasNoProblems() throws {
+        XCTAssertEqual(messages(try town()), [])
+    }
+
+    // Rule 1
+    func testRejectsRowOfWrongLength() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["ruter"] = ["##########", "#,,,,,,,,#", "#,......,#", "#,,,,,,,,#", "#,,,D,,,#", "##########"] }
+        assertOneProblem(t, id: "kart:sentrum", contains: "lengde")
+    }
+
+    func testRejectsWrongRowCountAndUnknownTile() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["hoyde"] = 7 }
+        assertOneProblem(t, id: "kart:sentrum", contains: "rader")
+        let u = try town(editing: "kart/sentrum.json") { $0["ruter"] = ["##########", "#,,,,,,,,#", "#,..?...,#", "#,,,,,,,,#", "#,,,D,,,,#", "##########"] }
+        assertOneProblem(u, id: "kart:sentrum", contains: "?")
+    }
+
+    // Rule 2
+    func testRejectsDoorNotOnDoorTile() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["dorer"] = [["x": 5, "y": 4, "til": "kontoret", "tilX": 3, "tilY": 4]] }
+        assertOneProblem(t, id: "kart:sentrum", contains: "dør")
+    }
+
+    func testRejectsDoorToMissingMap() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["dorer"] = [["x": 4, "y": 4, "til": "finnes-ikke", "tilX": 3, "tilY": 4]] }
+        let all = messages(t)
+        XCTAssertTrue(all.contains { $0.hasPrefix("kart:sentrum") && $0.contains("finnes-ikke") }, all.joined(separator: "\n"))
+    }
+
+    func testRejectsDoorLandingOnWall() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["dorer"] = [["x": 4, "y": 4, "til": "kontoret", "tilX": 0, "tilY": 0]] }
+        assertOneProblem(t, id: "kart:sentrum", contains: "gangbar")
+    }
+
+    func testRejectsDoorLandingOnPerson() throws {
+        let t = try town(editing: "kart/sentrum.json") { $0["dorer"] = [["x": 4, "y": 4, "til": "kontoret", "tilX": 3, "tilY": 2]] }
+        assertOneProblem(t, id: "kart:sentrum", contains: "person")
+    }
+
+    // Rule 3
+    func testRejectsPersonOutsideMap() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("sjef", x: 20, y: 2, rolle: "sjef")] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "utenfor")
+    }
+
+    func testRejectsTwoPeopleOnSameTile() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("a", x: 3, y: 2), self.person("b", x: 3, y: 2)] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "samme rute")
+    }
+
+    func testRejectsClientPersonWithUnknownClient() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("k", x: 3, y: 2, rolle: "klient", extra: ["klient": "spoekelset"])] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "spoekelset")
+    }
+
+    func testRejectsFagkontorWithUnknownTheme() throws {
+        let office: [String: Any] = ["id": "fk", "navn": "Fagkontor", "temaer": ["finnes-ikke"]]
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("f", x: 3, y: 2, rolle: "fagkontor", extra: ["fagkontor": office])] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "finnes-ikke")
+    }
+
+    // Rule 4
+    func testRejectsUnreachableMap() throws {
+        let island: [String: Any] = ["id": "oey", "navn": "Oey", "bredde": 3, "hoyde": 3, "ruter": ["###", "#.#", "###"], "dorer": [], "folk": []]
+        let t = try town(adding: ["kart/oey.json": island])
+        assertOneProblem(t, id: "kart:oey", contains: "nås ikke")
+    }
+
+    // Rule 5
+    func testRejectsUnknownIndustry() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["bransje"] = "ukjent" }
+        assertOneProblem(t, id: "klient:butikken", contains: "ukjent")
+    }
+
+    func testRejectsUnknownPuzzleId() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["oppgaver"] = ["mva-quiz-001", "mva-quiz-999"] }
+        assertOneProblem(t, id: "klient:butikken", contains: "mva-quiz-999")
+    }
+
+    func testRejectsTrialWithWrongCount() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["provesak"] = ["mva-quiz-001", "mva-quiz-002"] }
+        assertOneProblem(t, id: "klient:butikken", contains: "prøvesak")
+    }
+
+    func testRejectsVatTermWithoutRegistration() throws {
+        let t = try town(editing: "klienter/konsulenten.json") { $0["mvaTermin"] = "aarlig" }
+        assertOneProblem(t, id: "klient:konsulenten", contains: "mvaTermin")
+    }
+
+    func testRejectsRegisteredClientWithoutVatTerm() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["mvaTermin"] = nil }
+        assertOneProblem(t, id: "klient:butikken", contains: "mvaTermin")
+    }
+
+    func testRejectsPlaceWithoutClientPerson() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["sted"] = ["kart": "sentrum", "x": 3, "y": 2] }
+        assertOneProblem(t, id: "klient:butikken", contains: "sted")
+    }
+
+    func testRejectsTwoStartClients() throws {
+        let t = try town(editing: "klienter/konsulenten.json") { $0["startklient"] = true }
+        let all = messages(t)
+        XCTAssertEqual(all.count, 1, all.joined(separator: "\n"))
+        XCTAssertTrue(all[0].contains("startklient"))
+    }
+
+    func testRejectsNoStartClient() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["startklient"] = false }
+        let all = messages(t)
+        XCTAssertEqual(all.count, 1, all.joined(separator: "\n"))
+        XCTAssertTrue(all[0].contains("startklient"))
+    }
+
+    // Rule 6
+    func testRejectsVatTaskForUnregisteredClient() throws {
+        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-quiz-010", "mva-behandling-001"] }
+        assertOneProblem(t, id: "klient:konsulenten", contains: "mva-behandling-001")
+    }
+
+    func testRejectsVatAccountPostingForUnregisteredClient() throws {
+        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-quiz-010", "grunnlag-001"] }
+        assertOneProblem(t, id: "klient:konsulenten", contains: "grunnlag-001")
+    }
+
+    func testAllowsVatTaskForRegisteredClient() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["oppgaver"] = ["mva-behandling-001", "grunnlag-001"] }
+        XCTAssertEqual(messages(t), [])
+    }
+
+    // Rule 7
+    func testRejectsUnknownRuleCard() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        let url = folder.appendingPathComponent("bransjer.json")
+        var list = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [[String: Any]]
+        list[0]["regelkort"] = ["mva-satser", "regelkort-som-ikke-finnes"]
+        try JSONSerialization.data(withJSONObject: list).write(to: url)
+        assertOneProblem(try TownContent.load(folder: folder), id: "bransje:butikk", contains: "regelkort-som-ikke-finnes")
+    }
+
+    func testRejectsUnknownIndustryTheme() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        let url = folder.appendingPathComponent("bransjer.json")
+        var list = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as! [[String: Any]]
+        list[0]["temaer"] = ["mva", "tema-som-ikke-finnes"]
+        try JSONSerialization.data(withJSONObject: list).write(to: url)
+        assertOneProblem(try TownContent.load(folder: folder), id: "bransje:butikk", contains: "tema-som-ikke-finnes")
+    }
+
+    // Rule 8
+    func testRejectsThemeInTwoOffices() throws {
+        let a: [String: Any] = ["id": "a", "navn": "Kontor A", "temaer": ["mva"]]
+        let b: [String: Any] = ["id": "b", "navn": "Kontor B", "temaer": ["mva", "lonn"]]
+        let t = try town(editing: "kart/kontoret.json") {
+            $0["folk"] = [self.person("sjef", x: 3, y: 2, rolle: "sjef"),
+                          self.person("fa", x: 1, y: 1, rolle: "fagkontor", extra: ["fagkontor": a]),
+                          self.person("fb", x: 2, y: 1, rolle: "fagkontor", extra: ["fagkontor": b])]
+        }
+        assertOneProblem(t, id: "kart:kontoret", contains: "mva")
+    }
+
+    // Rule 9
+    func testRejectsWordLongerThanEighteen() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("sjef", x: 3, y: 2, rolle: "sjef", extra: ["tekst": ["Les skatteforvaltningsforskriften nå."]])] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "skatteforvaltningsforskriften")
+    }
+
+    func testRejectsLongWordInClientLines() throws {
+        let t = try town(editing: "klienter/butikken.json") {
+            var lines = $0["replikker"] as! [String: Any]
+            lines["hilsen"] = ["Skatteforvaltningsforskriften!"]
+            $0["replikker"] = lines
+        }
+        assertOneProblem(t, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")
+    }
+
+    func testRejectsLongWordInClientName() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["navn"] = "Skatteforvaltningsforskriften AS" }
+        assertOneProblem(t, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")
+    }
+
+    func testRejectsLongWordInMapName() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["navn"] = "Skatteforvaltningsforskriften" }
+        assertOneProblem(t, id: "kart:kontoret", contains: "Skatteforvaltningsforskriften")
+    }
+
+    func testEighteenCharacterWordIsAllowed() throws {
+        let t = try town(editing: "kart/kontoret.json") { $0["navn"] = "Abcdefghijklmnopqr" }
+        XCTAssertEqual(messages(t), [])
+    }
+}

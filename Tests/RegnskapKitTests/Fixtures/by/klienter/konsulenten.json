@@ -6,8 +6,8 @@
   "mvaRegistrert": false,
   "ansatte": 0,
   "sted": { "kart": "sentrum", "x": 6, "y": 2 },
-  "oppgaver": ["grunnlag-quiz-001"],
-  "provesak": ["grunnlag-quiz-001"],
+  "oppgaver": ["grunnlag-quiz-010"],
+  "provesak": ["grunnlag-quiz-010", "grunnlag-web-quiz-01", "grunnlag-web-quiz-03"],
   "replikker": {
     "hilsen": ["God dag. Jeg trenger hjelp."],
     "drift": ["Det er rolig om dagen."],

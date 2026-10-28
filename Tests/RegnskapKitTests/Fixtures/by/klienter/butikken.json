@@ -8,7 +8,7 @@
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "sentrum", "x": 2, "y": 2 },
   "oppgaver": ["mva-quiz-001"],
-  "provesak": ["mva-quiz-001"],
+  "provesak": ["mva-quiz-001", "mva-quiz-002", "mva-quiz-003"],
   "replikker": {
     "hilsen": ["Hei! Bilagene ligger klare."],
     "drift": ["Vi har hatt en travel uke."],
