@@ -17,7 +17,7 @@ extension ContentValidator {
         }
 
         let unreachable = unreachableMaps(town)
-        let officeProblems = duplicateOfficeThemes(town, library: library)
+        let officeProblems = duplicateOfficeThemes(town)
         for map in town.kart {
             var messages = validateMap(map, in: town, library: library)
             if unreachable.contains(map.id) { messages.append("kartet nås ikke fra «\(townStartMap)» via dører") }
@@ -28,15 +28,14 @@ extension ContentValidator {
             report("kart:\(townStartMap)", "kart/\(townStartMap).json", ["kartet «\(townStartMap)» finnes ikke"])
         }
 
-        // Filed once: on the second starting client, or on the first client when there is none.
         let startClients = town.klienter.filter(\.startklient)
-        let startProblemOwner = startClients.count > 1 ? startClients[1].id : town.klienter.first?.id
         for client in town.klienter {
-            var messages = validateClient(client, in: town, library: library)
-            if startClients.count != 1, client.id == startProblemOwner {
-                messages.append("nøyaktig én klient skal ha startklient: true, byen har \(startClients.count)")
-            }
-            report("klient:\(client.id)", "klienter/\(client.id).json", messages)
+            report("klient:\(client.id)", "klienter/\(client.id).json", validateClient(client, in: town, library: library))
+        }
+        // A town-level problem: it does not belong to any one client, and it must not depend on load order.
+        let townIsEmpty = town.kart.isEmpty && town.klienter.isEmpty && town.bransjer.isEmpty
+        if startClients.count != 1, !townIsEmpty {
+            report("by:startklient", "klienter/", ["nøyaktig én klient skal ha startklient: true, byen har \(startClients.count)"])
         }
         for bransje in town.bransjer {
             report("bransje:\(bransje.id)", "bransjer.json", validateBransje(bransje, library: library))
@@ -53,7 +52,8 @@ extension ContentValidator {
         if map.ruter.count != map.hoyde { out.append("kartet har \(map.ruter.count) rader, hoyde er \(map.hoyde)") }
         for (y, row) in map.ruter.enumerated() {
             if row.count != map.bredde { out.append("rad \(y) har lengde \(row.count), bredde er \(map.bredde)") }
-            for ch in Set(row) where Tile(rawValue: ch) == nil { out.append("rad \(y) har ukjent rute «\(ch)»") }
+            var reported = Set<Character>()
+            for ch in row where Tile(rawValue: ch) == nil && reported.insert(ch).inserted { out.append("rad \(y) har ukjent rute «\(ch)»") }
         }
 
         // Rule 2: doors.
@@ -110,7 +110,7 @@ extension ContentValidator {
     }
 
     /// Rule 8: a topic belongs to one office only. The problem is filed on the map of the later office.
-    private static func duplicateOfficeThemes(_ town: TownContent, library: ContentLibrary) -> [String: [String]] {
+    private static func duplicateOfficeThemes(_ town: TownContent) -> [String: [String]] {
         var owner: [String: String] = [:]
         var out: [String: [String]] = [:]
         for map in town.kart {
@@ -148,8 +148,8 @@ extension ContentValidator {
         // Rule 6: the answer keys assume a VAT-registered company.
         if !client.mvaRegistrert {
             var seen = Set<String>()
-            for id in tasks where seen.insert(id).inserted {
-                guard let puzzle = library.puzzle(id: id) else { continue }
+            for id in tasks {
+                guard seen.insert(id).inserted, let puzzle = library.puzzle(id: id) else { continue }
                 if puzzle.kind == .mva { out.append("oppgave «\(id)» er av typen mva, men klienten er ikke mva-registrert") }
                 if case .posting(let p) = puzzle.payload, p.fasit.contains(where: { Int($0.konto).map(vatAccounts.contains) == true }) {
                     out.append("oppgave «\(id)» bruker mva-konto (2700–2799), men klienten er ikke mva-registrert")

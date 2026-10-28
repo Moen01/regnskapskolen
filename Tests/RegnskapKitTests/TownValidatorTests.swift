@@ -59,8 +59,7 @@ final class TownValidatorTests: XCTestCase {
 
     func testRejectsDoorToMissingMap() throws {
         let t = try town(editing: "kart/sentrum.json") { $0["dorer"] = [["x": 4, "y": 4, "til": "finnes-ikke", "tilX": 3, "tilY": 4]] }
-        let all = messages(t)
-        XCTAssertTrue(all.contains { $0.hasPrefix("kart:sentrum") && $0.contains("finnes-ikke") }, all.joined(separator: "\n"))
+        assertOneProblem(t, id: "kart:sentrum", contains: "finnes-ikke")
     }
 
     func testRejectsDoorLandingOnWall() throws {
@@ -135,16 +134,24 @@ final class TownValidatorTests: XCTestCase {
 
     func testRejectsTwoStartClients() throws {
         let t = try town(editing: "klienter/konsulenten.json") { $0["startklient"] = true }
-        let all = messages(t)
-        XCTAssertEqual(all.count, 1, all.joined(separator: "\n"))
-        XCTAssertTrue(all[0].contains("startklient"))
+        assertOneProblem(t, id: "by:startklient", contains: "startklient")
     }
 
     func testRejectsNoStartClient() throws {
         let t = try town(editing: "klienter/butikken.json") { $0["startklient"] = false }
-        let all = messages(t)
-        XCTAssertEqual(all.count, 1, all.joined(separator: "\n"))
-        XCTAssertTrue(all[0].contains("startklient"))
+        assertOneProblem(t, id: "by:startklient", contains: "startklient")
+    }
+
+    func testRejectsTownWithNoClients() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        for name in ["butikken", "konsulenten"] { try FileManager.default.removeItem(at: folder.appendingPathComponent("klienter/\(name).json")) }
+        let t = try TownContent.load(folder: folder)
+        XCTAssertTrue(messages(t).contains { $0.hasPrefix("by:startklient") })
+    }
+
+    func testEmptyTownHasNoProblems() {
+        XCTAssertEqual(messages(.empty), [])
     }
 
     // Rule 6
