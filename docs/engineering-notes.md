@@ -47,6 +47,11 @@ Ting som kostet tid, så de ikke koster tid igjen.
 
 - **Høyreklikk → Åpne virker ikke lenger for ad hoc-signerte apper.** Dialogen har bare «Done» og «Move to Bin». Veien er Systeminnstillinger → Personvern og sikkerhet → «Åpne likevel» etter første forsøk, eller `xattr -dr com.apple.quarantine <app>`. Oppdateringer appen gjør selv fjerner karantenen etter `codesign --verify`, så bare førstegangsinstallasjonen rammes. Developer ID + notarisering fjerner dialogen helt.
 
+## Paragrafjakten
+
+- **Bindinger lever lenger enn visningen.** `EncounterView` bandt inndata til `store.encounterSession!`; når `endRun()` nullstilte økten, oppdaterte SwiftUI fortsatt bindingene på vei ut og trappet på nil. Bindinger inn i valgfri tilstand må ha en fallback (`PuzzleAttempt.empty(for:)`).
+- **Trekk er (lov, paragraf)-par, ikke regelkort.** Sju temaer har ett kort, og et kort kan dekke flere lover, så parene gir valg der kortene ikke gjør det. Avledere hentes fra andre temaer og treffer aldri oppgaven.
+
 ## Skjermbilder uten å klikke
 
 `REGNSKAP_SCREENSHOTS=<mappe>` tegner hver skjerm i et vindu utenfor skjermen og skriver PNG. Tre ting måtte til på macOS 26:
