@@ -29,7 +29,7 @@ public enum WalkEvent: Hashable, Sendable {
 }
 
 /// The player's position on one map. Pure logic: the caller switches maps on `.door`.
-public struct TownWalker: Hashable, Sendable {
+public struct TownWalker: Hashable, Codable, Sendable {
     public private(set) var x: Int
     public private(set) var y: Int
     public private(set) var facing: Facing
