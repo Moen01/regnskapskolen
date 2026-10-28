@@ -33,7 +33,7 @@ struct PopoverView: View {
                 Button { Task { await store.installUpdate() } } label: {
                     Label(store.isUpdating ? "Oppdaterer…" : "Oppdater til \(update.version)", systemImage: "arrow.down.circle.fill").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent).tint(.skole)
+                .buttonStyle(.borderedProminent).tint(.blue)
                 .disabled(store.isUpdating || update.assetURL == nil)
             }
             HStack {

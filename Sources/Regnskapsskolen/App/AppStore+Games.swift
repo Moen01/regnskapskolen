@@ -4,7 +4,8 @@ import RegnskapKit
 // The games: starting rounds, running their clock, handing answers to Kit and booking the result.
 extension AppStore {
     var now: TimeInterval { Date().timeIntervalSinceReferenceDate }
-    private static var isScreenshotRun: Bool { ProcessInfo.processInfo.environment["REGNSKAP_SCREENSHOTS"] != nil }
+    /// True under REGNSKAP_SCREENSHOTS: no clocks, no update checks, every sidebar row shown.
+    static var isScreenshotRun: Bool { ProcessInfo.processInfo.environment["REGNSKAP_SCREENSHOTS"] != nil }
     private var seed: UInt64 { UInt64(Date().timeIntervalSince1970) }
 
     func startLightning() {

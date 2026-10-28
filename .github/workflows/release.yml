@@ -1,26 +1,75 @@
-# Builds Regnskapsskolen for a version tag and attaches the zip to the GitHub release, where the
-# app's updater finds it. With the Developer ID and notarisation secrets in place (see README,
-# «Oppdateringer») the app is signed and notarised; without them it is signed ad hoc as before.
-# Push an annotated tag such as v0.2.0: its message becomes the release notes the app shows.
+# Builds Regnskapsskolen and attaches the zip to a GitHub release, where the app's updater finds it.
+#
+# Two ways in:
+#   - A push to main (normally the merge of staging): the version is bumped from the last tag
+#     (patch by default; «#minor» or «#major» in the merge commit's title or body bumps more), an
+#     annotated tag is created with the release notes, and the release is published. The notes are
+#     the merged pull request's description when there is one, else the commit subjects since the
+#     last tag. Pushes that only touch docs do not release.
+#   - A pushed annotated tag vX.Y.Z: released as is (its message is the notes).
+#
+# With the Developer ID and notarisation secrets in place (README, «Oppdateringer») the app is
+# signed and notarised; without them it is signed ad hoc.
 name: Release
 
 on:
   push:
+    branches: ["main"]
     tags: ["v*"]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".claude/**"
 
 permissions:
   contents: write
+  pull-requests: read
+
+# Two merges in a row release one after the other, so the second sees the first one's tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      # checkout leaves a lightweight copy of the tag; the annotated one carries the release notes.
+        with:
+          fetch-depth: 0
+
+      # checkout leaves a lightweight copy of a pushed tag; the annotated one carries the notes.
       - name: Fetch the annotated tag
+        if: github.ref_type == 'tag'
         run: |
           git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
           [[ "$(git cat-file -t "$GITHUB_REF_NAME")" == tag ]] || { echo "Push an annotated tag: git tag -a $GITHUB_REF_NAME -m \"…\""; exit 1; }
+          echo "TAG=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+
+      # A merge into main becomes the next version: the last tag bumped. The tag itself is
+      # created after a green build, so a failed run leaves no tag behind.
+      - name: Compute the next version and its notes
+        if: github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LAST=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo v0.0.0)
+          IFS=. read -r MAJOR MINOR PATCH <<< "${LAST#v}"
+          MESSAGE=$(git log -1 --format='%s%n%b')
+          if grep -q '#major' <<< "$MESSAGE"; then MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
+          elif grep -q '#minor' <<< "$MESSAGE"; then MINOR=$((MINOR + 1)); PATCH=0
+          else PATCH=$((PATCH + 1)); fi
+          TAG="v$MAJOR.$MINOR.$PATCH"
+          # The merged pull request's description is the note the app shows; fall back to the commits.
+          # Attribution trailers are not for the learner.
+          NOTES=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+            -q '[.[] | select(.base.ref == "main")][0] | select(. != null) | .title + "\n\n" + (.body // "")' 2>/dev/null \
+            | grep -vE '^(🤖|Co-Authored-By:)' || true)
+          if [[ -z "${NOTES//[[:space:]]/}" ]]; then NOTES="Regnskapsskolen ${TAG#v}"$'\n\n'"$(git log "$LAST"..HEAD --format='- %s' --no-merges)"; fi
+          printf '%s\n' "$NOTES" > "$RUNNER_TEMP/notes.md"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "Next version: $TAG (after $LAST)"
+
       - name: Select the newest Xcode
         run: sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)/Contents/Developer"
       - uses: actions/cache@v4
@@ -57,7 +106,7 @@ jobs:
           echo "SIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
 
       - name: Build the app bundle
-        run: APP_VERSION="${GITHUB_REF_NAME#v}" ./scripts/bundle.sh release
+        run: APP_VERSION="${TAG#v}" ./scripts/bundle.sh release
 
       - name: Notarise
         if: env.SIGNING == 'yes'
@@ -68,11 +117,11 @@ jobs:
         run: |
           export NOTARY_KEY="$RUNNER_TEMP/notary.p8"
           echo "$NOTARY_KEY_P8" > "$NOTARY_KEY"
-          ./scripts/notarize.sh "Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
+          ./scripts/notarize.sh "Regnskapsskolen-${TAG#v}.zip"
 
       - name: Zip it
         if: env.SIGNING != 'yes'
-        run: ditto -c -k --keepParent build/Regnskapsskolen.app "Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
+        run: ditto -c -k --keepParent build/Regnskapsskolen.app "Regnskapsskolen-${TAG#v}.zip"
 
       - name: Remove the signing keychain
         if: always() && env.SIGNING == 'yes'
@@ -80,10 +129,18 @@ jobs:
           security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true
           rm -f "$RUNNER_TEMP/notary.p8"
 
+      - name: Tag the merge
+        if: github.ref_type == 'branch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -F "$RUNNER_TEMP/notes.md"
+          git push origin "$TAG"
+
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ZIP="Regnskapsskolen-${GITHUB_REF_NAME#v}.zip"
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "Regnskapsskolen ${GITHUB_REF_NAME#v}" --notes-from-tag \
-            || gh release upload "$GITHUB_REF_NAME" "$ZIP" --clobber
+          ZIP="Regnskapsskolen-${TAG#v}.zip"
+          gh release create "$TAG" "$ZIP" --title "Regnskapsskolen ${TAG#v}" --notes-from-tag \
+            || gh release upload "$TAG" "$ZIP" --clobber
