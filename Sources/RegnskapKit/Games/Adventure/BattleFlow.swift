@@ -38,6 +38,7 @@ public struct BattleFlow: Hashable, Sendable {
     public private(set) var page = 0
     public private(set) var chosenMove: Move?
     public private(set) var hasChosen = false
+    private var outcome: EncounterOutcome?
 
     public init(encounter: Encounter, laws: LawNames, cards: [RuleCard], rates: [MVARate], attempt: PuzzleAttempt) {
         self.encounter = encounter
@@ -76,6 +77,7 @@ public struct BattleFlow: Hashable, Sendable {
 
     /// The store judged the attack; the dialog tells the result.
     public mutating func showOutcome(_ outcome: EncounterOutcome) {
+        self.outcome = outcome
         phase = .outcome
         show(BattleScript.result(outcome, encounter: encounter))
     }
@@ -124,7 +126,11 @@ public struct BattleFlow: Hashable, Sendable {
         case .answer:
             return act(on: panel.handle(key, attempt: &attempt))
         case .outcome:
-            if key == .a { advance(orElse: { $0.enterExplanation() }) }
+            guard key == .a else { return .none }
+            if hasMorePages { page += 1; return .none }
+            // A booked bilag keeps its verdict quiet: the explanation would give it away.
+            if outcome == .booked { return .next }
+            enterExplanation()
             return .none
         case .explanation:
             if key == .a {

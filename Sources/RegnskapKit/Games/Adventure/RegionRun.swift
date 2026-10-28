@@ -7,6 +7,17 @@ public struct Encounter: Hashable, Sendable {
     /// Empty when no paragraph on the region's cards hits the puzzle: the move step is skipped.
     public let moves: [Move]
     public let isGymLeader: Bool
+    /// Where the encounter happens: the dialog's intro and result depend on it.
+    public var context: EncounterContext = .wild
+}
+
+/// Where an encounter happens. The town reuses the battle for bilag, corrections, trials and the fagkontor.
+public enum EncounterContext: Hashable, Sendable {
+    case wild
+    case bilag(client: String)
+    case correction(client: String, day: DayKey)
+    case trial(client: String)
+    case fagkontor(name: String)
 }
 
 public enum EncounterOutcome: Hashable, Sendable {
@@ -14,6 +25,10 @@ public enum EncounterOutcome: Hashable, Sendable {
     case escaped(hpLost: Int)
     /// Right, but the creature was already met today: nothing moves, nothing is farmed.
     case repeated
+    /// A bilag booked in town: the verdict is kept quiet until the month is closed.
+    case booked
+    /// An error from a closed month, answered again: this one tells the verdict.
+    case corrected(ok: Bool)
 }
 
 public struct RunSummary: Hashable, Sendable {
@@ -50,13 +65,16 @@ public struct RegionRun: Hashable, Sendable {
     public private(set) var gymBadgeEarned = false
     private let regionCards: [RuleCard]
     private let otherCards: [RuleCard]
+    private let context: EncounterContext
     private var generator: SplitMix64
     private var seen: Set<String> = []
 
     public var gymReady: Bool { damage >= region.damageTarget && region.gymBadge == nil && !gymBadgeEarned }
 
-    public init(region: Region, progress: LearnerProgress, today: DayKey, regionCards: [RuleCard], otherCards: [RuleCard], seed: UInt64) {
+    public init(region: Region, progress: LearnerProgress, today: DayKey, regionCards: [RuleCard], otherCards: [RuleCard], seed: UInt64,
+                context: EncounterContext = .wild) {
         self.region = region
+        self.context = context
         damage = progress.game.regionDamage[region.tema] ?? 0
         self.regionCards = regionCards
         self.otherCards = otherCards
@@ -94,8 +112,32 @@ public struct RegionRun: Hashable, Sendable {
     }
 
     private mutating func encounter(_ puzzle: Puzzle, progress: LearnerProgress, isGymLeader: Bool) -> Encounter {
-        Encounter(puzzle: puzzle, stageBefore: Stage.of(box: progress.puzzles[puzzle.id]?.box),
-                  moves: Moves.options(for: puzzle, regionCards: regionCards, otherCards: otherCards, seed: generator.next()), isGymLeader: isGymLeader)
+        Self.encounter(puzzle, stageBefore: Stage.of(box: progress.puzzles[puzzle.id]?.box), isGymLeader: isGymLeader, context: context,
+                       regionCards: regionCards, otherCards: otherCards, generator: &generator)
+    }
+
+    /// One encounter with its move options drawn from the generator. Shared with the town's `BilagRun`.
+    static func encounter(_ puzzle: Puzzle, stageBefore: Stage, isGymLeader: Bool, context: EncounterContext,
+                          regionCards: [RuleCard], otherCards: [RuleCard], generator: inout SplitMix64) -> Encounter {
+        Encounter(puzzle: puzzle, stageBefore: stageBefore,
+                  moves: Moves.options(for: puzzle, regionCards: regionCards, otherCards: otherCards, seed: generator.next()),
+                  isGymLeader: isGymLeader, context: context)
+    }
+
+    /// The verdict on one attempt and the damage it deals: right deals `vanskelighet × damagePerLevel`,
+    /// twice that when the chosen move hits; wrong deals none. Shared with the town's `BilagRun`.
+    struct Strike: Hashable {
+        let correct: Bool
+        let hit: Bool
+        let damage: Int
+        var multiplier: Int { hit ? 2 : 1 }
+    }
+
+    static func strike(_ attempt: PuzzleAttempt, on puzzle: Puzzle, with move: Move?) -> Strike {
+        let correct = attempt.verdict(for: puzzle).correct
+        let hit = correct && (move.map { Moves.hits($0, puzzle) } ?? false)
+        let damage = correct ? puzzle.vanskelighet * damagePerLevel * (hit ? 2 : 1) : 0
+        return Strike(correct: correct, hit: hit, damage: damage)
     }
 
     public mutating func choose(_ move: Move?) {
@@ -108,18 +150,16 @@ public struct RegionRun: Hashable, Sendable {
     public mutating func answer(_ attempt: PuzzleAttempt, progress: LearnerProgress, today: DayKey) -> (outcome: EncounterOutcome, result: AttemptResult)? {
         guard phase == .encounter, let encounter = current, encounter.moves.isEmpty || hasChosen else { return nil }
         let puzzle = encounter.puzzle
-        let verdict = attempt.verdict(for: puzzle)
+        let strike = Self.strike(attempt, on: puzzle, with: chosenMove)
         let first = Scheduler.isFirstAnswer(of: puzzle.id, on: today, progress: progress)
         let outcome: EncounterOutcome
-        if verdict.correct, !first {
+        if strike.correct, !first {
             outcome = .repeated
-        } else if verdict.correct {
-            let hit = chosenMove.map { Moves.hits($0, puzzle) } ?? false
-            let multiplier = hit ? 2 : 1
-            damage += puzzle.vanskelighet * Self.damagePerLevel * multiplier
-            xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: true) * multiplier
+        } else if strike.correct {
+            damage += strike.damage
+            xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: true) * strike.multiplier
             caught += 1
-            outcome = .caught(stage: Stage.of(box: (progress.puzzles[puzzle.id]?.box ?? 0) + 1), superEffective: hit)
+            outcome = .caught(stage: Stage.of(box: (progress.puzzles[puzzle.id]?.box ?? 0) + 1), superEffective: strike.hit)
             if encounter.isGymLeader {
                 gymBadgeEarned = true
                 xp += Self.gymXP
@@ -132,7 +172,7 @@ public struct RegionRun: Hashable, Sendable {
         }
         seen.insert(puzzle.id)
         phase = .result(outcome)
-        return (outcome, AttemptResult(puzzleId: puzzle.id, correctFirstTry: verdict.correct))
+        return (outcome, AttemptResult(puzzleId: puzzle.id, correctFirstTry: strike.correct))
     }
 
     /// Leaves the result: back to the next encounter, or finished when the HP is gone.

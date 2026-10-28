@@ -5,6 +5,16 @@ import Foundation
 public enum BattleScript {
     public static func intro(_ encounter: Encounter) -> [String] {
         let name = SpeciesName.name(for: encounter.puzzle.id)
+        let title = encounter.puzzle.tittel
+        switch encounter.context {
+        case .wild: break
+        case .bilag: return ["Bilag fra haugen!", title]
+        case .correction(_, let day):
+            // One page; the dialog's wrap puts a long species name on the date's line instead of cutting it.
+            return ["Avstemmingen går ikke opp: \(name) \(String(format: "%02d.%02d", day.day, day.month))."]
+        case .trial: return ["Prøvesak!", title]
+        case .fagkontor(let office): return ["\(office) vil teste deg!", title]
+        }
         let first: String
         if encounter.isGymLeader {
             first = "Gym-lederen \(name) stiller!"
@@ -13,7 +23,7 @@ public enum BattleScript {
         } else {
             first = "\(name) (\(encounter.stageBefore.navn.uppercased())) vil kjempe igjen!"
         }
-        return [first, encounter.puzzle.tittel]
+        return [first, title]
     }
 
     public static func moveUsed(_ move: Move?, laws: LawNames) -> String {
@@ -30,6 +40,10 @@ public enum BattleScript {
             return ["Bom!", "\(name) flyktet! Kunden mistet \(kroner(hpLost)) kr."]
         case .repeated:
             return ["Riktig, men \(name) er alt møtt i dag.", "Den kommer igjen i morgen."]
+        case .booked:
+            return ["Bilaget er bokført."]
+        case .corrected(let ok):
+            return [ok ? "Feilen er rettet." : "Fortsatt feil. Kunden er mindre fornøyd."]
         }
     }
 

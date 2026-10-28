@@ -99,6 +99,18 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(f.handle(.a, attempt: &a), .next)
     }
 
+    func testBookedSkipsTheExplanationButCorrectedShowsIt() {
+        var (f, a) = flow()
+        f.showOutcome(.booked)
+        XCTAssertEqual(f.pages, [["Bilaget er", "bokført."]])
+        XCTAssertEqual(f.handle(.a, attempt: &a), .next, "the explanation would give the verdict away")
+        var (g, b) = flow()
+        g.showOutcome(.corrected(ok: false))
+        while g.hasMorePages { _ = g.handle(.a, attempt: &b) }
+        XCTAssertEqual(g.handle(.a, attempt: &b), .none)
+        XCTAssertEqual(g.phase, .explanation)
+    }
+
     func testClickOnTheDialogAdvancesLikeAInThePagePhases() {
         var (f, a) = flow()
         XCTAssertTrue(f.awaitsContinue)
