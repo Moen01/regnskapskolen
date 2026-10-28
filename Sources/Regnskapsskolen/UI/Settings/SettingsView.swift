@@ -42,6 +42,11 @@ struct SettingsView: View {
                 if let error = store.loadError { Text(error).font(.caption).foregroundStyle(Color.bad) }
                 Toggle("Vis utkast (oppgaver som ikke er godkjent, også de Claude lager)", isOn: $settings.showDrafts)
             }
+            Section("Spill") {
+                Toggle("Vis Spill i sidepanelet", isOn: $settings.showGame)
+                Text("Paragrafjakten, Lynrunde og Debet eller kredit? Fremdriften og XP-en din beholdes når du skrur det av.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Section("Oppdateringer") {
                 LabeledContent("Versjon") { Text(AppUpdater.currentVersion).monospacedDigit() }
                 if AppUpdater.isDevelopmentBuild {
@@ -77,6 +82,7 @@ struct SettingsView: View {
         .onChange(of: settings.reminderWeekdays) { store.scheduleReminders() }
         .onChange(of: settings.dailyCount) { store.scheduleReminders() }
         .onChange(of: settings.showDrafts) { store.reloadContent() }
+        .onChange(of: settings.showGame) { if !settings.showGame, navigation.section == .game { navigation.section = .settings } }
     }
 
     /// Minutes from midnight as a Date on today's calendar day, for the time picker.

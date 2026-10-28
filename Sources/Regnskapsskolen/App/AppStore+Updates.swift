@@ -7,7 +7,6 @@ extension AppStore {
     static let updateInterval: TimeInterval = 6 * 3600
     /// Opening the popover checks again when the last check is older than this.
     static let staleAfter: TimeInterval = 3600
-    private static var isScreenshotRun: Bool { ProcessInfo.processInfo.environment["REGNSKAP_SCREENSHOTS"] != nil }
 
     func checkForAppUpdate(userInitiated: Bool = false) async {
         lastUpdateCheck = Date()
