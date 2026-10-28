@@ -20,7 +20,7 @@ public struct AnswerPanel: Hashable, Sendable {
         case spotElements
     }
 
-    let puzzle: Puzzle
+    public let puzzle: Puzzle
     let rates: [MVARate]
     private(set) var mode: Mode
     private(set) var attempt: PuzzleAttempt
