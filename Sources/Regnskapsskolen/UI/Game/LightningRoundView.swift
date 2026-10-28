@@ -26,9 +26,13 @@ struct LightningRoundView: View {
 
     private func topBar(_ round: LightningRound) -> some View {
         HStack(spacing: 12) {
-            TimelineView(.periodic(from: .now, by: 0.1)) { _ in
-                let left = Int(round.remaining(at: store.now).rounded(.up))
-                Label("\(left) s", systemImage: "timer").monospacedDigit().foregroundStyle(left < 10 ? Color.bad : Color.primary)
+            if round.limit.isInfinite {
+                Label("Spørsmål \(round.answered + 1) av \(round.answered + round.queue.count)", systemImage: "list.number").monospacedDigit()
+            } else {
+                TimelineView(.periodic(from: .now, by: 0.1)) { _ in
+                    let left = Int(round.remaining(at: store.now).rounded(.up))
+                    Label("\(left) s", systemImage: "timer").monospacedDigit().foregroundStyle(left < 10 ? Color.bad : Color.primary)
+                }
             }
             Text("\(round.score) poeng").monospacedDigit()
             Pill(text: String(format: "×%.2f", round.combo.multiplier), color: .skole)
