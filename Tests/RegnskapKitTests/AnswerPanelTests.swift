@@ -105,4 +105,85 @@ final class AnswerPanelTests: XCTestCase {
         XCTAssertEqual(panel.handle(.b, attempt: &attempt), .back)
         XCTAssertEqual(attempt, .quiz(1))
     }
+
+    func testPostingLineFormatFitsSeventeenColumns() {
+        let accounts = [AccountOption(nr: "1920", navn: "Bankinnskudd"), AccountOption(nr: "3000", navn: "Salgsinntekt, avgiftspliktig")]
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: 2500), accounts: accounts), "1920 Bank  D 2500")
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "3000", kredit: 1250000), accounts: accounts), "3000 Sa K 1250000")
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(), accounts: accounts), "---- (tom)")
+    }
+
+    func testPostingEnterWalksAccountSideAmountThenStrikes() {
+        let p = puzzle(.postering)
+        let accounts = p.payloadPosting!.kontoer
+        var attempt = PuzzleAttempt.empty(for: .postering)
+        var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
+        XCTAssertEqual(panel.title, "FØR BILAGET")
+        XCTAssertEqual(panel.rows.map(\.id), ["line-0", "line-1", "add", "strike"])
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)            // line 0 → account list
+        XCTAssertEqual(panel.title, "KONTO")
+        XCTAssertEqual(panel.rows.count, accounts.count)
+        _ = panel.handle(.down, attempt: &attempt)
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)            // account chosen → side
+        XCTAssertEqual(panel.title, "SIDE")
+        XCTAssertEqual(panel.rows.map(\.text), ["Debet", "Kredit"])
+        _ = panel.handle(.right, attempt: &attempt)
+        XCTAssertEqual(panel.cursor, 1)
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)            // side chosen → amount entry
+        XCTAssertEqual(panel.entryLabel, "BELØP:")
+        for c in "2500" { _ = panel.handle(.character(c), attempt: &attempt) }
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)            // amount set → back to lines, next line
+        XCTAssertEqual(panel.title, "FØR BILAGET")
+        XCTAssertEqual(panel.cursor, 1)
+        guard case .posting(let lines) = attempt else { return XCTFail() }
+        XCTAssertEqual(lines[0].konto, accounts[1].nr)
+        XCTAssertEqual(lines[0].kredit, 2500)
+        XCTAssertNil(lines[0].debet)
+        XCTAssertEqual(panel.sums?.kredit, 2500)
+        _ = panel.handle(.down, attempt: &attempt)                              // "add"
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)
+        XCTAssertEqual(panel.rows.map(\.id), ["line-0", "line-1", "line-2", "add", "strike"])
+        while panel.rows[panel.cursor].id != "strike" { _ = panel.handle(.down, attempt: &attempt) }
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .attack)
+    }
+
+    func testPostingStrikeNeedsAnAnswerAndDeleteRemovesALine() {
+        let p = puzzle(.postering)
+        var attempt = PuzzleAttempt.empty(for: .postering)
+        var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
+        while panel.rows[panel.cursor].id != "strike" { _ = panel.handle(.down, attempt: &attempt) }
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .invalid("Før minst én linje først."))
+        panel.cursor = 0
+        _ = panel.handle(.delete, attempt: &attempt)
+        XCTAssertEqual(panel.rows.map(\.id), ["line-0", "add", "strike"])
+        _ = panel.handle(.delete, attempt: &attempt)                            // the last line stays
+        XCTAssertEqual(panel.rows.map(\.id), ["line-0", "add", "strike"])
+    }
+
+    func testClassifyPicksACategoryPerElement() {
+        let p = puzzle(.klassifiser)
+        let c = p.payloadClassify!
+        var attempt = PuzzleAttempt.empty(for: .klassifiser)
+        var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
+        XCTAssertEqual(panel.rows.count, c.elementer.count + 1)                 // + "strike"
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)
+        XCTAssertEqual(panel.rows.map(\.text), c.kategorier.map { TextWrap.truncate($0, to: 17) })
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)
+        XCTAssertEqual(attempt, .classify([0: c.kategorier[0]]))
+        XCTAssertTrue(panel.rows[0].marked)
+        while panel.rows[panel.cursor].id != "strike" { _ = panel.handle(.down, attempt: &attempt) }
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .attack)
+    }
+
+    func testSpotTogglesAndStrikesEvenWithNothingMarked() {
+        let p = puzzle(.finnfeil)
+        var attempt = PuzzleAttempt.empty(for: .finnfeil)
+        var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
+        XCTAssertTrue(panel.rows[0].text.hasPrefix("[ ] "))
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .none)
+        XCTAssertTrue(panel.rows[0].text.hasPrefix("[x] "))
+        XCTAssertEqual(attempt, .spot([0]))
+        while panel.rows[panel.cursor].id != "strike" { _ = panel.handle(.down, attempt: &attempt) }
+        XCTAssertEqual(panel.handle(.a, attempt: &attempt), .attack)
+    }
 }

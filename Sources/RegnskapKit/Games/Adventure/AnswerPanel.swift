@@ -277,14 +277,109 @@ public struct AnswerPanel: Hashable, Sendable {
         let side = line.debet != nil ? "D" : (line.kredit != nil ? "K" : " ")
         let amount = (line.debet ?? line.kredit).map { NSDecimalNumber(decimal: $0).stringValue } ?? ""
         let name = accounts.first { $0.nr == line.konto }?.navn ?? ""
-        let fixed = line.konto.count + 1 + 2 + side.count + 1 + amount.count
-        let room = max(2, columns - fixed)
-        let shortName = String(name.prefix(room))
-        return "\(line.konto) \(shortName.padding(toLength: room, withPad: " ", startingAt: 0))\(side) \(amount)".trimmingCharacters(in: .whitespaces)
+        // Everything but the name and the gap before the side; the name shrinks to at least two
+        // letters, and the gap closes to one space when even that is too wide.
+        let base = line.konto.count + 1 + side.count + 1 + amount.count
+        let room = max(2, columns - base - 2)
+        let gap = base + room + 2 <= columns ? "  " : " "
+        let shortName = String(name.prefix(room)).padding(toLength: room, withPad: " ", startingAt: 0)
+        return "\(line.konto) \(shortName)\(gap)\(side) \(amount)".trimmingCharacters(in: .whitespaces)
     }
 
     private mutating func handlePosting(_ key: GameKey) -> PanelEvent {
-        .none
+        guard case .posting(let p) = puzzle.payload else { return .none }
+        var lines = postingLines
+        switch mode {
+        case .postingLines:
+            if move(key) { return .none }
+            let row = rows[cursor]
+            switch key {
+            case .a where row.id == "strike":
+                return attempt.isAnswered ? .attack : .invalid("Før minst én linje først.")
+            case .a where row.id == "add":
+                lines.append(PostingAttemptLine())
+                attempt = .posting(lines)
+                return .none
+            case .a:
+                let index = cursor
+                mode = .postingAccount(index)
+                cursor = p.kontoer.firstIndex { $0.nr == lines[index].konto } ?? 0
+                return .none
+            case .delete where row.id.hasPrefix("line-") && lines.count > 1:
+                lines.remove(at: cursor)
+                attempt = .posting(lines)
+                cursor = min(cursor, lines.count - 1)
+                return .none
+            case .b:
+                return .back
+            default:
+                return .none
+            }
+        case .postingAccount(let index):
+            if move(key) { return .none }
+            switch key {
+            case .a:
+                lines[index].konto = p.kontoer[cursor].nr
+                attempt = .posting(lines)
+                mode = .postingSide(index)
+                cursor = lines[index].kredit != nil && lines[index].debet == nil ? 1 : 0
+                return .none
+            case .b:
+                mode = .postingLines
+                cursor = index
+                return .none
+            default:
+                return .none
+            }
+        case .postingSide(let index):
+            switch key {
+            case .left, .up: cursor = 0; return .none
+            case .right, .down: cursor = 1; return .none
+            case .a:
+                mode = .postingAmount(index)
+                entry = (lines[index].debet ?? lines[index].kredit).map { NSDecimalNumber(decimal: $0).stringValue } ?? ""
+                entryLabel = "BELØP:"
+                return .none
+            case .b:
+                mode = .postingLines
+                cursor = index
+                return .none
+            default:
+                return .none
+            }
+        case .postingAmount(let index):
+            switch key {
+            case .character(let c):
+                if Set("0123456789 ,.").contains(c) { entry = (entry ?? "") + String(c) }
+                return .none
+            case .delete:
+                if let text = entry, !text.isEmpty { entry = String(text.dropLast()) }
+                return .none
+            case .a:
+                guard let amount = NorwegianFormat.parseAmount(entry ?? ""), amount > 0 else {
+                    return .invalid("Skriv et beløp, for eksempel 1 250 eller 1250,50.")
+                }
+                let credit = cursor == 1
+                lines[index].debet = credit ? nil : amount
+                lines[index].kredit = credit ? amount : nil
+                attempt = .posting(lines)
+                entry = nil
+                entryLabel = ""
+                mode = .postingLines
+                cursor = min(index + 1, lines.count - 1)
+                return .none
+            case .b:
+                entry = nil
+                entryLabel = ""
+                mode = .postingLines
+                cursor = index
+                return .none
+            default:
+                return .none
+            }
+        default:
+            return .none
+        }
     }
 
     // MARK: Classify and spot
@@ -294,8 +389,42 @@ public struct AnswerPanel: Hashable, Sendable {
     }
 
     private mutating func handleClassify(_ key: GameKey) -> PanelEvent {
+        guard case .classify(let p) = puzzle.payload else { return .none }
         if move(key) { return .none }
-        return key == .b ? .back : .none
+        switch mode {
+        case .classifyElements:
+            switch key {
+            case .a where rows[cursor].id == "strike":
+                return attempt.isAnswered ? .attack : .invalid("Velg en kategori først.")
+            case .a:
+                let index = cursor
+                mode = .classifyCategory(index)
+                cursor = classifyAnswers[index].flatMap { p.kategorier.firstIndex(of: $0) } ?? 0
+                return .none
+            case .b:
+                return .back
+            default:
+                return .none
+            }
+        case .classifyCategory(let index):
+            switch key {
+            case .a:
+                var answers = classifyAnswers
+                answers[index] = p.kategorier[cursor]
+                attempt = .classify(answers)
+                mode = .classifyElements
+                cursor = index
+                return .none
+            case .b:
+                mode = .classifyElements
+                cursor = index
+                return .none
+            default:
+                return .none
+            }
+        default:
+            return .none
+        }
     }
 
     private var spotMarked: Set<Int> {
@@ -304,6 +433,18 @@ public struct AnswerPanel: Hashable, Sendable {
 
     private mutating func handleSpot(_ key: GameKey) -> PanelEvent {
         if move(key) { return .none }
-        return key == .b ? .back : .none
+        switch key {
+        case .a where rows[cursor].id == "strike":
+            return .attack
+        case .a, .character(" "):
+            var marked = spotMarked
+            if marked.contains(cursor) { marked.remove(cursor) } else { marked.insert(cursor) }
+            attempt = .spot(marked)
+            return .none
+        case .b:
+            return .back
+        default:
+            return .none
+        }
     }
 }
