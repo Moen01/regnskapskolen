@@ -66,6 +66,7 @@ extension AppStore {
         } else {
             return
         }
+        lastWasWeekly = weeklyRound
         if weeklyRound {
             // The challenge has its own book: no record, no round badge, one result per week.
             weeklyRound = false

@@ -56,6 +56,8 @@ final class AppStore {
     var showCollection = false
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
+    /// The last summary came from the weekly challenge, so it shows the shareable code.
+    var lastWasWeekly = false
 
     /// A newer release on GitHub, once a check has found one.
     var availableUpdate: AppRelease?

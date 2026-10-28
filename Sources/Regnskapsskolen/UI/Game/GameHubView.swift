@@ -11,9 +11,11 @@ struct GameHubView: View {
         } else if store.drill != nil {
             DebitCreditView()
         } else if let summary = store.lastSummary {
-            RoundSummaryView(summary: summary, newBadges: store.newBadges, isRecord: store.lastWasRecord,
+            RoundSummaryView(summary: summary, newBadges: store.newBadges, isRecord: store.lastWasRecord, weeklyCode: store.lastWasWeekly ? store.weeklyCode : nil,
                              onAgain: { summary.game == .lynrunde ? store.startLightning() : store.startDrill() },
                              onHub: { store.lastSummary = nil })
+        } else if store.showCollection {
+            CollectionView()
         } else if store.run?.current != nil {
             EncounterView()
         } else if let summary = store.lastRunSummary {

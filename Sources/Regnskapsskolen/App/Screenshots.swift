@@ -48,6 +48,9 @@ enum Screenshots {
         store.endRun()
         store.lastRunSummary = nil
         store.selectedRegion = nil
+        store.showCollection = true
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-samling.png"))
+        store.showCollection = false
         navigation.section = .today
         for kind in PuzzleKind.allCases {
             guard let puzzle = store.pool.first(where: { $0.kind == kind }) else { continue }
