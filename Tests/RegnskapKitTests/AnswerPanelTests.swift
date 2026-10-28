@@ -111,6 +111,8 @@ final class AnswerPanelTests: XCTestCase {
         XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: 2500), accounts: accounts), "1920 Bank  D 2500")
         XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "3000", kredit: 1250000), accounts: accounts), "3000 Sa K 1250000")
         XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(), accounts: accounts), "---- (tom)")
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: Decimal(string: "2500.5")!), accounts: accounts), "1920 Ba  D 2500,5")
+        XCTAssertEqual(AnswerPanel.amountText(Decimal(string: "1250.25")!), "1250,25")
     }
 
     func testPostingEnterWalksAccountSideAmountThenStrikes() {

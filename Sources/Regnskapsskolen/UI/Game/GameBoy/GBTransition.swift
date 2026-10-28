@@ -22,31 +22,33 @@ extension View {
     }
 }
 
-/// Two inversions of the screen over 0.3 s.
+/// Two inversions of the screen over 0.3 s, drawn as an overlay so the view underneath keeps
+/// its identity (focus, typing and pending keys survive the flash).
 private struct GBFlash<Trigger: Equatable>: ViewModifier {
     let trigger: Trigger
     @State private var inverted = false
 
     func body(content: Content) -> some View {
         content
-            .colorInvert(inverted)
-            .onChange(of: trigger) {
-                Task { @MainActor in
-                    for _ in 0..<2 {
-                        inverted = true
-                        try? await Task.sleep(for: .milliseconds(75))
-                        inverted = false
-                        try? await Task.sleep(for: .milliseconds(75))
-                    }
-                }
+            .overlay {
+                Rectangle().fill(.white).blendMode(.difference)
+                    .opacity(inverted ? 1 : 0)
+                    .allowsHitTesting(false)
             }
+            .onAppear(perform: flash)
+            .onChange(of: trigger) { flash() }
     }
-}
 
-private extension View {
-    @ViewBuilder
-    func colorInvert(_ on: Bool) -> some View {
-        if on { colorInvert() } else { self }
+    private func flash() {
+        guard !AppStore.isScreenshotRun else { return }
+        Task { @MainActor in
+            for _ in 0..<2 {
+                inverted = true
+                try? await Task.sleep(for: .milliseconds(75))
+                inverted = false
+                try? await Task.sleep(for: .milliseconds(75))
+            }
+        }
     }
 }
 

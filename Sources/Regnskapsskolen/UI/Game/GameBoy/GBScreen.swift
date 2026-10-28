@@ -44,7 +44,7 @@ struct GBScreen<Content: View>: View {
                 .focusEffectDisabled()
                 .focused($focused)
                 .onAppear { focused = true }
-                .onTapGesture { focused = true }
+                .simultaneousGesture(TapGesture().onEnded { focused = true })
                 .onKeyPress(phases: .down) { press in
                     guard let key = Self.key(for: press) else { return .ignored }
                     onKey(key)

@@ -9,6 +9,11 @@ struct GBDialog: View {
     let page: Int
     var typing = true
     var tabTurns = false
+    /// The marker shows even on the last page: A moves the story on.
+    var showsMarker = false
+    /// Bumped by the owner when Enter or space should show the rest of the page at once.
+    var reveal = 0
+    var onComplete: ((Bool) -> Void)? = nil
     let onTurn: () -> Void
     @State private var shown = Int.max
     @State private var blink = true
@@ -21,14 +26,15 @@ struct GBDialog: View {
     var body: some View {
         GBBox(x: 0, y: 96, width: 160, height: 48, padding: 0) {
             ZStack(alignment: .bottomTrailing) {
-                VStack(alignment: .leading, spacing: 4 * scale) {
+                // Lines at y 6, 16 and 26; the marker sits at y 36–44, under the third line.
+                VStack(alignment: .leading, spacing: 2 * scale) {
                     ForEach(Array(visibleLines.enumerated()), id: \.offset) { _, line in GBText(line) }
                 }
-                .padding(.top, 8 * scale)
+                .padding(.top, 6 * scale)
                 .padding(.leading, 8 * scale)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                if complete, hasMore || tabTurns {
-                    GBText(tabTurns ? "TAB▼" : "▼")
+                if complete, hasMore || tabTurns || showsMarker {
+                    GBText(tabTurns && !showsMarker ? "TAB▼" : "▼")
                         .opacity(blink || !typing ? 1 : 0)
                         .padding(.trailing, 6 * scale)
                         .padding(.bottom, 4 * scale)
@@ -41,6 +47,8 @@ struct GBDialog: View {
         }
         .onChange(of: pages) { restart() }
         .onChange(of: page) { restart() }
+        .onChange(of: reveal) { shown = total }
+        .onChange(of: complete) { onComplete?(complete) }
         .onAppear { restart() }
         .task(id: typing) {
             guard typing else { return }

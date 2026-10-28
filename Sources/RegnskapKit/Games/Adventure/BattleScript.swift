@@ -39,8 +39,11 @@ public enum BattleScript {
             + encounter.puzzle.lov.map { "\(laws.short($0.lov)) \($0.paragraf): \($0.tekst)" }
     }
 
-    /// Whole kroner with the Norwegian thousands separator and an ASCII minus.
+    /// Whole kroner with a plain space between thousands and an ASCII minus: the pixel font has
+    /// neither U+202F nor U+2212.
     public static func kroner(_ amount: Int) -> String {
-        NorwegianFormat.kroner(Decimal(amount), decimals: 0).replacingOccurrences(of: "\u{2212}", with: "-")
+        NorwegianFormat.kroner(Decimal(amount), decimals: 0)
+            .replacingOccurrences(of: "\u{2212}", with: "-")
+            .replacingOccurrences(of: "\u{202F}", with: " ")
     }
 }

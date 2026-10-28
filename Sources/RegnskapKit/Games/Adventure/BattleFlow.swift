@@ -53,6 +53,22 @@ public struct BattleFlow: Hashable, Sendable {
 
     public var hasMorePages: Bool { page < pages.count - 1 }
 
+    /// Phases where A (or a click on the dialog) moves the story on, so the dialog shows a
+    /// continue marker even on its last page.
+    public var awaitsContinue: Bool {
+        switch phase {
+        case .intro, .reading, .card, .outcome, .explanation: true
+        default: false
+        }
+    }
+
+    /// A click on the dialog box: the next step where the dialog is the story, else the next page.
+    public mutating func clickDialog(attempt: inout PuzzleAttempt) -> BattleAction {
+        if awaitsContinue { return handle(.a, attempt: &attempt) }
+        turnPage()
+        return .none
+    }
+
     /// Tab, or a click in the dialog: the next page, round to the first.
     public mutating func turnPage() {
         page = hasMorePages ? page + 1 : 0
@@ -87,6 +103,8 @@ public struct BattleFlow: Hashable, Sendable {
 
     public mutating func handle(_ key: GameKey, attempt: inout PuzzleAttempt) -> BattleAction {
         if key == .tab { turnPage(); return .none }
+        // Space reads like A while the dialog tells the story; in a panel it is a typed character.
+        let key = key == .character(" ") && awaitsContinue ? GameKey.a : key
         switch phase {
         case .intro:
             if key == .a || key == .b { advance(orElse: { $0.enterMenu() }) }
@@ -229,14 +247,15 @@ public struct BattleFlow: Hashable, Sendable {
         show([cardRows.isEmpty ? "Ingen regelkort her." : (cardRows[cardCursor].full ?? cardRows[cardCursor].text)])
     }
 
-    /// The move used, the panel's preface (a sak's message), then the highlighted row in full or
-    /// the task text. The page stays when the pages did not change, so the learner is not thrown
-    /// back to the start by every cursor move inside an entry field.
+    /// The move used, the panel's preface (a sak's message), the highlighted row in full when it
+    /// was cut, then the task text. The page stays when the pages did not change, so the learner
+    /// is not thrown back to the start by every keystroke inside an entry field.
     private mutating func showAnswerPages(keepingPageWhenUnchanged before: [[String]]? = nil) {
         var texts: [String] = []
         if hasChosen { texts.append(BattleScript.moveUsed(chosenMove, laws: laws)) }
         texts += panel.preface
-        texts.append(panel.dialog ?? TextWrap.plain(markdown: encounter.puzzle.oppgave))
+        if let row = panel.dialog { texts.append(row) }
+        texts.append(TextWrap.plain(markdown: encounter.puzzle.oppgave))
         let fresh = Self.paged(texts)
         if fresh != before { pages = fresh; page = 0 }
     }

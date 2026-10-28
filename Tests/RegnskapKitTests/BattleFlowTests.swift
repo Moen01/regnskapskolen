@@ -99,6 +99,53 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(f.handle(.a, attempt: &a), .next)
     }
 
+    func testClickOnTheDialogAdvancesLikeAInThePagePhases() {
+        var (f, a) = flow()
+        XCTAssertTrue(f.awaitsContinue)
+        XCTAssertEqual(f.clickDialog(attempt: &a), .none)    // next intro page
+        XCTAssertEqual(f.clickDialog(attempt: &a), .none)    // → menu
+        XCTAssertEqual(f.phase, .menu)
+        XCTAssertFalse(f.awaitsContinue)
+        _ = f.handle(.a, attempt: &a); _ = f.handle(.a, attempt: &a)   // KJEMP, first move → answer
+        XCTAssertEqual(f.phase, .answer)
+        let before = f.page
+        XCTAssertEqual(f.clickDialog(attempt: &a), .none)    // in the answer phase a click only turns the page
+        XCTAssertEqual(f.page, before + 1)
+        XCTAssertEqual(f.phase, .answer)
+        f.showOutcome(.escaped(hpLost: 500))
+        while f.hasMorePages { _ = f.clickDialog(attempt: &a) }
+        _ = f.clickDialog(attempt: &a)
+        XCTAssertEqual(f.phase, .explanation)
+        XCTAssertTrue(f.awaitsContinue)                      // the last explanation page still shows the marker
+        while f.hasMorePages { _ = f.clickDialog(attempt: &a) }
+        XCTAssertEqual(f.clickDialog(attempt: &a), .next)
+    }
+
+    func testSpaceActsAsAWhileReading() {
+        var (f, a) = flow()
+        XCTAssertEqual(f.handle(.character(" "), attempt: &a), .none)
+        XCTAssertEqual(f.page, 1)
+        _ = f.handle(.character(" "), attempt: &a)
+        XCTAssertEqual(f.phase, .menu)
+    }
+
+    func testAnswerPagesShowTheRowThenTheTask() {
+        let puzzle = Self.library.puzzles.first { p in
+            p.kind == .quiz && Moves.canHit(p, regionCards: Self.library.rules(tema: p.tema)) && p.payloadQuiz!.alternativer[0].count > 17
+        }!
+        let cards = Self.library.rules(tema: puzzle.tema)
+        let moves = Moves.options(for: puzzle, regionCards: cards, otherCards: Self.library.rules.filter { $0.tema != puzzle.tema }, seed: 1)
+        var f = BattleFlow(encounter: Encounter(puzzle: puzzle, stageBefore: .vill, moves: moves, isGymLeader: false),
+                           laws: Self.library.laws, cards: cards, rates: [], attempt: .empty(for: .quiz))
+        var a = PuzzleAttempt.empty(for: .quiz)
+        for _ in 0..<4 { _ = f.handle(.a, attempt: &a) }
+        XCTAssertEqual(f.phase, .answer)
+        let taskPages = TextWrap.pages(TextWrap.lines(TextWrap.plain(markdown: puzzle.oppgave), columns: 18), rows: 3)
+        let rowPages = TextWrap.pages(TextWrap.lines(puzzle.payloadQuiz!.alternativer[0], columns: 18), rows: 3)
+        XCTAssertEqual(Array(f.pages.suffix(taskPages.count)), taskPages)
+        XCTAssertEqual(Array(f.pages.dropFirst().prefix(rowPages.count)), rowPages)
+    }
+
     func testPanelInvalidBecomesADialogPage() {
         var (f, a) = flow(kind: .regnut)
         _ = f.handle(.a, attempt: &a); _ = f.handle(.a, attempt: &a); _ = f.handle(.a, attempt: &a); _ = f.handle(.a, attempt: &a)

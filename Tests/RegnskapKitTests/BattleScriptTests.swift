@@ -29,7 +29,7 @@ final class BattleScriptTests: XCTestCase {
         XCTAssertEqual(BattleScript.result(.caught(stage: .ung, superEffective: false), encounter: encounter()),
                        ["Treff!", "\(name) ble fanget! Trinn: UNG"])
         XCTAssertEqual(BattleScript.result(.escaped(hpLost: 1000), encounter: encounter()),
-                       ["Bom!", "\(name) flyktet! Kunden mistet 1\u{202F}000 kr."])
+                       ["Bom!", "\(name) flyktet! Kunden mistet 1 000 kr."])
         XCTAssertEqual(BattleScript.result(.repeated, encounter: encounter()),
                        ["Riktig, men \(name) er alt møtt i dag.", "Den kommer igjen i morgen."])
     }
@@ -38,7 +38,8 @@ final class BattleScriptTests: XCTestCase {
         XCTAssertEqual(BattleScript.explanation(encounter(), laws: laws), ["Fordi bfl. sier det.", "bfl. § 4: Grunnleggende prinsipper."])
     }
 
-    func testKronerUsesAsciiMinus() {
-        XCTAssertEqual(BattleScript.kroner(-2500), "-2\u{202F}500")
+    func testKronerUsesAsciiMinusAndAPlainSpace() {
+        XCTAssertEqual(BattleScript.kroner(-2500), "-2 500")
+        XCTAssertEqual(BattleScript.kroner(1_250_000), "1 250 000")
     }
 }

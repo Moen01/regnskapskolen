@@ -12,6 +12,9 @@ struct BattleScreen: View {
     @State private var misses = 0
     /// The voucher line that is hitting right now, while the hits play.
     @State private var hitLine: Int?
+    /// Whether the dialog has typed out its page; Enter and space first reveal, then advance.
+    @State private var dialogComplete = true
+    @State private var reveal = 0
 
     private struct Battle: Hashable {
         let id: String
@@ -48,7 +51,8 @@ struct BattleScreen: View {
                     BattleMenu(cursor: flow.menuCursor, onClick: { index in click(menu: index) })
                 } else {
                     GBDialog(pages: flow.pages, page: flow.page, typing: !AppStore.isScreenshotRun,
-                             tabTurns: flow.phase == .answer && flow.pages.count > 1, onTurn: turnPage)
+                             tabTurns: flow.phase == .answer && flow.pages.count > 1, showsMarker: flow.awaitsContinue,
+                             reveal: reveal, onComplete: { dialogComplete = $0 }, onTurn: clickDialog)
                 }
             }
         }
@@ -63,6 +67,11 @@ struct BattleScreen: View {
     }
 
     private func handle(_ key: GameKey) {
+        // While the page is still being typed, Enter and space show the rest of it; the next press moves on.
+        if !dialogComplete, !AppStore.isScreenshotRun, key == .a || key == .character(" "), flow?.awaitsContinue == true {
+            reveal += 1
+            return
+        }
         drive { flow, attempt in flow.handle(key, attempt: &attempt) }
     }
 
@@ -74,8 +83,9 @@ struct BattleScreen: View {
         drive { flow, attempt in flow.click(menu: index, attempt: &attempt) }
     }
 
-    private func turnPage() {
-        drive { flow, _ in flow.turnPage(); return .none }
+    private func clickDialog() {
+        if !dialogComplete, !AppStore.isScreenshotRun { reveal += 1; return }
+        drive { flow, attempt in flow.clickDialog(attempt: &attempt) }
     }
 
     /// Runs one step of the flow against the session's attempt, keeps both, and acts on the result.

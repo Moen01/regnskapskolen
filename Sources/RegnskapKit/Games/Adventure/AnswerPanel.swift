@@ -66,6 +66,14 @@ public struct AnswerPanel: Hashable, Sendable {
 
     // MARK: What the view draws
 
+    /// True while the voucher's lines are listed (the view shows the sums in the headline).
+    public var isListingLines: Bool { mode == .postingLines }
+
+    /// An amount as the learner wrote it: no grouping, a decimal comma.
+    public static func amountText(_ value: Decimal) -> String {
+        NSDecimalNumber(decimal: value).stringValue.replacingOccurrences(of: ".", with: ",")
+    }
+
     public var title: String {
         switch mode {
         case .list:
@@ -275,7 +283,7 @@ public struct AnswerPanel: Hashable, Sendable {
     public static func format(line: PostingAttemptLine, accounts: [AccountOption]) -> String {
         guard !line.konto.isEmpty else { return "---- (tom)" }
         let side = line.debet != nil ? "D" : (line.kredit != nil ? "K" : " ")
-        let amount = (line.debet ?? line.kredit).map { NSDecimalNumber(decimal: $0).stringValue } ?? ""
+        let amount = (line.debet ?? line.kredit).map(amountText) ?? ""
         let name = accounts.first { $0.nr == line.konto }?.navn ?? ""
         // Everything but the name and the gap before the side; the name shrinks to at least two
         // letters, and the gap closes to one space when even that is too wide.
@@ -337,7 +345,7 @@ public struct AnswerPanel: Hashable, Sendable {
             case .right, .down: cursor = 1; return .none
             case .a:
                 mode = .postingAmount(index)
-                entry = (lines[index].debet ?? lines[index].kredit).map { NSDecimalNumber(decimal: $0).stringValue } ?? ""
+                entry = (lines[index].debet ?? lines[index].kredit).map(Self.amountText) ?? ""
                 entryLabel = "BELØP:"
                 return .none
             case .b:

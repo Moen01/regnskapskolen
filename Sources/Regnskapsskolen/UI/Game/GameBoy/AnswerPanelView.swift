@@ -10,8 +10,8 @@ struct AnswerPanelView: View {
 
     private var headline: String {
         // While the voucher's lines are listed, the title gives way to the running sums.
-        if panel.title == "FØR BILAGET", let sums = panel.sums {
-            return TextWrap.truncate("BILAG D\(Self.amount(sums.debet)) K\(Self.amount(sums.kredit))", to: AnswerPanel.columns)
+        if panel.isListingLines, let sums = panel.sums {
+            return TextWrap.truncate("BILAG D\(AnswerPanel.amountText(sums.debet)) K\(AnswerPanel.amountText(sums.kredit))", to: AnswerPanel.columns)
         }
         return panel.title
     }
@@ -28,9 +28,5 @@ struct AnswerPanelView: View {
                 }
             }
         }
-    }
-
-    private static func amount(_ value: Decimal) -> String {
-        NSDecimalNumber(decimal: value).stringValue
     }
 }

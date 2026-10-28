@@ -32,6 +32,7 @@ struct MapScreen: View {
     }
 
     private var pages: [[String]] {
+        guard rows.indices.contains(cursor) else { return [[]] }
         let level = XP.level(for: store.progress.game.xp)
         let text: String
         if cursor < regions.count {
