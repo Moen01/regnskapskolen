@@ -102,7 +102,7 @@ public enum Scheduler {
 }
 
 /// A small seeded generator, so the day's shuffle is the same on every launch.
-struct SplitMix64: RandomNumberGenerator {
+struct SplitMix64: RandomNumberGenerator, Hashable {
     private var state: UInt64
     init(seed: UInt64) { state = seed }
     mutating func next() -> UInt64 {
