@@ -5,7 +5,8 @@ import RegnskapKit
 // App updates: a check against GitHub Releases, an install on request, and the loop that checks.
 extension AppStore {
     static let updateInterval: TimeInterval = 6 * 3600
-    private static var isScreenshotRun: Bool { ProcessInfo.processInfo.environment["REGNSKAP_SCREENSHOTS"] != nil }
+    /// Opening the popover checks again when the last check is older than this.
+    static let staleAfter: TimeInterval = 3600
 
     func checkForAppUpdate(userInitiated: Bool = false) async {
         lastUpdateCheck = Date()
@@ -49,6 +50,13 @@ extension AppStore {
             updateState = error.localizedDescription
             isUpdating = false
         }
+    }
+
+    /// A quiet check when the learner opens the popover and the last one is an hour old.
+    func checkForUpdateIfStale() {
+        guard !Self.isScreenshotRun, !AppUpdater.isDevelopmentBuild, settings.checkForUpdates,
+              Date().timeIntervalSince(lastUpdateCheck) > Self.staleAfter else { return }
+        Task { await checkForAppUpdate() }
     }
 
     /// Thirty seconds after launch, then every six hours while the app runs. Never in screenshot

@@ -35,14 +35,7 @@ Skriptet sjekker Xcode og Swift 6, ser etter Claude Code, bygger appen, legger d
 
 Appen sjekker nyeste utgivelse på GitHub 30 sekunder etter start og hver sjette time (kan slås av i Innstillinger). Finnes en nyere versjon, får du knappen **Oppdater til X.Y.Z** i menylinjen og **Oppdater og start på nytt** i Innstillinger → Oppdateringer, med utgivelsesnotatene under, og én varsling. Appen laster ned `Regnskapsskolen-<versjon>.zip` fra utgivelsen, pakker ut, kontrollerer signaturen (`codesign --verify`), bytter seg selv ut og starter på nytt. En app signert med Developer ID godtar bare en oppdatering fra samme Apple-team. En ad hoc-signert utgivelse (uten hemmelighetene under) kontrolleres bare for at bundelen er hel; Developer ID anbefales. Et lokalt bygg (`make app`, `make install`) er et utviklingsbygg og oppdaterer aldri seg selv.
 
-Publiser en versjon med en annotert tag; meldingen blir utgivelsesnotatet i appen:
-
-```sh
-git tag -a v0.2.0 -m "Regnskapsskolen 0.2.0: bankavstemming i sandkassen"
-git push origin v0.2.0
-```
-
-Workflowen **Release** tester, bygger, signerer og notariserer når disse hemmelighetene finnes i repoet, og legger zip-en på utgivelsen:
+Arbeid går i pull requests mot `staging`. En pull request `staging` → `main` som merges, blir en ny versjon av seg selv: workflowen **Release** bumper versjonen (patch; `#minor`/`#major` i merge-meldingen for mer), tagger, tester, bygger, signerer og notariserer når disse hemmelighetene finnes i repoet, og legger zip-en på utgivelsen. PR-beskrivelsen blir utgivelsesnotatet appen viser. Mer i `docs/releasing.md`.
 
 | Hemmelighet | Hva det er |
 |---|---|
@@ -51,8 +44,6 @@ Workflowen **Release** tester, bygger, signerer og notariserer når disse hemmel
 | `NOTARY_KEY_P8` | En App Store Connect API-nøkkel (Users and Access → Integrations → Team Keys, rollen Developer); innholdet i .p8-fila |
 | `NOTARY_KEY_ID` | Nøkkelens ID |
 | `NOTARY_ISSUER_ID` | Issuer ID over nøkkellisten |
-
-Mer i `docs/releasing.md`.
 
 ## Claude
 

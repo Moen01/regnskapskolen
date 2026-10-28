@@ -5,12 +5,17 @@ struct MainView: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
 
+    /// Spill is hidden until the learner turns it on in Innstillinger; screenshots show every screen.
+    private var sections: [AppSection] {
+        AppSection.allCases.filter { $0 != .game || store.settings.showGame || AppStore.isScreenshotRun }
+    }
+
     var body: some View {
         @Bindable var navigation = navigation
         NavigationSplitView {
             // Rows take their selection tag from the ForEach id, so the id must be the AppSection
             // itself: with the default String id the AppSection binding never matches a row.
-            List(AppSection.allCases, id: \.self, selection: $navigation.section) { section in
+            List(sections, id: \.self, selection: $navigation.section) { section in
                 Label(section.title, systemImage: section.symbol)
                     .badge(section == .today ? store.remainingToday : 0)
             }

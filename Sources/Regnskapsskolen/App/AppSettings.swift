@@ -20,6 +20,8 @@ final class AppSettings {
     /// The sandbox case the journal belongs to, so "Sjekk mot fasit" survives a relaunch.
     var sandboxCaseId: String { didSet { defaults.set(sandboxCaseId, forKey: "sandkasse.case") } }
     var checkForUpdates: Bool { didSet { defaults.set(checkForUpdates, forKey: "oppdateringer.sjekk") } }
+    /// The game lives in the sidebar only when the learner asks for it; off by default.
+    var showGame: Bool { didSet { defaults.set(showGame, forKey: "spill.vis") } }
     /// The tag last announced with a notification, so one version is announced once.
     var lastNotifiedUpdate: String { didSet { defaults.set(lastNotifiedUpdate, forKey: "oppdateringer.varslet") } }
 
@@ -34,6 +36,7 @@ final class AppSettings {
         onboardingDone = defaults.bool(forKey: "onboarding.v1")
         sandboxCaseId = defaults.string(forKey: "sandkasse.case") ?? ""
         checkForUpdates = defaults.object(forKey: "oppdateringer.sjekk") as? Bool ?? true
+        showGame = defaults.bool(forKey: "spill.vis")
         lastNotifiedUpdate = defaults.string(forKey: "oppdateringer.varslet") ?? ""
     }
 

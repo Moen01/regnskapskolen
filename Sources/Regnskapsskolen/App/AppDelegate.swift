@@ -139,6 +139,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         if popover.isShown { popover.performClose(nil) }
         else if let button = statusItem.button {
             store.reloadIfNewDayOrChanged()
+            store.checkForUpdateIfStale()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
         }
