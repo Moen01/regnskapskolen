@@ -1,0 +1,16 @@
+[
+  {
+    "id": "butikk",
+    "navn": "Butikkdrift",
+    "temaer": ["mva", "bilag-bokforingsloven"],
+    "regelkort": ["mva-satser", "bokforingsloven-dokumentasjon"],
+    "setning": "Butikken selger varer med mva."
+  },
+  {
+    "id": "konsulent",
+    "navn": "Konsulentvirksomhet",
+    "temaer": ["perioder-frister"],
+    "regelkort": ["mva-terminer-frister"],
+    "setning": "Konsulenten selger egen tid."
+  }
+]

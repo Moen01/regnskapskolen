@@ -1,0 +1,21 @@
+{
+  "id": "butikken",
+  "navn": "Bakeren AS",
+  "bransje": "butikk",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 3,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "sentrum", "x": 2, "y": 2 },
+  "oppgaver": ["mva-quiz-001"],
+  "provesak": ["mva-quiz-001"],
+  "replikker": {
+    "hilsen": ["Hei! Bilagene ligger klare."],
+    "drift": ["Vi har hatt en travel uke."],
+    "haug": ["Her er bilagene dine."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det ble dyrt."]
+  },
+  "startklient": true,
+  "status": "godkjent"
+}

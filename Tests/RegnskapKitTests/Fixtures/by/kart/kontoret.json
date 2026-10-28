@@ -1,0 +1,18 @@
+{
+  "id": "kontoret",
+  "navn": "Kontoret",
+  "bredde": 8,
+  "hoyde": 6,
+  "ruter": [
+    "########",
+    "#......#",
+    "#......#",
+    "#......#",
+    "#......#",
+    "###D####"
+  ],
+  "dorer": [{ "x": 3, "y": 5, "til": "sentrum", "tilX": 4, "tilY": 3 }],
+  "folk": [
+    { "id": "sjef", "rolle": "sjef", "x": 3, "y": 2, "tekst": ["Velkommen til kontoret."] }
+  ]
+}
