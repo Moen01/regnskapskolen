@@ -52,6 +52,14 @@ Ting som kostet tid, så de ikke koster tid igjen.
 - **Bindinger lever lenger enn visningen.** `EncounterView` bandt inndata til `store.encounterSession!`; når `endRun()` nullstilte økten, oppdaterte SwiftUI fortsatt bindingene på vei ut og trappet på nil. Bindinger inn i valgfri tilstand må ha en fallback (`PuzzleAttempt.empty(for:)`).
 - **Trekk er (lov, paragraf)-par, ikke regelkort.** Sju temaer har ett kort, og et kort kan dekke flere lover, så parene gir valg der kortene ikke gjør det. Avledere hentes fra andre temaer og treffer aldri oppgaven.
 
+## Game Boy-skallet
+
+- **Én logisk skjerm, heltallsskala.** Alt under `UI/Game/GameBoy/` regner i piksler på en 160 × 144-skjerm og ganger med `gbScale` (3–5, det største som får plass). Plassering skjer med `offset` i en `ZStack(alignment: .topLeading)`; rammen må ha `alignment: .topLeading` på `frame`, ellers sentreres innholdet (første skjermbilde viste det).
+- **Logikken ligger i Kit.** `AnswerPanel` (markør, skrivefelt, bilagslinjer) og `BattleFlow` (fasene i et møte) tar `GameKey` inn og gir hendelser ut; visningene tegner `rows`, `cursor`, `pages`. Alt som kan gå galt med taster, testes uten SwiftUI.
+- **Ingen `onAppear` for tilstand skjermbildene trenger.** Skjermbildemodus tegner uten at `onAppear` kjører, så `BattleScreen` utleder flyten fra møtet og lagrer den per oppgave-id. Skrivemaskinen er av i skjermbildemodus (`typing: false`).
+- **Fonten.** «Press Start 2P» ligger i `Resources/Fonts/` (OFL) og registreres av `ATSApplicationFontsPath` i bundelen; `GBFont.register()` tar den fra repoet når appen kjøres uten bundle. Mangler den, brukes systemets monospace i fet. Fonten mangler U+2212, så spilltekst bruker ASCII-minus.
+- **Korte lovnavn** er innhold (`Innhold/lover.json`), ikke kode; testen krever en oppføring per lov i repoet, mens kjøretiden faller tilbake til fullt navn.
+
 ## Skjermbilder uten å klikke
 
 `REGNSKAP_SCREENSHOTS=<mappe>` tegner hver skjerm i et vindu utenfor skjermen og skriver PNG. Tre ting måtte til på macOS 26:

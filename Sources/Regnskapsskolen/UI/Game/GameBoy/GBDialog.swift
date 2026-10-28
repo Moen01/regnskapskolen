@@ -29,7 +29,7 @@ struct GBDialog: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 if complete, hasMore || tabTurns {
                     GBText(tabTurns ? "TAB▼" : "▼")
-                        .opacity(blink ? 1 : 0)
+                        .opacity(blink || !typing ? 1 : 0)
                         .padding(.trailing, 6 * scale)
                         .padding(.bottom, 4 * scale)
                 }

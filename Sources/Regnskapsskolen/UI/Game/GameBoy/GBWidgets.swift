@@ -79,18 +79,22 @@ struct GBList: View {
     let rows: [PanelRow]
     let cursor: Int
     let visible: Range<Int>
+    /// A row drawn inverted: the line that just hit.
+    var highlight: Int? = nil
     let onClick: (Int) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(visible), id: \.self) { index in
+                let hit = index == highlight
                 Button { onClick(index) } label: {
                     HStack(spacing: 0) {
-                        GBText(index == cursor ? "▶" : " ").frame(width: 8 * scale)
-                        GBText(rows[index].text)
+                        GBText(index == cursor ? "▶" : " ", color: hit ? GBPalette.lightest : GBPalette.darkest).frame(width: 8 * scale)
+                        GBText(rows[index].text, color: hit ? GBPalette.lightest : GBPalette.darkest)
                         Spacer(minLength: 0)
                     }
                     .frame(height: 12 * scale)
+                    .background(hit ? GBPalette.darkest : .clear)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)

@@ -5,6 +5,7 @@ import SwiftUI
 struct AnswerPanelView: View {
     @Environment(\.gbScale) private var scale
     let panel: AnswerPanel
+    var hitLine: Int? = nil
     let onClick: (Int) -> Void
 
     private var headline: String {
@@ -23,7 +24,7 @@ struct AnswerPanelView: View {
                     GBEntry(label: panel.entryLabel, text: entry)
                     GBText(panel.puzzle.kind == .frist ? "dd.mm.åååå" : "Enter = slå", color: GBPalette.dark)
                 } else {
-                    GBList(rows: panel.rows, cursor: panel.cursor, visible: panel.visibleRange, onClick: onClick)
+                    GBList(rows: panel.rows, cursor: panel.cursor, visible: panel.visibleRange, highlight: hitLine, onClick: onClick)
                 }
             }
         }

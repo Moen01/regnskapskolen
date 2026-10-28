@@ -8,6 +8,10 @@ struct BattleScreen: View {
     @Environment(AppStore.self) private var store
     /// The flow for one creature; a creature with another id gets a fresh one.
     @State private var battle: Battle?
+    /// Counts the misses, so each one shakes the screen once.
+    @State private var misses = 0
+    /// The voucher line that is hitting right now, while the hits play.
+    @State private var hitLine: Int?
 
     private struct Battle: Hashable {
         let id: String
@@ -29,14 +33,14 @@ struct BattleScreen: View {
     var body: some View {
         GBScreen(onKey: handle) {
             if let run = store.run, let encounter = run.current, let flow {
-                BattleField(encounter: encounter, hp: run.hp, species: SpeciesName.name(for: encounter.puzzle.id))
+                BattleField(encounter: encounter, hp: run.hp, species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught(run))
                 switch flow.phase {
                 case .moves:
                     ListPanel(title: "HVILKEN REGEL?", rows: flow.moveRows, cursor: flow.moveCursor, onClick: { index in click(row: index) })
                 case .rules:
                     ListPanel(title: "REGELKORT", rows: flow.cardRows, cursor: flow.cardCursor, onClick: { index in click(row: index) })
                 case .answer:
-                    AnswerPanelView(panel: flow.panel, onClick: { index in click(row: index) })
+                    AnswerPanelView(panel: flow.panel, hitLine: hitLine, onClick: { index in click(row: index) })
                 default:
                     EmptyView()
                 }
@@ -48,6 +52,14 @@ struct BattleScreen: View {
                 }
             }
         }
+        .gbFlash(trigger: store.run?.current?.puzzle.id)
+        .gbShake(trigger: misses)
+    }
+
+    /// Caught, and the dialog has moved on to say so: the creature shrinks away.
+    private func isCaught(_ run: RegionRun) -> Bool {
+        guard case .result(.caught) = run.phase, let phase = flow?.phase else { return false }
+        return phase == .outcome || phase == .explanation
     }
 
     private func handle(_ key: GameKey) {
@@ -84,7 +96,21 @@ struct BattleScreen: View {
             store.chooseMove(move)
         case .attack:
             store.answerEncounter()
-            if case .result(let outcome) = store.run?.phase { battle?.flow.showOutcome(outcome) }
+            guard case .result(let outcome) = store.run?.phase else { return }
+            if case .escaped = outcome { misses += 1 }
+            // A correct voucher lands one hit per line before the dialog tells the result.
+            if case .caught = outcome, case .posting(let lines) = store.encounterSession?.attempt ?? .quiz(nil), !AppStore.isScreenshotRun {
+                Task { @MainActor in
+                    for index in lines.indices {
+                        hitLine = index
+                        try? await Task.sleep(for: .milliseconds(150))
+                    }
+                    hitLine = nil
+                    battle?.flow.showOutcome(outcome)
+                }
+            } else {
+                battle?.flow.showOutcome(outcome)
+            }
         case .flee:
             store.endRun()
         case .next:
@@ -100,6 +126,7 @@ private struct BattleField: View {
     let encounter: Encounter
     let hp: Int
     let species: String
+    let caught: Bool
 
     private var stage: Stage { encounter.stageBefore }
 
@@ -118,8 +145,10 @@ private struct BattleField: View {
         GBAt(x: 100, y: 46) { Ellipse().fill(GBPalette.light).frame(width: 56 * scale, height: 6 * scale) }
         if encounter.isGymLeader {
             GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), pixel: 3) }
+                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
         } else {
             GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), pixel: 3) }
+                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
         }
         GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, pixel: 3) }
         GBBox(x: 62, y: 60, width: 94, height: 32, padding: 3) {
