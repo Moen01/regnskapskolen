@@ -17,7 +17,7 @@ struct GameHubView: View {
         } else if store.showCollection {
             CollectionScreen()
         } else if store.run?.current != nil {
-            BattleScreen()
+            BattleScreen(host: .adventure(store))
         } else if let summary = store.lastRunSummary {
             SummaryScreen(summary: summary, newBadges: store.newBadges, onRegion: { store.lastRunSummary = nil }, onMap: { store.closeRegion() })
         } else if let region = store.currentRegion {
