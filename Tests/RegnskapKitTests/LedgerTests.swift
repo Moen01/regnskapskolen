@@ -46,13 +46,13 @@ final class LedgerTests: XCTestCase {
     func testPileSkipsBookedBilag() {
         let c = makeLedgerClient()
         var state = ClientState.fresh(.active)
-        state.book(BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true), boxBefore: 1)
+        state.book(BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true), boxBefore: 1, client: "k1")
         XCTAssertEqual(Ledger.pile(for: c, month: jan, start: jan, state: state, pool: allIds), ["p1", "p2", "p3", "p4"])
     }
 
     func testWrongBookingOpensAnErrorRightDoesNot() {
         var state = ClientState.fresh(.active)
-        state.book(BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true), boxBefore: 2)
+        state.book(BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true), boxBefore: 2, client: "k1")
         XCTAssertTrue(state.openErrors.isEmpty)
         state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
         XCTAssertEqual(state.booked.count, 2)
@@ -79,11 +79,11 @@ final class LedgerTests: XCTestCase {
         var state = ClientState.fresh(.active)
         XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(2, 10), state: state, pool: allIds), jan)
         for i in 0..<5 {
-            state.book(BookedBilag(puzzleId: "p\(i)", month: jan, day: day(2, 10), correct: true), boxBefore: 1)
+            state.book(BookedBilag(puzzleId: "p\(i)", month: jan, day: day(2, 10), correct: true), boxBefore: 1, client: "k1")
         }
         XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(2, 10), state: state, pool: allIds), feb)
         for i in 5..<10 {
-            state.book(BookedBilag(puzzleId: "p\(i)", month: feb, day: day(2, 11), correct: true), boxBefore: 1)
+            state.book(BookedBilag(puzzleId: "p\(i)", month: feb, day: day(2, 11), correct: true), boxBefore: 1, client: "k1")
         }
         XCTAssertNil(Ledger.pileMonth(for: c, start: jan, today: day(2, 11), state: state, pool: allIds))
         XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(3, 1), state: state, pool: allIds), mar)
@@ -92,7 +92,7 @@ final class LedgerTests: XCTestCase {
 
     func testCorrectionClosesTheMonth() {
         var state = ClientState.fresh(.active)
-        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3)
+        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
         state.closeIfClean(jan)
         XCTAssertTrue(state.closedMonths.isEmpty)
         state.correct(state.openErrors[0], ok: true)
@@ -103,9 +103,18 @@ final class LedgerTests: XCTestCase {
 
     func testFailedCorrectionCostsTenAndStays() {
         var state = ClientState.fresh(.active)
-        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3)
+        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
         state.correct(state.openErrors[0], ok: false)
         XCTAssertEqual(state.satisfaction, TownRules.startSatisfaction - 10)
         XCTAssertEqual(state.openErrors.count, 1)
+    }
+
+    func testFailedCorrectionClampsAtZeroAndArchives() {
+        var state = ClientState.fresh(.active)
+        state.satisfaction = 5
+        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
+        state.correct(state.openErrors[0], ok: false)
+        XCTAssertEqual(state.satisfaction, 0)
+        XCTAssertEqual(state.status, .archived)
     }
 }

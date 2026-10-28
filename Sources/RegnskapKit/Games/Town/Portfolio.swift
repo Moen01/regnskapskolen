@@ -34,10 +34,11 @@ extension ClientState {
 
     private mutating func adjustSatisfaction(by delta: Int) {
         satisfaction = min(TownRules.maxSatisfaction, max(0, satisfaction + delta))
+        if satisfaction == 0 { status = .archived }
     }
 
     /// `client` is the client id; the state does not know its own id, so the caller passes it.
-    public mutating func book(_ bilag: BookedBilag, boxBefore: Int, client: String = "") {
+    public mutating func book(_ bilag: BookedBilag, boxBefore: Int, client: String) {
         booked.append(bilag)
         guard !bilag.correct else { return }
         openErrors.append(OpenError(puzzleId: bilag.puzzleId, client: client, month: bilag.month, day: bilag.day, boxBefore: boxBefore))
@@ -74,7 +75,6 @@ extension ClientState {
             adjustSatisfaction(by: TownRules.missedDeadline)
             newly.append(d)
         }
-        if satisfaction == 0 { status = .archived }
         return newly
     }
 }
