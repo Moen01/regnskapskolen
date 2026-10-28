@@ -1,0 +1,22 @@
+{
+  "merknad": "Forkortelsene er Claudes forslag 28.10.2026. Kontroller mot Lovdata og Skatte-ABC før de regnes som riktige; usikre er merket med (?) i tittel. En lov uten kort vises med fullt navn i spillet.",
+  "lover": [
+    { "navn": "bokføringsloven", "kort": "bfl.", "tittel": "Lov om bokføring" },
+    { "navn": "bokføringsforskriften", "kort": "bff.", "tittel": "Forskrift om bokføring (?)" },
+    { "navn": "merverdiavgiftsloven", "kort": "mval.", "tittel": "Lov om merverdiavgift" },
+    { "navn": "merverdiavgiftsforskriften", "kort": "fmva.", "tittel": "Forskrift til merverdiavgiftsloven (?)" },
+    { "navn": "regnskapsloven", "kort": "rskl.", "tittel": "Lov om årsregnskap m.v." },
+    { "navn": "skatteloven", "kort": "sktl.", "tittel": "Lov om skatt av formue og inntekt" },
+    { "navn": "skatteforvaltningsloven", "kort": "sktfvl.", "tittel": "Lov om skatteforvaltning" },
+    { "navn": "skatteforvaltningsforskriften", "kort": "sktfvfs.", "tittel": "Forskrift til skatteforvaltningsloven (?)" },
+    { "navn": "skattebetalingsloven", "kort": "sktbl.", "tittel": "Lov om betaling og innkreving av skatte- og avgiftskrav" },
+    { "navn": "folketrygdloven", "kort": "ftrl.", "tittel": "Lov om folketrygd" },
+    { "navn": "aksjeloven", "kort": "asl.", "tittel": "Lov om aksjeselskaper" },
+    { "navn": "ferieloven", "kort": "feriel.", "tittel": "Lov om ferie (?)" },
+    { "navn": "forvaltningsloven", "kort": "fvl.", "tittel": "Lov om behandlingsmåten i forvaltningssaker" },
+    { "navn": "forsinkelsesrenteloven", "kort": null, "tittel": "Lov om renter ved forsinket betaling m.m." },
+    { "navn": "inkassoforskriften", "kort": null, "tittel": "Forskrift til inkassoloven" },
+    { "navn": "a-opplysningsloven", "kort": null, "tittel": "Lov om arbeidsgivers innrapportering av ansettelses- og inntektsforhold m.m." },
+    { "navn": "a-opplysningsforskriften", "kort": null, "tittel": "Forskrift om arbeidsgivers innrapportering (?)" }
+  ]
+}
