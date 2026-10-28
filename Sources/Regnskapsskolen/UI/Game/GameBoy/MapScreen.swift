@@ -18,10 +18,11 @@ struct MapScreen: View {
 
     private var rows: [PanelRow] {
         regions.map { region in
-            let count = region.isEmpty ? "bygges" : "\(region.caught)/\(region.puzzles.count)"
+            // The name has the row; the dialog carries the name in full. Locked rows are dimmed.
+            let count = region.isEmpty ? "" : " \(region.caught)/\(region.puzzles.count)"
             let prefix = region.gymBadge != nil ? "*" : ""
-            let text = region.unlocked ? "\(prefix)\(region.navn) \(count)" : "LÅST \(region.navn)"
-            return PanelRow.fitting(id: region.tema, text, columns: AnswerPanel.columns)
+            let name = TextWrap.truncate(prefix + region.navn, to: AnswerPanel.columns - count.count)
+            return PanelRow(id: region.tema, text: name + count, full: region.navn, marked: !region.unlocked)
         } + [PanelRow(id: Self.trainingId, text: "TRENING"), PanelRow(id: Self.collectionId, text: "SAMLING")]
     }
 
@@ -37,9 +38,9 @@ struct MapScreen: View {
         let text: String
         if cursor < regions.count {
             let region = regions[cursor]
-            if !region.unlocked { text = "Låst. Fang 60 % av forrige region først." }
-            else if region.isEmpty { text = "Under bygging: ingen skapninger her ennå." }
-            else { text = region.theme.setning.isEmpty ? region.navn : region.theme.setning }
+            if !region.unlocked { text = "\(region.navn) er låst. Fang 60 % av forrige region først." }
+            else if region.isEmpty { text = "\(region.navn) er under bygging: ingen skapninger her ennå." }
+            else { text = region.theme.setning.isEmpty ? region.navn : "\(region.navn): \(region.theme.setning)" }
         } else if rows[cursor].id == Self.trainingId {
             text = "Arena, Dojo og Ukens utfordring. \(level.navn), \(store.progress.game.xp) XP."
         } else {
