@@ -24,6 +24,8 @@
 	<string>public.app-category.education</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>15.0</string>
+	<key>ATSApplicationFontsPath</key>
+	<string>Fonts</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSHighResolutionCapable</key>

@@ -10,6 +10,8 @@ public struct Move: Hashable, Sendable, Identifiable {
 
     public var id: String { "\(lov) \(paragraf)" }
     public var label: String { id }
+    /// «bfl. § 4»: the form that fits a Game Boy move list.
+    public func shortLabel(laws: LawNames) -> String { "\(laws.short(lov)) \(paragraf)" }
 }
 
 public enum Moves {

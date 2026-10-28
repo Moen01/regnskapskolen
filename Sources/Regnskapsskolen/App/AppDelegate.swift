@@ -51,6 +51,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.shared = self
+        GBFont.register()
         if let dir = ProcessInfo.processInfo.environment["REGNSKAP_SCREENSHOTS"] {
             Task { await Screenshots.capture(to: dir, store: store); NSApp.terminate(nil) }
             return

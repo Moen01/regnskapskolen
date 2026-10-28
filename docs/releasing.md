@@ -31,3 +31,4 @@ En annotert tag `vX.Y.Z` pushet for hånd utgis fortsatt som før, med taggens m
 | 0.2.0 | Bankavstemming i sandkassen, Spill (Lynrunde, Debet eller kredit?, XP og merker), oppdateringer fra GitHub Releases |
 | 0.3.0 | Paragrafjakten: regioner, trekk, HP, gym-ledere, samling, ukens utfordring |
 | 0.3.1 | Staging-grenen og automatisk versjon ved merge til main; blå oppdateringsknapp; sjekk når popoveren åpnes |
+| 0.4.0 | Paragrafjakten på Game Boy: pikselskjerm, kampskjerm med trekk og svarpanel, tastatur; Spill av som standard |
