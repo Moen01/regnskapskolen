@@ -23,7 +23,7 @@ struct GameHubView: View {
         } else if let region = store.currentRegion {
             RegionView(region: region)
         } else {
-            MapView()
+            MapScreen()
         }
     }
 

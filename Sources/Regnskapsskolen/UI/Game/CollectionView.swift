@@ -1,6 +1,21 @@
 import RegnskapKit
 import SwiftUI
 
+extension Color {
+    /// A region theme's colour name from Kit, mapped to the app's palette.
+    static func theme(_ name: String) -> Color {
+        switch name {
+        case "skole": .skole
+        case "debet": .debet
+        case "kredit": .kredit
+        case "ok": .ok
+        case "warn": .warn
+        case "orange": .orange
+        default: .secondary
+        }
+    }
+}
+
 /// The collection: every creature per region, caught ones as cards that flip to their rule, wild ones as silhouettes.
 struct CollectionView: View {
     @Environment(AppStore.self) private var store

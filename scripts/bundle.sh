@@ -26,6 +26,8 @@ fi
 [[ -f Resources/AppIcon.icns ]] && cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 # Innholdet følger med i appen, som reserve når innholdsmappen i Innstillinger ikke finnes.
 cp -R Innhold "$APP/Contents/Resources/Innhold"
+# The pixel font for the Game Boy screen; Info.plist's ATSApplicationFontsPath registers it.
+cp -R Resources/Fonts "$APP/Contents/Resources/Fonts"
 
 if [[ -n "${SIGN_IDENTITY:-}" ]]; then
   codesign --force --options runtime --timestamp --entitlements Resources/Regnskapsskolen.entitlements --sign "$SIGN_IDENTITY" "$APP"
