@@ -43,6 +43,10 @@ enum Screenshots {
         store.lastSummary = nil
         store.openRegion("mva")
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-region.png"))
+        store.startRun()
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-mote.png"))
+        store.endRun()
+        store.lastRunSummary = nil
         store.selectedRegion = nil
         navigation.section = .today
         for kind in PuzzleKind.allCases {
