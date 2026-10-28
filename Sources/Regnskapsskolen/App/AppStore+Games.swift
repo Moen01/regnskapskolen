@@ -11,6 +11,7 @@ extension AppStore {
         drill = nil
         lastSummary = nil
         newBadges = []
+        weeklyRound = false
         lightning = LightningRound(pool: pool, tema: lynrundeTema, progress: progress, today: todayKey, seed: seed, startedAt: now)
         startClock()
     }
@@ -65,14 +66,38 @@ extension AppStore {
         } else {
             return
         }
-        let key = Self.scoreKey(summary.game, tema: summary.tema)
-        lastWasRecord = summary.answered > 0 && summary.score > (progress.game.bestScores[key] ?? 0)
-        if lastWasRecord { progress.game.bestScores[key] = summary.score }
+        if weeklyRound {
+            // The challenge has its own book: no record, no round badge, one result per week.
+            weeklyRound = false
+            lastWasRecord = false
+            progress.game.weekly[todayKey.weekKey] = summary.score
+            progress.game.counters["uke-\(todayKey.weekKey)"] = summary.correct
+        } else {
+            let key = Self.scoreKey(summary.game, tema: summary.tema)
+            lastWasRecord = summary.answered > 0 && summary.score > (progress.game.bestScores[key] ?? 0)
+            if lastWasRecord { progress.game.bestScores[key] = summary.score }
+            newBadges += Badges.award(.roundFinished(game: summary.game, tema: summary.tema, score: summary.score, correct: summary.correct), on: todayKey, progress: &progress)
+        }
         progress.game.xp += summary.xp
-        newBadges += Badges.award(.roundFinished(game: summary.game, tema: summary.tema, score: summary.score, correct: summary.correct), on: todayKey, progress: &progress)
         lastSummary = summary
         saveProgress()
     }
+
+    /// This week's ten, without a clock; refused once the week has a result.
+    func startWeekly() {
+        guard let library, weeklyDone == nil else { return }
+        drill = nil
+        lastSummary = nil
+        newBadges = []
+        let week = todayKey.isoWeek
+        let ten = WeeklyChallenge.puzzles(approved: library.approved, week: week)
+        weeklyRound = true
+        lightning = LightningRound(pool: ten, tema: nil, progress: progress, today: todayKey, seed: WeeklyChallenge.seed(for: week), startedAt: now, duration: .infinity)
+        startClock()
+    }
+
+    var weeklyDone: Int? { progress.game.weekly[todayKey.weekKey] }
+    var weeklyCode: String? { weeklyDone.map { WeeklyChallenge.resultCode(week: todayKey.isoWeek.week, score: $0, correct: progress.game.counters["uke-\(todayKey.weekKey)"] ?? 0) } }
 
     func bestScore(for game: GameKind, tema: String?) -> Int? {
         progress.game.bestScores[Self.scoreKey(game, tema: tema)]

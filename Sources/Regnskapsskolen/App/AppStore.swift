@@ -48,6 +48,15 @@ final class AppStore {
     var lynrundeTema: String?
     @ObservationIgnored var clock: Task<Void, Never>?
 
+    /// Paragrafjakten: the region on screen, the run in it, and the encounter's input.
+    var selectedRegion: String?
+    var run: RegionRun?
+    var encounterSession: PuzzleSession?
+    var lastRunSummary: RunSummary?
+    var showCollection = false
+    /// The open lightning round is this week's challenge (no clock, result saved per week).
+    var weeklyRound = false
+
     /// A newer release on GitHub, once a check has found one.
     var availableUpdate: AppRelease?
     /// One line about the last check or install, for Settings.
