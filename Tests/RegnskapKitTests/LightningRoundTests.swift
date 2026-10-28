@@ -101,6 +101,8 @@ final class LightningRoundTests: XCTestCase {
         XCTAssertNil(tiny.current)
         let empty = LightningRound(pool: [], tema: nil, progress: LearnerProgress(), today: today, seed: 1, startedAt: 0)
         XCTAssertEqual(empty.phase, .finished)
+        var short = LightningRound(pool: pool, tema: nil, progress: LearnerProgress(), today: today, seed: 1, startedAt: 0, duration: 10)
+        short.tick(at: 10); XCTAssertEqual(short.phase, .finished, "a custom duration ends the round")
     }
 
     func testSummary() {

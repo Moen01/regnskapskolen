@@ -20,6 +20,8 @@ public struct LightningRound: Hashable, Sendable {
     public static let pointsPerLevel = 100
 
     public let tema: String?
+    /// Seconds the round lasts; `.infinity` is a round without a clock (the weekly challenge).
+    public let limit: TimeInterval
     public private(set) var queue: [Puzzle]
     public private(set) var phase: Phase
     public private(set) var score = 0
@@ -58,16 +60,18 @@ public struct LightningRound: Hashable, Sendable {
         return shuffled.enumerated().sorted { (group($0.element), $0.offset) < (group($1.element), $1.offset) }.map(\.element)
     }
 
-    public init(pool: [Puzzle], tema: String?, progress: LearnerProgress, today: DayKey, seed: UInt64, startedAt: TimeInterval) {
+    public init(pool: [Puzzle], tema: String?, progress: LearnerProgress, today: DayKey, seed: UInt64, startedAt: TimeInterval, duration: TimeInterval = LightningRound.duration) {
         self.tema = tema
+        self.limit = duration
         self.startedAt = startedAt
         queue = Self.order(pool: pool, tema: tema, progress: progress, today: today, seed: seed)
         phase = queue.isEmpty ? .finished : .question
     }
 
     public func remaining(at now: TimeInterval) -> TimeInterval {
+        guard limit.isFinite else { return .infinity }
         let paused = pausedFor + (pauseStart.map { now - $0 } ?? 0)
-        return max(0, Self.duration - (now - startedAt - paused))
+        return max(0, limit - (now - startedAt - paused))
     }
 
     /// Nil outside `.question` or once the time is up.
