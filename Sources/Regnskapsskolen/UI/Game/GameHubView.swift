@@ -15,13 +15,13 @@ struct GameHubView: View {
                              onAgain: { summary.game == .lynrunde ? store.startLightning() : store.startDrill() },
                              onHub: { store.lastSummary = nil })
         } else if store.showCollection {
-            CollectionView()
+            CollectionScreen()
         } else if store.run?.current != nil {
             EncounterView()
         } else if let summary = store.lastRunSummary {
-            RunSummaryView(summary: summary, newBadges: store.newBadges, onRegion: { store.lastRunSummary = nil }, onMap: { store.closeRegion() })
+            SummaryScreen(summary: summary, newBadges: store.newBadges, onRegion: { store.lastRunSummary = nil }, onMap: { store.closeRegion() })
         } else if let region = store.currentRegion {
-            RegionView(region: region)
+            RegionScreen(region: region)
         } else {
             MapScreen()
         }

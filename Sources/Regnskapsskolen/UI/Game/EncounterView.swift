@@ -1,6 +1,21 @@
 import RegnskapKit
 import SwiftUI
 
+extension Color {
+    /// A region theme's colour name from Kit, mapped to the app's palette. Goes with this view.
+    static func theme(_ name: String) -> Color {
+        switch name {
+        case "skole": .skole
+        case "debet": .debet
+        case "kredit": .kredit
+        case "ok": .ok
+        case "warn": .warn
+        case "orange": .orange
+        default: .secondary
+        }
+    }
+}
+
 /// A creature in front of the learner: pick the rule, answer the puzzle, see it caught or gone.
 struct EncounterView: View {
     @Environment(AppStore.self) private var store
