@@ -69,6 +69,15 @@ public struct DayKey: Hashable, Codable, Comparable, Sendable, CustomStringConve
 
     public var isWeekend: Bool { weekday >= 6 }
 
+    /// ISO 8601 week: the first days of January can belong to the old year's last week.
+    public var isoWeek: (year: Int, week: Int) {
+        let c = Calendar.norwegian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+        return (c.yearForWeekOfYear!, c.weekOfYear!)
+    }
+
+    /// "2026-44"
+    public var weekKey: String { let w = isoWeek; return "\(w.year)-\(w.week)" }
+
     public var isNorwegianPublicHoliday: Bool {
         if [(1, 1), (5, 1), (5, 17), (12, 25), (12, 26)].contains(where: { $0.0 == month && $0.1 == day }) { return true }
         let easter = Self.easterSunday(year: year)

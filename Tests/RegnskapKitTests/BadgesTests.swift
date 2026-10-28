@@ -6,10 +6,19 @@ final class BadgesTests: XCTestCase {
     var progress = LearnerProgress()
     func award(_ event: GameEvent) -> [String] { Badges.award(event, on: day, progress: &progress).map(\.id) }
 
-    func testCatalogHasEightBadgesWithUniqueIds() {
-        XCTAssertEqual(Badges.all.count, 8)
-        XCTAssertEqual(Set(Badges.all.map(\.id)).count, 8)
-        XCTAssertEqual(Badges.all.map(\.id), ["mva-mester", "fristfri", "null-differanse", "bank-avstemt", "lynrask", "reflekser", "sju-dager", "tretti-dager"])
+    func testCatalogHasTwelveBadgesWithUniqueIds() {
+        XCTAssertEqual(Badges.all.count, 12)
+        XCTAssertEqual(Set(Badges.all.map(\.id)).count, 12)
+        XCTAssertEqual(Badges.all.map(\.id), ["mva-mester", "fristfri", "null-differanse", "bank-avstemt", "lynrask", "reflekser", "sju-dager", "tretti-dager", "forste-fangst", "samler", "hele-regionen", "tolv-merker"])
+    }
+
+    func testCollectionBadges() {
+        XCTAssertEqual(award(.caught(total: 1)), ["forste-fangst"])
+        XCTAssertEqual(award(.caught(total: 24)), [])
+        XCTAssertEqual(award(.caught(total: 25)), ["samler"])
+        XCTAssertEqual(award(.regionMastered), ["hele-regionen"])
+        XCTAssertEqual(award(.gymBadges(count: 11)), [])
+        XCTAssertEqual(award(.gymBadges(count: 12)), ["tolv-merker"])
     }
 
     func testMvaMesterNeedsTwentyInARowAndIsAwardedOnce() {

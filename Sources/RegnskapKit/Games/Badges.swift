@@ -27,6 +27,12 @@ public enum GameEvent: Hashable, Sendable {
     case caseMatched
     case bankReconciled
     case dayCompleted(streak: Int)
+    /// Paragrafjakten: a creature caught; `total` is the collection's size afterwards.
+    case caught(total: Int)
+    /// Every puzzle in a region at box 3 or higher.
+    case regionMastered
+    /// A gym badge earned; `count` is how many are held afterwards.
+    case gymBadges(count: Int)
 }
 
 /// The badge catalog and the one place badges are handed out. Thresholds live here.
@@ -34,6 +40,7 @@ public enum Badges {
     public static let mvaRun = "mva-paa-rad", fristCount = "frist-riktig"
     public static let mvaRunNeeded = 20, fristNeeded = 10, lynraskScore = 1500, reflekserCorrect = 30
     public static let streakSeven = 7, streakThirty = 30
+    public static let collectorCount = 25, allGyms = 12
 
     public static let all: [Badge] = [
         Badge(id: "mva-mester", navn: "Mva-mester", beskrivelse: "20 mva-oppgaver riktig på rad", symbol: "percent"),
@@ -44,6 +51,10 @@ public enum Badges {
         Badge(id: "reflekser", navn: "Reflekser", beskrivelse: "30 riktige i én runde Debet eller kredit?", symbol: "arrow.left.arrow.right"),
         Badge(id: "sju-dager", navn: "Sju dager", beskrivelse: "7 dager på rad", symbol: "flame"),
         Badge(id: "tretti-dager", navn: "Tretti dager", beskrivelse: "30 dager på rad", symbol: "flame.fill"),
+        Badge(id: "forste-fangst", navn: "Første fangst", beskrivelse: "Den første skapningen i samlingen", symbol: "sparkle"),
+        Badge(id: "samler", navn: "Samler", beskrivelse: "25 skapninger i samlingen", symbol: "square.grid.3x3.fill"),
+        Badge(id: "hele-regionen", navn: "Hele regionen", beskrivelse: "Alle skapningene i én region på Voksen eller høyere", symbol: "map.fill"),
+        Badge(id: "tolv-merker", navn: "Tolv merker", beskrivelse: "Alle gym-merkene", symbol: "crown.fill"),
     ]
 
     public static func badge(_ id: String) -> Badge? { all.first { $0.id == id } }
@@ -75,6 +86,13 @@ public enum Badges {
         case .dayCompleted(let streak):
             if streak >= streakSeven { earned.append("sju-dager") }
             if streak >= streakThirty { earned.append("tretti-dager") }
+        case .caught(let total):
+            if total >= 1 { earned.append("forste-fangst") }
+            if total >= collectorCount { earned.append("samler") }
+        case .regionMastered:
+            earned.append("hele-regionen")
+        case .gymBadges(let count):
+            if count >= allGyms { earned.append("tolv-merker") }
         }
         return all.filter { earned.contains($0.id) && progress.game.badges[$0.id] == nil }.map { badge in
             progress.game.badges[badge.id] = day

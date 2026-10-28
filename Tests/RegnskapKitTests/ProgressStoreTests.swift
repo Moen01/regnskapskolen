@@ -67,4 +67,17 @@ final class ProgressStoreTests: XCTestCase {
         _ = store.load()
         XCTAssertTrue(store.fileHadGame)
     }
+
+    func testRegionDamageAndWeeklyRoundTripAndDefaultEmpty() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("fremdrift-\(UUID().uuidString).json")
+        try Data(#"{"puzzles":{},"days":{},"game":{"xp":5,"badges":{},"bestScores":{},"counters":{}}}"#.utf8).write(to: url)
+        let store = ProgressStore(url: url)
+        XCTAssertEqual(store.load().game.regionDamage, [:])
+        XCTAssertEqual(store.load().game.weekly, [:])
+        var progress = LearnerProgress()
+        progress.game.regionDamage["mva"] = 350
+        progress.game.weekly["2026-44"] = 1850
+        try store.save(progress)
+        XCTAssertEqual(store.load().game, progress.game)
+    }
 }

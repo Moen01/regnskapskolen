@@ -56,4 +56,11 @@ final class DayKeyTests: XCTestCase {
         // June 2026 starts on a Monday: no days from May.
         XCTAssertEqual(DayKey.monthGrid(year: 2026, month: 6).first, DayKey(year: 2026, month: 6, day: 1))
     }
+
+    func testISOWeek() {
+        XCTAssertEqual(DayKey(year: 2026, month: 10, day: 28).isoWeek.week, 44)
+        XCTAssertEqual(DayKey(year: 2026, month: 10, day: 28).weekKey, "2026-44")
+        XCTAssertEqual(DayKey(year: 2026, month: 12, day: 31).isoWeek.week, 53, "2026 has 53 ISO weeks")
+        XCTAssertEqual(DayKey(year: 2027, month: 1, day: 1).weekKey, "2026-53", "the first days of 2027 belong to 2026's last week")
+    }
 }
