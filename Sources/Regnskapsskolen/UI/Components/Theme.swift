@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 extension Color {
@@ -7,6 +8,13 @@ extension Color {
     static let ok = Color(red: 0x2f / 255, green: 0x7d / 255, blue: 0x4f / 255)
     static let bad = Color(red: 0xb4 / 255, green: 0x23 / 255, blue: 0x18 / 255)
     static let warn = Color(red: 0x8a / 255, green: 0x5a / 255, blue: 0x00 / 255)
+}
+
+enum Clipboard {
+    static func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
 }
 
 struct Pill: View {

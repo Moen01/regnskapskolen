@@ -21,6 +21,7 @@ public final class ContentLibrary: @unchecked Sendable {
         var topics: [Topic]
         var puzzles: [Puzzle] = []
         var rules: [RuleCard] = []
+        var laws: LawNames = .empty
         var loadErrors: [ContentLoadError] = []
         var generatedInMemory: [Puzzle] = []
         var byId: [String: Puzzle] = [:]
@@ -35,6 +36,8 @@ public final class ContentLibrary: @unchecked Sendable {
     public var topics: [Topic] { lock.withLock { state.topics } }
     public var puzzles: [Puzzle] { lock.withLock { state.puzzles } }
     public var rules: [RuleCard] { lock.withLock { state.rules } }
+    /// Short law names from `lover.json`; empty when the folder has none.
+    public var laws: LawNames { lock.withLock { state.laws } }
     public var loadErrors: [ContentLoadError] { lock.withLock { state.loadErrors } }
     /// Puzzles Claude wrote this session, visible until the next reload reads their files.
     public var generatedInMemory: [Puzzle] {
@@ -79,8 +82,14 @@ public final class ContentLibrary: @unchecked Sendable {
         }
         state.puzzles = loaded
         state.byId = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
-        state.loadErrors = errors
         state.rules = RuleCard.load(folder: root.appendingPathComponent("regler", isDirectory: true))
+        let lawsURL = root.appendingPathComponent("lover.json")
+        do {
+            state.laws = try LawNames.read(url: lawsURL)
+        } catch {
+            errors.append(ContentLoadError(file: lawsURL.path, message: describe(error)))
+        }
+        state.loadErrors = errors
         state.generatedInMemory = generated.filter { state.byId[$0.id] == nil }
         state.lastSignature = signature(root: root, extraRoots: extraRoots)
         return state

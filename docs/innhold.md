@@ -207,6 +207,10 @@ Brødtekst i Markdown: avsnitt, punktlister og tabeller.
 
 Kortene vises under *Regler* og legges ved systemprompten når Claude forklarer eller skriver oppgaver i temaet. Bruk bare paragrafer du har sjekket på Lovdata.
 
+## Lover
+
+`Innhold/lover.json` har én oppføring per lov eller forskrift som oppgavene og regelkortene viser til: `navn` (slik det står i `lov`-feltene), `kort` (forkortelsen regnskapsførere skriver, `bfl.`, `mval.`, `rskl.`; `null` når ingen er kjent) og `tittel`. Spillet viser `kort` i trekklisten; mangler den, vises fullt navn. Testen `LawNamesTests` krever at hver lov i repoet har en oppføring og at forkortelsene er unike og høyst 8 tegn. Filen er innhold: rett den når Lovdata sier noe annet, og fjern `(?)` fra `tittel` når forkortelsen er kontrollert.
+
 ## Sandkassecaser
 
 `Innhold/sandkasse/<id>.json`: `id`, `tittel`, `selskap`, `beskrivelse`, `vanskelighet`, `lov`, `hendelser` (`dato`, `tekst`, `hint`), `fasitSaldobalanse` (konto → saldo, debet pluss og kredit minus) og `fasitJournal` (bilagene som gir fasiten). `SandboxCaseTests` sjekker at journalen stemmer med saldobalansen og at mva-linjene følger kodene.

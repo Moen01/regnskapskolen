@@ -41,6 +41,8 @@ enum Screenshots {
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-debet-kredit.png"))
         store.endRound()
         store.lastSummary = nil
+        // Too small for the handheld: the screen asks for a bigger window instead of overlapping.
+        await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 500, height: 400), to: folder.appendingPathComponent("spill-lite.png"))
         store.openRegion("mva")
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-region.png"))
         store.startRun()
