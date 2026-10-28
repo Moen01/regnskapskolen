@@ -51,8 +51,8 @@ struct SettingsView: View {
                         HStack {
                             Label("Versjon \(update.version) er klar", systemImage: "arrow.down.circle.fill").foregroundStyle(Color.skole)
                             Spacer()
-                            Button(store.isUpdating ? "Oppdaterer…" : "Oppdater og start på nytt") { Task { await store.installUpdate() } }
-                                .buttonStyle(.borderedProminent).tint(.skole)
+                            Button(store.isUpdating ? "Oppdaterer…" : "Oppdater til \(update.version)") { Task { await store.installUpdate() } }
+                                .buttonStyle(.borderedProminent).tint(.blue)
                                 .disabled(store.isUpdating || update.assetURL == nil)
                         }
                         if !update.notes.isEmpty { MarkdownText(update.notes).font(.caption).frame(maxHeight: 160) }
