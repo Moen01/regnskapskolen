@@ -12,6 +12,8 @@ public struct Encounter: Hashable, Sendable {
 public enum EncounterOutcome: Hashable, Sendable {
     case caught(stage: Stage, superEffective: Bool)
     case escaped(hpLost: Int)
+    /// Right, but the creature was already met today: nothing moves, nothing is farmed.
+    case repeated
 }
 
 public struct RunSummary: Hashable, Sendable {
@@ -40,6 +42,8 @@ public struct RegionRun: Hashable, Sendable {
     public private(set) var phase: Phase = .encounter
     public private(set) var current: Encounter?
     public private(set) var chosenMove: Move?
+    /// The rule step is the attack: with moves on offer, the learner must pick one (or «Ingen regel») before answering.
+    public private(set) var hasChosen = false
     public private(set) var caught = 0
     public private(set) var escaped = 0
     public private(set) var xp = 0
@@ -63,16 +67,20 @@ public struct RegionRun: Hashable, Sendable {
     /// answered today; the gym leader only when the meter is full. Nothing left ends the run.
     public mutating func nextEncounter(progress: LearnerProgress, today: DayKey) {
         chosenMove = nil
+        hasChosen = false
         guard phase != .finished, hp > 0 else { finish(); return }
         if gymReady, let leader = region.gymLeader, !seen.contains(leader.id) {
             current = encounter(leader, progress: progress, isGymLeader: true)
             phase = .encounter
             return
         }
-        let candidates = region.puzzles.filter { $0.id != region.gymLeader?.id && !seen.contains($0.id) }
+        // The leader is held back only while the gym fight is still ahead; afterwards it is an ordinary creature.
+        let gymPending = region.gymBadge == nil && !gymBadgeEarned
+        let candidates = region.puzzles.filter { !(gymPending && $0.id == region.gymLeader?.id) && !seen.contains($0.id) }
         func group(_ puzzle: Puzzle) -> (Int, Int) {
-            guard let p = progress.puzzles[puzzle.id], p.box >= 1 else { return (1, puzzle.vanskelighet) }
-            if p.lastSeen == today { return (3, 0) }
+            let p = progress.puzzles[puzzle.id]
+            if p?.lastSeen == today { return (3, 0) }
+            guard let p, p.box >= 1 else { return (1, puzzle.vanskelighet) }
             if (p.due ?? today) <= today { return (0, 0) }
             return (2, 0)
         }
@@ -90,24 +98,28 @@ public struct RegionRun: Hashable, Sendable {
                   moves: Moves.options(for: puzzle, regionCards: regionCards, otherCards: otherCards, seed: generator.next()), isGymLeader: isGymLeader)
     }
 
-    public mutating func choose(_ move: Move?) { chosenMove = move }
+    public mutating func choose(_ move: Move?) {
+        chosenMove = move
+        hasChosen = true
+    }
 
     /// Checks the attempt: right on this one try catches, anything else escapes. Returns what the
     /// scheduler must hear, or nil outside an encounter.
     public mutating func answer(_ attempt: PuzzleAttempt, progress: LearnerProgress, today: DayKey) -> (outcome: EncounterOutcome, result: AttemptResult)? {
-        guard phase == .encounter, let encounter = current else { return nil }
+        guard phase == .encounter, let encounter = current, encounter.moves.isEmpty || hasChosen else { return nil }
         let puzzle = encounter.puzzle
         let verdict = attempt.verdict(for: puzzle)
         let first = Scheduler.isFirstAnswer(of: puzzle.id, on: today, progress: progress)
         let outcome: EncounterOutcome
-        if verdict.correct {
+        if verdict.correct, !first {
+            outcome = .repeated
+        } else if verdict.correct {
             let hit = chosenMove.map { Moves.hits($0, puzzle) } ?? false
             let multiplier = hit ? 2 : 1
             damage += puzzle.vanskelighet * Self.damagePerLevel * multiplier
-            if first { xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: true) * multiplier }
+            xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: true) * multiplier
             caught += 1
-            let box = progress.puzzles[puzzle.id]?.box ?? 0
-            outcome = .caught(stage: Stage.of(box: first ? box + 1 : box), superEffective: hit)
+            outcome = .caught(stage: Stage.of(box: (progress.puzzles[puzzle.id]?.box ?? 0) + 1), superEffective: hit)
             if encounter.isGymLeader {
                 gymBadgeEarned = true
                 xp += Self.gymXP

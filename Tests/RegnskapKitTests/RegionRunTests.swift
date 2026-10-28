@@ -43,7 +43,7 @@ final class RegionRunTests: XCTestCase {
             r.nextEncounter(progress: progress, today: today)
             guard let e = r.current else { break }
             if e.moves.contains(where: { Moves.hits($0, e.puzzle) }) { found = e; break }
-            _ = r.answer(correct(e.puzzle), progress: progress, today: today); r.proceed()
+            r.choose(nil); _ = r.answer(correct(e.puzzle), progress: progress, today: today); r.proceed()
         }
         let e = try XCTUnwrap(found)
         let hit = try XCTUnwrap(e.moves.first { Moves.hits($0, e.puzzle) })
@@ -82,7 +82,7 @@ final class RegionRunTests: XCTestCase {
             guardCount += 1
             r.nextEncounter(progress: progress, today: today)
             guard r.current != nil else { break }
-            _ = r.answer(.quiz(-1), progress: progress, today: today)
+            r.choose(nil); _ = r.answer(.quiz(-1), progress: progress, today: today)
             r.proceed()
         }
         XCTAssertEqual(r.hp, 0)
@@ -120,9 +120,86 @@ final class RegionRunTests: XCTestCase {
         r.choose(nil); _ = r.answer(correct(lonn[0]), progress: progress, today: today); r.proceed()
         r.nextEncounter(progress: progress, today: today)
         let e = try XCTUnwrap(r.current)
-        let xpBefore = r.xp
-        _ = r.answer(correct(e.puzzle), progress: progress, today: today)
-        XCTAssertEqual(r.xp, xpBefore, "already answered today: no XP")
+        let xpBefore = r.xp, damageBefore = r.damage, caughtBefore = r.caught
+        r.choose(nil)
+        let (outcome, _) = try XCTUnwrap(r.answer(correct(e.puzzle), progress: progress, today: today))
+        XCTAssertEqual(outcome, .repeated, "already answered today: no catch, no damage, no XP")
+        XCTAssertEqual(r.xp, xpBefore); XCTAssertEqual(r.damage, damageBefore); XCTAssertEqual(r.caught, caughtBefore)
+    }
+
+    func testAWildCreatureMetTodayComesLastAndIsNotCaughtAgain() throws {
+        var progress = LearnerProgress()
+        let lonn = pool.filter { $0.tema == "lonn" }.sorted { $0.id < $1.id }
+        progress.puzzles[lonn[0].id] = PuzzleProgress(box: 0, attempts: 1, correct: 0, lastSeen: today, due: today)   // escaped earlier today
+        var r = run("lonn", progress: progress)
+        r.nextEncounter(progress: progress, today: today)
+        XCTAssertNotEqual(r.current?.puzzle.id, lonn[0].id, "a creature met today is not first")
+        var seen = 0
+        while let e = r.current, e.puzzle.id != lonn[0].id, seen < 20 {
+            seen += 1; r.choose(nil); _ = r.answer(correct(e.puzzle), progress: progress, today: today); r.proceed(); r.nextEncounter(progress: progress, today: today)
+        }
+        let e = try XCTUnwrap(r.current)
+        XCTAssertEqual(e.puzzle.id, lonn[0].id, "it comes last")
+        r.choose(nil)
+        let (outcome, result) = try XCTUnwrap(r.answer(correct(e.puzzle), progress: progress, today: today))
+        XCTAssertEqual(outcome, .repeated)
+        XCTAssertTrue(result.correctFirstTry)
+    }
+
+    func testTheRuleMustBeChosenBeforeAnsweringWhenThereAreMoves() throws {
+        var r = run("mva")
+        var e: Encounter?
+        for _ in 0..<20 { r.nextEncounter(progress: LearnerProgress(), today: today); guard let c = r.current else { break }; if !c.moves.isEmpty { e = c; break }; r.choose(nil); _ = r.answer(correct(c.puzzle), progress: LearnerProgress(), today: today); r.proceed() }
+        let encounter = try XCTUnwrap(e)
+        XCTAssertFalse(r.hasChosen)
+        XCTAssertNil(r.answer(correct(encounter.puzzle), progress: LearnerProgress(), today: today), "no answer before the rule is chosen")
+        r.choose(nil)
+        XCTAssertTrue(r.hasChosen)
+        XCTAssertNotNil(r.answer(correct(encounter.puzzle), progress: LearnerProgress(), today: today))
+    }
+
+    func testACorrectAnswerWithAWrongRuleGivesSingleDamage() throws {
+        var r = run("mva")
+        var e: Encounter?
+        for _ in 0..<20 { r.nextEncounter(progress: LearnerProgress(), today: today); guard let c = r.current else { break }; if !c.moves.isEmpty { e = c; break }; r.choose(nil); _ = r.answer(correct(c.puzzle), progress: LearnerProgress(), today: today); r.proceed() }
+        let encounter = try XCTUnwrap(e)
+        let miss = try XCTUnwrap(encounter.moves.first { !Moves.hits($0, encounter.puzzle) })
+        let before = r.damage
+        r.choose(miss)
+        let (outcome, _) = try XCTUnwrap(r.answer(correct(encounter.puzzle), progress: LearnerProgress(), today: today))
+        XCTAssertEqual(outcome, .caught(stage: .klekket, superEffective: false))
+        XCTAssertEqual(r.damage - before, encounter.puzzle.vanskelighet * 100)
+    }
+
+    func testTheLeaderIsAnOrdinaryCreatureOnceTheBadgeIsHeld() throws {
+        var progress = LearnerProgress()
+        progress.game.badges["gym-periodisering"] = today.adding(days: -1)
+        let held = region("periodisering", progress: progress)
+        XCTAssertNotNil(held.gymBadge)
+        var r = RegionRun(region: held, progress: progress, today: today, regionCards: Self.library.rules(tema: "periodisering"), otherCards: [], seed: 1)
+        var ids: Set<String> = []
+        for _ in 0..<held.puzzles.count {
+            r.nextEncounter(progress: progress, today: today)
+            guard let e = r.current else { break }
+            XCTAssertFalse(e.isGymLeader)
+            ids.insert(e.puzzle.id)
+            r.choose(nil); _ = r.answer(correct(e.puzzle), progress: progress, today: today); r.proceed()
+        }
+        XCTAssertTrue(ids.contains(held.gymLeader!.id), "the former leader is met like any other creature")
+    }
+
+    func testAWrongAnswerOnACaughtCreatureSendsItBackToTheWild() throws {
+        var progress = LearnerProgress()
+        let lonn = pool.filter { $0.tema == "lonn" }
+        for p in lonn { progress.puzzles[p.id] = PuzzleProgress(box: 2, attempts: 2, correct: 2, lastSeen: today.adding(days: -5), due: today.adding(days: -2)) }
+        var r = run("lonn", progress: progress)
+        r.nextEncounter(progress: progress, today: today)
+        let e = try XCTUnwrap(r.current)
+        XCTAssertEqual(e.stageBefore, .ung)
+        r.choose(nil)
+        let (_, result) = try XCTUnwrap(r.answer(.quiz(-1), progress: progress, today: today))
+        Scheduler.record(result, on: today, progress: &progress)
+        XCTAssertEqual(progress.puzzles[e.puzzle.id]?.box, 0, "back to the wild")
     }
 
     func testEmptyRegionFinishesAtOnce() {

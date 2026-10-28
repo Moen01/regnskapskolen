@@ -24,7 +24,8 @@ struct EncounterView: View {
                     if run.phase == .encounter {
                         Button("Sjekk") { store.answerEncounter() }
                             .keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.skole)
-                            .disabled(!(store.encounterSession?.attempt.isAnswered ?? false))
+                            .disabled(!(store.encounterSession?.attempt.isAnswered ?? false) || !(encounter.moves.isEmpty || run.hasChosen))
+                        if !encounter.moves.isEmpty, !run.hasChosen { Text("Velg en regel først.").font(.caption).foregroundStyle(.secondary) }
                     }
                     if case .result(let outcome) = run.phase { result(outcome, encounter) }
                 }
@@ -74,7 +75,7 @@ struct EncounterView: View {
                         Button(move.label) { store.chooseMove(move) }
                             .buttonStyle(.bordered).tint(run.chosenMove == move ? .skole : nil)
                     }
-                    Button("Ingen regel") { store.chooseMove(nil) }.buttonStyle(.bordered)
+                    Button("Ingen regel") { store.chooseMove(nil) }.buttonStyle(.bordered).tint(run.hasChosen && run.chosenMove == nil ? .skole : nil)
                 }
             }
         }
@@ -110,6 +111,8 @@ struct EncounterView: View {
                 if superEffective { Pill(text: "Super effektivt!", color: .ok) }
             case .escaped(let hpLost):
                 Label("Flyktet. −\(NorwegianFormat.kroner(Decimal(hpLost), decimals: 0)) kr", systemImage: "xmark.circle.fill").font(.headline).foregroundStyle(Color.bad)
+            case .repeated:
+                Label("Riktig, men den er alt møtt i dag. Den kommer igjen i morgen.", systemImage: "clock.arrow.circlepath").font(.headline).foregroundStyle(.secondary)
             }
             MarkdownText(encounter.puzzle.forklaring).font(.callout)
             ForEach(encounter.puzzle.lov, id: \.self) { LawBadge(law: $0) }
@@ -118,6 +121,6 @@ struct EncounterView: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background({ if case .caught = outcome { Color.ok.opacity(0.08) } else { Color.bad.opacity(0.08) } }(), in: RoundedRectangle(cornerRadius: 10))
+        .background({ switch outcome { case .caught: Color.ok.opacity(0.08); case .escaped: Color.bad.opacity(0.08); case .repeated: Color.secondary.opacity(0.08) } }(), in: RoundedRectangle(cornerRadius: 10))
     }
 }

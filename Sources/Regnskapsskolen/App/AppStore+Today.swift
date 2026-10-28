@@ -41,12 +41,13 @@ extension AppStore {
     }
 
     /// Leitner first, then XP and badges: XP only for the day's first answer to the puzzle, like the box.
-    func record(_ result: AttemptResult) {
+    /// A region run books its own XP (with the rule bonus), so it passes `countXP: false`.
+    func record(_ result: AttemptResult, countXP: Bool = true) {
         let first = Scheduler.isFirstAnswer(of: result.puzzleId, on: todayKey, progress: progress)
         let wasDone = progress.days[todayKey.string]?.done ?? false
         Scheduler.record(result, on: todayKey, progress: &progress)
         if let puzzle = library?.puzzle(id: result.puzzleId) {
-            if first { progress.game.xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: result.correctFirstTry) }
+            if first, countXP { progress.game.xp += XP.forPuzzle(vanskelighet: puzzle.vanskelighet, correctFirstTry: result.correctFirstTry) }
             newBadges += Badges.award(.puzzleAnswered(kind: puzzle.kind, correctFirstTry: result.correctFirstTry), on: todayKey, progress: &progress)
         }
         if !wasDone, progress.days[todayKey.string]?.done == true {

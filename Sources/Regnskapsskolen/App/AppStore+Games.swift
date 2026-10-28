@@ -66,14 +66,18 @@ extension AppStore {
         } else {
             return
         }
-        lastWasWeekly = weeklyRound
         if weeklyRound {
-            // The challenge has its own book: no record, no round badge, one result per week.
+            // The challenge has its own book: no record, no round badge, one result per week, and only
+            // a round played to the end counts: «Avbryt» on question one must not burn the week.
             weeklyRound = false
             lastWasRecord = false
-            progress.game.weekly[todayKey.weekKey] = summary.score
-            progress.game.counters["uke-\(todayKey.weekKey)"] = summary.correct
+            lastWasWeekly = summary.answered >= WeeklyChallenge.count
+            if lastWasWeekly {
+                progress.game.weekly[todayKey.weekKey] = summary.score
+                progress.game.counters["uke-\(todayKey.weekKey)"] = summary.correct
+            }
         } else {
+            lastWasWeekly = false
             let key = Self.scoreKey(summary.game, tema: summary.tema)
             lastWasRecord = summary.answered > 0 && summary.score > (progress.game.bestScores[key] ?? 0)
             if lastWasRecord { progress.game.bestScores[key] = summary.score }
@@ -93,7 +97,8 @@ extension AppStore {
         let week = todayKey.isoWeek
         let ten = WeeklyChallenge.puzzles(approved: library.approved, week: week)
         weeklyRound = true
-        lightning = LightningRound(pool: ten, tema: nil, progress: progress, today: todayKey, seed: WeeklyChallenge.seed(for: week), startedAt: now, duration: .infinity)
+        // An empty progress, so the seeded order (and the combo) is the same for every player.
+        lightning = LightningRound(pool: ten, tema: nil, progress: LearnerProgress(), today: todayKey, seed: WeeklyChallenge.seed(for: week), startedAt: now, duration: .infinity)
         startClock()
     }
 

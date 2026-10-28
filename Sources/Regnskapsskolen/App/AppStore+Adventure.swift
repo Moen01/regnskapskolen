@@ -41,7 +41,7 @@ extension AppStore {
         guard var current = run, let session = encounterSession, session.attempt.isAnswered,
               let (outcome, result) = current.answer(session.attempt, progress: progress, today: todayKey) else { return }
         run = current
-        record(result)
+        record(result, countXP: false)
         if case .caught = outcome {
             newBadges += Badges.award(.caught(total: collectionTotal), on: todayKey, progress: &progress)
             if let region = currentRegion, !region.isEmpty, region.mastered == region.puzzles.count {
