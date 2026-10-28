@@ -14,7 +14,7 @@ Med [Claude Code](https://claude.com/claude-code) installert kan appen forklare 
 
 1. Last ned `Regnskapsskolen-<versjon>.zip` under *Releases* og pakk ut.
 2. Dra `Regnskapsskolen.app` til *Programmer*.
-3. Appen er ad hoc-signert: høyreklikk → *Åpne* første gang (macOS spør én gang).
+3. Appen er ad hoc-signert (inntil utgivelsene signeres med Developer ID), så macOS stopper den første gang med «Apple could not verify …». Trykk *Done*, åpne *Systeminnstillinger → Personvern og sikkerhet*, rull ned til meldingen om Regnskapsskolen og trykk *Åpne likevel*. Alternativ i Terminal: `xattr -dr com.apple.quarantine /Applications/Regnskapsskolen.app`. Oppdateringer appen installerer selv får ikke denne dialogen.
 4. Finn bokikonet i menylinjen. Tallet er oppgavene som gjenstår i dag.
 5. Gå gjennom oppsettet: når du vil minnes på, og om Claude skal brukes.
 6. Appen sier fra i menylinjen når en ny versjon finnes; du trykker, den bytter seg selv ut og starter på nytt.

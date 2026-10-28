@@ -43,6 +43,10 @@ Ting som kostet tid, så de ikke koster tid igjen.
 - **`try await XCTUnwrap(expr)` kompilerer ikke**: `XCTUnwrap` tar en autoclosure som ikke kan vente. Skriv `let x = try await expr; try XCTUnwrap(x)`.
 - **Skjermbildemodus må aldri lagre til Application Support.** En avsluttet demo-runde lagret fremdriften over den ekte fila (27.10.2026). `Screenshots.capture` bytter `store.progressStore` til en fil ved siden av PNG-ene før noe tegnes.
 
+## Gatekeeper på macOS 15
+
+- **Høyreklikk → Åpne virker ikke lenger for ad hoc-signerte apper.** Dialogen har bare «Done» og «Move to Bin». Veien er Systeminnstillinger → Personvern og sikkerhet → «Åpne likevel» etter første forsøk, eller `xattr -dr com.apple.quarantine <app>`. Oppdateringer appen gjør selv fjerner karantenen etter `codesign --verify`, så bare førstegangsinstallasjonen rammes. Developer ID + notarisering fjerner dialogen helt.
+
 ## Skjermbilder uten å klikke
 
 `REGNSKAP_SCREENSHOTS=<mappe>` tegner hver skjerm i et vindu utenfor skjermen og skriver PNG. Tre ting måtte til på macOS 26:
