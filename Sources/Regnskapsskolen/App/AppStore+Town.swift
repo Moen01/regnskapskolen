@@ -313,10 +313,8 @@ extension AppStore {
         switch goal {
         case .trial(let id):
             if trialScore.won(needed: TownRules.trialWinsNeeded) {
-                var client = progress.game.town?.clients[id] ?? .fresh(.prospect)
-                client.status = .active
-                progress.game.town?.clients[id] = client
-                progress.game.town?.contracts -= 1
+                // The town's own day, not the learner's: deadlines before it are not the player's.
+                if let day = progress.game.town?.calendar.today { progress.game.town?.winTrial(client: id, on: day) }
                 lines = ["Prøvesaken er vunnet!", "\(clientName(id)) er nå din klient."]
             } else {
                 lines = ["Prøvesaken gikk ikke denne gangen."]

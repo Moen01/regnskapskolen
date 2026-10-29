@@ -10,6 +10,13 @@ extension TownFlow {
         client.navn.split(separator: " ").first.map { $0.uppercased() } ?? client.id.uppercased()
     }
 
+    /// A list row of a client's short name and a detail ("MVA1", "LUKK JAN"). Only the name is
+    /// cut, so the detail always survives the 17 columns; `full` goes to the dialog under the list.
+    static func clientRow(id: String, name: String, detail: String, nameFirst: Bool, full: String, marked: Bool = false) -> PanelRow {
+        let cut = TextWrap.truncate(name, to: max(1, rowColumns - detail.count - 1))
+        return PanelRow(id: id, text: nameFirst ? "\(cut) \(detail)" : "\(detail) \(cut)", full: full, marked: marked)
+    }
+
     var today: DayKey { state.calendar.today }
 
     var activeClients: [TownClient] {
@@ -21,12 +28,13 @@ extension TownFlow {
     /// Deadlines in the next seven days for active clients, marked when few days are left.
     /// A delivered deadline is left out: there is nothing more to do for it.
     mutating func openFristnav() -> TownAction {
-        let names = Dictionary(content.klienter.map { ($0.id, Self.shortName($0)) }, uniquingKeysWith: { first, _ in first })
         let rows = DeadlinePlanner.upcoming(clients: activeClients, from: today, days: 7, deadlines: deadlines)
-            .filter { state.clients[$0.client]?.delivered.contains($0.kind.id) != true }
+            .filter { state.clients[$0.client]?.delivered.contains($0.kind.id) != true && state.clients[$0.client]?.covers($0) != false }
             .map { d in
-                PanelRow.fitting(id: "\(d.client):\(d.kind.id)", "\(d.label) \(names[d.client] ?? d.client)", columns: Self.rowColumns,
-                                 marked: DayKey.daysBetween(today, d.day) <= TownRules.warnDaysBefore)
+                let client = content.client(d.client)
+                return Self.clientRow(id: "\(d.client):\(d.kind.id)", name: client.map(Self.shortName) ?? d.client.uppercased(),
+                                      detail: d.shortLabel, nameFirst: false, full: "\(d.label) \(client?.navn ?? d.client)",
+                                      marked: DayKey.daysBetween(today, d.day) <= TownRules.warnDaysBefore)
             }
         openList(.fristnav, rows: rows)
         if rows.isEmpty { show(["Ingen frister de neste 7 dagene."]) }
@@ -77,19 +85,20 @@ extension TownFlow {
         guard let clientState = state.clients[client.id] else { return [] }
         let name = Self.shortName(client)
         var out: [(task: CounterTask, row: PanelRow)] = []
-        func add(_ task: CounterTask, _ text: String) {
-            out.append((task, PanelRow.fitting(id: "\(out.count):\(client.id)", text, columns: Self.rowColumns)))
+        func add(_ task: CounterTask, _ detail: String, full: String) {
+            out.append((task, Self.clientRow(id: "\(out.count):\(client.id)", name: name, detail: detail, nameFirst: true, full: full)))
         }
         if let month = firstOpenMonth(clientState),
            Ledger.canClose(month, client: client, start: state.start, state: clientState, today: today, pool: pool) {
-            add(.close(client: client.id, month: month), "\(name) LUKK \(Self.monthAbbreviations[month.month - 1])")
+            add(.close(client: client.id, month: month), "LUKK \(Self.monthAbbreviations[month.month - 1])",
+                full: "Lukk \(Self.monthNames[month.month - 1]) for \(client.navn)")
         }
         for year in state.start.year...max(state.start.year, today.year) {
             for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) {
                 let months = d.kind.months(rates: deadlines.rates)
-                guard !months.isEmpty, months.allSatisfy(clientState.closedMonths.contains),
+                guard clientState.covers(d), !months.isEmpty, months.allSatisfy(clientState.closedMonths.contains),
                       !clientState.delivered.contains(d.kind.id), !clientState.missed.contains(d.kind.id) else { continue }
-                add(.deliver(client: client.id, kind: d.kind), "\(name) LEVER \(Self.shortKind(d.kind))")
+                add(.deliver(client: client.id, kind: d.kind), "LEVER \(d.kind.shortName)", full: "Lever \(d.label) for \(client.navn)")
             }
         }
         return out
@@ -103,13 +112,6 @@ extension TownFlow {
             month = month.next
         }
         return nil
-    }
-
-    private static func shortKind(_ kind: DeadlineKind) -> String {
-        switch kind {
-        case let .mva(termin, _): return "MVA \(termin)"
-        case .mvaAarlig: return "MVA ÅR"
-        }
     }
 
     /// Open errors in the month send the player to correct them; a clean month closes here.

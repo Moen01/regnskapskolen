@@ -16,9 +16,21 @@ extension TownAction {
 /// day, the deadlines that went by are marked as missed.
 extension TownState {
     /// The client's deadlines from the first year of the game through this year. Years before the
-    /// start are left out: the game did not run then, so nothing could be missed.
+    /// start are left out: the game did not run then, so nothing could be missed. So are deadlines
+    /// due before the client was won (`ClientState.activeFrom`).
     public func deadlines(for client: TownClient, deadlines: Deadlines) -> [TownDeadline] {
-        (start.year...max(start.year, calendar.today.year)).flatMap { DeadlinePlanner.deadlines(for: client, year: $0, deadlines: deadlines) }
+        (start.year...max(start.year, calendar.today.year))
+            .flatMap { DeadlinePlanner.deadlines(for: client, year: $0, deadlines: deadlines) }
+            .filter { clients[client.id]?.covers($0) != false }
+    }
+
+    /// A won trial: the client becomes active from `day` and uses one contract.
+    public mutating func winTrial(client: String, on day: DayKey) {
+        var state = clients[client] ?? .fresh(.prospect)
+        state.status = .active
+        state.activeFrom = day
+        clients[client] = state
+        contracts -= 1
     }
 
     /// Marks every active client's passed deadlines as missed. Returns the newly missed ones.
@@ -54,7 +66,7 @@ extension TownState {
         for client in content.klienter where clients[client.id]?.status == .active {
             // Next year too, so a sleep in December still stops at the term due in February.
             for year in start.year...(today.year + 1) {
-                for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) {
+                for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) where clients[client.id]?.covers(d) != false {
                     events += [d.day, d.day.adding(days: -TownRules.warnDaysBefore)]
                 }
             }

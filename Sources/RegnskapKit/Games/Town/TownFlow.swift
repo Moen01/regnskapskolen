@@ -155,9 +155,13 @@ public struct TownFlow: Hashable, Sendable {
             state.clients[id] = clientState
             return say(first ? lines.hilsen + lines.drift : lines.hilsen, then: .choice(prompt: "Prøvesak?", yes: .trial(client: id)))
         case .active:
+            // The start client is active without a first talk; it still tells how it runs once.
+            let intro = clientState.met ? [] : lines.hilsen + lines.drift
+            clientState.met = true
+            state.clients[id] = clientState
             // R1: the oldest month with bilag left, not only this month.
             let month = Ledger.pileMonth(for: client, start: state.start, today: state.calendar.today, state: clientState, pool: pool)
-            return month == nil ? say(lines.tomHaug) : say(lines.haug, then: .action(.startBilag(client: id)))
+            return month == nil ? say(intro + lines.tomHaug) : say(intro + lines.haug, then: .action(.startBilag(client: id)))
         case .archived:
             return say(["Vi har funnet et annet kontor."])
         }

@@ -159,10 +159,20 @@ final class TownFlowTests: XCTestCase {
 
     func testActiveClientWithPileStartsBilag() {
         var f = flow(state(map: "sentrum", x: 2, y: 3))
+        XCTAssertFalse(f.state.clients["butikken"]!.met)
         XCTAssertEqual(f.key(.a), .none)
+        // The start client is active from the start; its first talk still tells how it runs.
+        XCTAssertTrue(f.state.clients["butikken"]!.met)
+        XCTAssertTrue(text(f).contains("Hei! Bilagene ligger klare."))
+        XCTAssertTrue(text(f).contains("travel uke"))
         XCTAssertTrue(text(f).contains("Her er bilagene dine."))
         XCTAssertEqual(readDialog(&f), .startBilag(client: "butikken"))
         XCTAssertEqual(f.phase, .walking)
+        // The second talk is only the pile.
+        _ = f.key(.a)
+        XCTAssertFalse(text(f).contains("travel uke"))
+        XCTAssertTrue(text(f).contains("Her er bilagene dine."))
+        XCTAssertEqual(readDialog(&f), .startBilag(client: "butikken"))
 
         // R1: a January bilag left unbooked is still the pile in March.
         var march = flow(state(map: "sentrum", x: 2, y: 3, today: day(3, 2)))
@@ -221,7 +231,9 @@ final class TownFlowTests: XCTestCase {
         var g = flow(s)
         _ = g.key(.a)
         XCTAssertEqual(g.phase, .counter)
-        XCTAssertEqual(g.rows.map { $0.full ?? $0.text }, ["BAKEREN LEVER MVA 1"])
+        // "BAKEREN LEVER MVA1" is 18 columns: the name is cut, never the term.
+        XCTAssertEqual(g.rows.map(\.text), ["BAKER… LEVER MVA1"])
+        XCTAssertEqual(g.rows.map(\.full), ["Lever 10.04 MVA 1. TERMIN for Bakeren AS"])
         XCTAssertEqual(g.key(.a), .deliver(client: "butikken", kind: .mva(termin: 1, year: 2026)))
         XCTAssertEqual(g.phase, .walking)
 
@@ -241,7 +253,8 @@ final class TownFlowTests: XCTestCase {
             XCTAssertEqual(f.key(.a), .none)
             XCTAssertEqual(f.phase, .fristnav)
             XCTAssertEqual(f.rows.count, 1)
-            XCTAssertEqual(f.rows[0].full ?? f.rows[0].text, "10.04 MVA 1. TERMIN BAKEREN")
+            XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKER…")
+            XCTAssertEqual(f.rows[0].full, "10.04 MVA 1. TERMIN Bakeren AS")
             XCTAssertEqual(f.rows[0].marked, marked, "\(today)")
             XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= 17 })
         }
@@ -282,6 +295,15 @@ final class TownFlowTests: XCTestCase {
     }
 
     // MARK: Width
+
+    func testClientRowCutsTheNameNotTheDeadline() {
+        let annual = TownFlow.clientRow(id: "x", name: "LEGEKONTORET", detail: "LEVER MVAÅR", nameFirst: true, full: "full")
+        XCTAssertEqual(annual.text, "LEGE… LEVER MVAÅR")
+        XCTAssertLessThanOrEqual(annual.text.count, TownFlow.rowColumns)
+        XCTAssertEqual(annual.full, "full")
+        XCTAssertEqual(TownFlow.clientRow(id: "x", name: "KAFÉ", detail: "10.04 MVA1", nameFirst: false, full: "").text, "10.04 MVA1 KAFÉ")
+    }
+
 
     func testEveryPageLineFitsEighteen() throws {
         var seen: [[[String]]] = []

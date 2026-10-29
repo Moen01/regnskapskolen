@@ -76,6 +76,21 @@ public struct TownDeadline: Hashable, Sendable {
         case .mvaAarlig: return "\(date) MVA ÅRLIG"
         }
     }
+
+    /// "10.04 MVA1": short enough that a list row keeps the client's name in 17 columns.
+    public var shortLabel: String {
+        String(format: "%02d.%02d ", day.day, day.month) + kind.shortName
+    }
+}
+
+extension DeadlineKind {
+    /// "MVA1" or "MVAÅR", for list rows.
+    public var shortName: String {
+        switch self {
+        case let .mva(termin, _): return "MVA\(termin)"
+        case .mvaAarlig: return "MVAÅR"
+        }
+    }
 }
 
 public enum DeadlinePlanner {

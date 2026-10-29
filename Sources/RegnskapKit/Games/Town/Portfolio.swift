@@ -13,9 +13,13 @@ public struct ClientState: Hashable, Codable, Sendable {
     public var closedMonths: Set<MonthKey>
     public var delivered: Set<String>
     public var missed: Set<String>
+    /// The day the client was won. Deadlines due before it are not the player's: a client won in
+    /// April cannot have missed the term due in March. `nil` (the start client, saves from before
+    /// the field) covers every deadline. Optional, so the synthesized decoder reads old saves.
+    public var activeFrom: DayKey?
 
     public init(status: ClientStatus, satisfaction: Int, met: Bool, booked: [BookedBilag] = [], openErrors: [OpenError] = [],
-                closedMonths: Set<MonthKey> = [], delivered: Set<String> = [], missed: Set<String> = []) {
+                closedMonths: Set<MonthKey> = [], delivered: Set<String> = [], missed: Set<String> = [], activeFrom: DayKey? = nil) {
         self.status = status
         self.satisfaction = satisfaction
         self.met = met
@@ -24,6 +28,7 @@ public struct ClientState: Hashable, Codable, Sendable {
         self.closedMonths = closedMonths
         self.delivered = delivered
         self.missed = missed
+        self.activeFrom = activeFrom
     }
 }
 
@@ -67,6 +72,11 @@ extension ClientState {
         closedMonths.insert(month)
     }
 
+    /// Whether the deadline falls on or after the day the client was won.
+    public func covers(_ deadline: TownDeadline) -> Bool {
+        activeFrom.map { deadline.day >= $0 } ?? true
+    }
+
     public mutating func deliver(_ kind: DeadlineKind) {
         delivered.insert(kind.id)
         adjustSatisfaction(by: TownRules.deliverBonus)
@@ -76,7 +86,7 @@ extension ClientState {
     /// A deadline is missed from the day after it falls due. Returns the newly missed ones.
     public mutating func checkMissed(_ deadlines: [TownDeadline], today: DayKey) -> [TownDeadline] {
         var newly: [TownDeadline] = []
-        for d in deadlines where d.day < today && !delivered.contains(d.kind.id) && !missed.contains(d.kind.id) {
+        for d in deadlines where d.day < today && covers(d) && !delivered.contains(d.kind.id) && !missed.contains(d.kind.id) {
             missed.insert(d.kind.id)
             adjustSatisfaction(by: TownRules.missedDeadline)
             newly.append(d)

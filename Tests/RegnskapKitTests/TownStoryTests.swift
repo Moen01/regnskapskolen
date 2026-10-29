@@ -17,6 +17,8 @@ final class TownStoryTests: XCTestCase {
     let feb = MonthKey(year: 2026, month: 2)
     let cafe = "kafe-lysthuset"
     let doctor = "legekontoret-bryggen"
+    let pixel = "nettbutikken-pixel"
+    let motor = "verkstedet-motor"
 
     func flow(_ state: TownState) -> TownFlow {
         TownFlow(content: town, state: state, deadlines: deadlines, pool: pool, regions: [], damage: [:], ruleCards: Self.library.rules)
@@ -102,9 +104,12 @@ final class TownStoryTests: XCTestCase {
         press([.up, .up], &f)
         XCTAssertEqual(f.state.walker, TownWalker(x: 4, y: 4, facing: .up))
 
-        // The owner hands over the pile across the counter.
+        // The owner hands over the pile across the counter, and the first time says how the café runs.
         XCTAssertEqual(f.key(.a), .none)
         XCTAssertEqual(f.phase, .dialog)
+        let firstTalk = f.pages.flatMap { $0 }.joined(separator: " ")
+        XCTAssertTrue(firstTalk.contains("take-away i disken."), firstTalk)
+        XCTAssertTrue(f.state.clients[cafe]!.met)
         XCTAssertEqual(readDialog(&f), .startBilag(client: cafe))
         state = f.state
         XCTAssertTrue(TownAction.startBilag(client: cafe).spendsAction)
@@ -179,7 +184,7 @@ final class TownStoryTests: XCTestCase {
         XCTAssertTrue(stops.contains(deadlines.mvaFrist(termin: 1, year: 2026).adding(days: -TownRules.warnDaysBefore)))
         f = flow(state)
         _ = f.talk(to: counter)
-        let deliverRow = try XCTUnwrap(f.rows.firstIndex { $0.text == "KAFÉ LEVER MVA 1" })
+        let deliverRow = try XCTUnwrap(f.rows.firstIndex { $0.text == "KAFÉ LEVER MVA1" })
         for _ in 0..<deliverRow { _ = f.key(.down) }
         let kind = DeadlineKind.mva(termin: 1, year: 2026)
         XCTAssertEqual(f.key(.a), .deliver(client: cafe, kind: kind))
@@ -263,5 +268,77 @@ final class TownStoryTests: XCTestCase {
         var visible = state.clients[cafe]!
         visible.closeIfClean(jan, pool: pool)
         XCTAssertEqual(visible.closedMonths, [])
+    }
+
+    /// Talks to the client where it stands, says yes to the trial, and wins it the way the store does.
+    func winTrial(_ id: String, state: inout TownState) throws {
+        let client = try XCTUnwrap(town.client(id))
+        let person = try XCTUnwrap(town.map(client.sted.kart)?.folk.first { $0.rolle == .klient && $0.klient == id })
+        var f = flow(state)
+        _ = f.talk(to: person)
+        _ = readDialog(&f)
+        XCTAssertEqual(f.phase, .choice, id)
+        XCTAssertEqual(f.key(.a), .startTrial(client: id))
+        state = f.state
+        state.winTrial(client: id, on: state.calendar.today)
+        _ = state.spendAction(content: town, deadlines: deadlines)
+    }
+
+    func testAllThreeTrialsCanBeWonInPhase2a() throws {
+        var state = TownState.new(content: town, year: 2026)
+        XCTAssertEqual(state.contracts, 3)
+        for id in [pixel, motor, doctor] { try winTrial(id, state: &state) }
+        XCTAssertEqual(state.clients.values.filter { $0.status == .active }.count, 4)
+        XCTAssertEqual(state.contracts, 0)
+        XCTAssertEqual(state.clients[pixel]?.activeFrom, DayKey(year: 2026, month: 1, day: 1))
+        XCTAssertNil(state.clients[cafe]?.activeFrom, "the start client covers every deadline")
+    }
+
+    func testAClientWonAfterADeadlineHasNotMissedIt() throws {
+        var state = TownState.new(content: town, year: 2026)
+        let wonOn = DayKey(year: 2026, month: 4, day: 12)
+        state.calendar = TownCalendar(start: wonOn)
+        state.clients[cafe]?.delivered = [DeadlineKind.mva(termin: 1, year: 2026).id]
+        try winTrial(pixel, state: &state)
+        XCTAssertEqual(state.clients[pixel]?.activeFrom, wonOn)
+
+        var missed: [TownDeadline] = []
+        while state.calendar.today < DayKey(year: 2026, month: 5, day: 2) { missed += state.sleep(content: town, deadlines: deadlines) }
+        XCTAssertEqual(missed, [], "term 1 fell due on 10 April, before Pixel was won")
+        XCTAssertEqual(state.clients[pixel]?.missed, [])
+        XCTAssertEqual(state.clients[pixel]?.satisfaction, TownRules.startSatisfaction)
+
+        // January and February closed: the counter offers no delivery for term 1.
+        state.clients[pixel]?.closedMonths = [jan, feb]
+        var f = flow(state)
+        let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
+        _ = f.talk(to: counter)
+        XCTAssertFalse(f.rows.contains { $0.text.hasPrefix("PIXEL LEVER") }, "\(f.rows.map(\.text))")
+
+        // Term 2 (due in June) is Pixel's: Fristnav lists it, and it is missed when not delivered.
+        state.calendar = TownCalendar(start: deadlines.mvaFrist(termin: 2, year: 2026).adding(days: -2))
+        f = flow(state)
+        _ = f.openFristnav()
+        XCTAssertTrue(f.rows.contains { $0.id == "\(pixel):mva-2026-2" }, "\(f.rows.map(\.id))")
+        while state.calendar.today <= deadlines.mvaFrist(termin: 2, year: 2026) { missed += state.sleep(content: town, deadlines: deadlines) }
+        XCTAssertTrue(missed.contains { $0.client == pixel && $0.kind == .mva(termin: 2, year: 2026) })
+    }
+
+    func testFristnavRowsKeepTheClientName() throws {
+        var state = TownState.new(content: town, year: 2026)
+        for id in [pixel, motor] { state.clients[id]?.status = .active }
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 4, day: 7))
+        var f = flow(state)
+        _ = f.openFristnav()
+        XCTAssertEqual(f.rows.map(\.text), ["10.04 MVA1 KAFÉ", "10.04 MVA1 PIXEL", "10.04 MVA1 MOTOR"])
+        XCTAssertEqual(f.rows.first?.full, "10.04 MVA 1. TERMIN Kafé Lysthuset AS")
+        XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns && !$0.text.contains("…") })
+    }
+
+    func testATrialDoesNotSpoilTheClientsPile() {
+        // The trial shows the answer and explanation, so its puzzles must not come back as bilag.
+        for client in town.klienter where !client.startklient {
+            XCTAssertEqual(Set(client.provesak).intersection(client.oppgaver), [], client.id)
+        }
     }
 }
