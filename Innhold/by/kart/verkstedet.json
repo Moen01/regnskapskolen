@@ -1,0 +1,23 @@
+{
+  "id": "verkstedet",
+  "navn": "Motor & Mek",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "sentrum", "tilX": 24, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-verkstedet-motor", "rolle": "klient", "x": 4, "y": 2, "klient": "verkstedet-motor", "tekst": [] },
+    { "id": "folk-kunde", "rolle": "folk", "x": 1, "y": 4, "tekst": ["Bilen min er inne på service."] }
+  ]
+}

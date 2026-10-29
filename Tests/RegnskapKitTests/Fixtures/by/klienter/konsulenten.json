@@ -1,0 +1,19 @@
+{
+  "id": "konsulenten",
+  "navn": "Rådgiver Hansen ENK",
+  "bransje": "konsulent",
+  "selskapsform": "ENK",
+  "mvaRegistrert": false,
+  "ansatte": 0,
+  "sted": { "kart": "sentrum", "x": 6, "y": 2 },
+  "oppgaver": ["grunnlag-quiz-010"],
+  "provesak": ["grunnlag-quiz-010", "grunnlag-web-quiz-01", "grunnlag-web-quiz-03"],
+  "replikker": {
+    "hilsen": ["God dag. Jeg trenger hjelp."],
+    "drift": ["Det er rolig om dagen."],
+    "haug": ["Dette er månedens bilag."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Vi glapp fristen."]
+  },
+  "status": "utkast"
+}

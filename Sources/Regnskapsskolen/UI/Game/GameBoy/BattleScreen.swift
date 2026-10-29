@@ -3,9 +3,9 @@ import SwiftUI
 
 /// The encounter on the handheld: the creature and the learner face to face, the dialog box,
 /// and over the field the menu, the move list, the rule cards or the answer panel. `BattleFlow`
-/// owns the phases; this view draws them and maps its actions onto the store.
+/// owns the phases; this view draws them and maps its actions onto the host.
 struct BattleScreen: View {
-    @Environment(AppStore.self) private var store
+    let host: BattleHost
     /// The flow for one creature; a creature with another id gets a fresh one.
     @State private var battle: Battle?
     /// Counts the misses, so each one shakes the screen once.
@@ -24,19 +24,21 @@ struct BattleScreen: View {
     /// The flow for the creature in front of the learner, built on the spot when none is kept
     /// yet (so a first render, including a screenshot, shows the intro).
     private var flow: BattleFlow? {
-        guard let encounter = store.run?.current else { return nil }
+        guard let encounter = host.encounter() else { return nil }
+        let library = host.library()
         if let battle, battle.id == encounter.puzzle.id { return battle.flow }
         return BattleFlow(encounter: encounter,
-                          laws: store.library?.laws ?? .empty,
-                          cards: store.library?.rules(tema: encounter.puzzle.tema) ?? [],
-                          rates: store.library?.rates.mvaSatser ?? [],
-                          attempt: store.encounterSession?.attempt ?? .empty(for: encounter.puzzle.kind))
+                          laws: library?.laws ?? .empty,
+                          cards: library?.rules(tema: encounter.puzzle.tema) ?? [],
+                          rates: library?.rates.mvaSatser ?? [],
+                          attempt: host.session()?.attempt ?? .empty(for: encounter.puzzle.kind))
     }
 
     var body: some View {
         GBScreen(onKey: handle) {
-            if let run = store.run, let encounter = run.current, let flow {
-                BattleField(encounter: encounter, hp: run.hp, species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught(run))
+            if let encounter = host.encounter(), let flow {
+                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(),
+                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught)
                 switch flow.phase {
                 case .moves:
                     ListPanel(title: "HVILKEN REGEL?", rows: flow.moveRows, cursor: flow.moveCursor, onClick: { index in click(row: index) })
@@ -56,13 +58,13 @@ struct BattleScreen: View {
                 }
             }
         }
-        .gbFlash(trigger: store.run?.current?.puzzle.id)
+        .gbFlash(trigger: host.encounter()?.puzzle.id)
         .gbShake(trigger: misses)
     }
 
     /// Caught, and the dialog has moved on to say so: the creature shrinks away.
-    private func isCaught(_ run: RegionRun) -> Bool {
-        guard case .result(.caught) = run.phase, let phase = flow?.phase else { return false }
+    private var isCaught: Bool {
+        guard case .caught = host.outcome(), let phase = flow?.phase else { return false }
         return phase == .outcome || phase == .explanation
     }
 
@@ -90,10 +92,10 @@ struct BattleScreen: View {
 
     /// Runs one step of the flow against the session's attempt, keeps both, and acts on the result.
     private func drive(_ step: (inout BattleFlow, inout PuzzleAttempt) -> BattleAction) {
-        guard let encounter = store.run?.current, var current = flow else { return }
-        var attempt = store.encounterSession?.attempt ?? .empty(for: encounter.puzzle.kind)
+        guard let encounter = host.encounter(), var current = flow else { return }
+        var attempt = host.session()?.attempt ?? .empty(for: encounter.puzzle.kind)
         let action = step(&current, &attempt)
-        store.encounterSession?.attempt = attempt
+        host.setAttempt(attempt)
         battle = Battle(id: encounter.puzzle.id, flow: current)
         act(action)
     }
@@ -103,13 +105,13 @@ struct BattleScreen: View {
         case .none, .invalid:
             break
         case .chooseMove(let move):
-            store.chooseMove(move)
+            host.choose(move)
         case .attack:
-            store.answerEncounter()
-            guard case .result(let outcome) = store.run?.phase else { return }
+            host.attack()
+            guard let outcome = host.outcome() else { return }
             if case .escaped = outcome { misses += 1 }
             // A correct voucher lands one hit per line before the dialog tells the result.
-            if case .caught = outcome, case .posting(let lines) = store.encounterSession?.attempt ?? .quiz(nil), !AppStore.isScreenshotRun {
+            if case .caught = outcome, case .posting(let lines) = host.session()?.attempt ?? .quiz(nil), !AppStore.isScreenshotRun {
                 Task { @MainActor in
                     for index in lines.indices {
                         hitLine = index
@@ -122,9 +124,9 @@ struct BattleScreen: View {
                 battle?.flow.showOutcome(outcome)
             }
         case .flee:
-            store.endRun()
+            host.flee()
         case .next:
-            store.proceedEncounter()
+            host.next()
         }
     }
 }
@@ -134,11 +136,10 @@ struct BattleScreen: View {
 private struct BattleField: View {
     @Environment(\.gbScale) private var scale
     let encounter: Encounter
-    let hp: Int
+    let stage: Stage
+    let hp: Int?
     let species: String
     let caught: Bool
-
-    private var stage: Stage { encounter.stageBefore }
 
     var body: some View {
         GBBox(x: 4, y: 6, width: 96, height: 30, padding: 3) {
@@ -161,14 +162,16 @@ private struct BattleField: View {
                 .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
         }
         GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, pixel: 3) }
-        GBBox(x: 62, y: 60, width: 94, height: 32, padding: 3) {
-            VStack(alignment: .leading, spacing: 2 * scale) {
-                GBText("KUNDEN")
-                HStack(spacing: 2 * scale) {
-                    GBText("HP:")
-                    GBBar(value: Double(hp) / Double(RegionRun.hp), width: 58)
+        if let hp {
+            GBBox(x: 62, y: 60, width: 94, height: 32, padding: 3) {
+                VStack(alignment: .leading, spacing: 2 * scale) {
+                    GBText("KUNDEN")
+                    HStack(spacing: 2 * scale) {
+                        GBText("HP:")
+                        GBBar(value: Double(hp) / Double(RegionRun.hp), width: 58)
+                    }
+                    HStack { Spacer(minLength: 0); GBText("\(hp)/\(RegionRun.hp)") }
                 }
-                HStack { Spacer(minLength: 0); GBText("\(hp)/\(RegionRun.hp)") }
             }
         }
     }

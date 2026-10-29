@@ -30,7 +30,9 @@ enum Screenshots {
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("sandbox-bank.png"))
         store.sandboxPane = .journal
         // The games: a round just started, then its summary. No clock runs in screenshot mode.
+        // Paragrafjakten and the training grounds sit behind the town's TRENING.
         navigation.section = .game
+        store.showTraining = true
         store.lynrundeTema = "mva"  // every puzzle in the round is mva, so the shot shows the two-step input
         store.startLightning()
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-lynrunde.png"))
@@ -53,6 +55,8 @@ enum Screenshots {
         store.showCollection = true
         await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent("spill-samling.png"))
         store.showCollection = false
+        store.showTraining = false
+        await snapTown(store: store, navigation: navigation, folder: folder)
         navigation.section = .today
         for kind in PuzzleKind.allCases {
             guard let puzzle = store.pool.first(where: { $0.kind == kind }) else { continue }
@@ -77,6 +81,54 @@ enum Screenshots {
         navigation.showOnboarding = true
         await snap(OnboardingView().environment(store).environment(navigation), size: NSSize(width: 560, height: 520), to: folder.appendingPathComponent("onboarding.png"))
         print("Skrev skjermbilder til \(folder.path)")
+    }
+
+    /// The town in fixed states on fixed days, so the shots are the same on every run: Sentrum,
+    /// the counter with a month to close and a term to deliver, and Fristnav three days before the term.
+    @MainActor
+    static func snapTown(store: AppStore, navigation: Navigation, folder: URL) async {
+        guard let library = store.library else { return }
+        let town = library.town
+        let visible = Set(store.pool.map(\.id))
+        let cafe = "kafe-lysthuset"
+        func stage(map: String, x: Int, y: Int, facing: Facing, day: DayKey, _ change: (inout TownState) -> Void = { _ in }) {
+            var state = TownState.new(content: town, year: 2026)
+            state.mapId = map
+            state.walker = TownWalker(x: x, y: y, facing: facing)
+            state.calendar = TownCalendar(start: day)
+            change(&state)
+            store.town = nil
+            store.progress.game.town = state
+            store.openTown()
+        }
+        func shot(_ name: String) async {
+            await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent(name))
+        }
+
+        stage(map: "sentrum", x: 14, y: 6, facing: .down, day: DayKey(year: 2026, month: 1, day: 5))
+        await shot("spill-by.png")
+
+        // January and February booked and closed; March has no bilag, so it can close on 2 April.
+        stage(map: "kontoret", x: 2, y: 3, facing: .up, day: DayKey(year: 2026, month: 4, day: 2)) { state in
+            guard let client = town.client(cafe) else { return }
+            for month in [MonthKey(year: 2026, month: 1), MonthKey(year: 2026, month: 2)] {
+                for id in Ledger.pile(for: client, month: month, start: state.start, state: state.clients[cafe]!, pool: visible) {
+                    state.clients[cafe]?.book(BookedBilag(puzzleId: id, month: month, day: month.next.first, correct: true), boxBefore: 0, client: cafe)
+                }
+                state.clients[cafe]?.closeIfClean(month)
+            }
+        }
+        store.townKey(.a)
+        await shot("spill-kontoret.png")
+
+        stage(map: "kontoret", x: 3, y: 3, facing: .left, day: DayKey(year: 2026, month: 4, day: 7)) { state in
+            state.clients["nettbutikken-pixel"]?.status = .active
+        }
+        store.townKey(.a)
+        store.townKey(.a)
+        await shot("spill-fristnav.png")
+        store.town = nil
+        store.progress.game.town = nil
     }
 
     @MainActor

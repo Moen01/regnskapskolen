@@ -1,0 +1,27 @@
+{
+  "id": "kontoret",
+  "navn": "Kontoret",
+  "bredde": 12,
+  "hoyde": 9,
+  "ruter": [
+    "############",
+    "#...#......#",
+    "#===.......#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "######D#####"
+  ],
+  "dorer": [
+    { "x": 6, "y": 8, "til": "sentrum", "tilX": 14, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "sjef", "rolle": "sjef", "x": 6, "y": 2, "tekst": ["Velkommen til kontoret! Fint at du er her.", "Din første klient er Kafé Lysthuset. Kafeen ligger til venstre i gata.", "Hent bilagene der, før dem, og lever mva-meldingen før fristen.", "De andre i byen trenger også hjelp. Snakk med dem."] },
+    { "id": "skranke", "rolle": "skranke", "x": 2, "y": 1, "tekst": ["Her lukker du måneder og leverer."] },
+    { "id": "seng", "rolle": "seng", "x": 10, "y": 1, "tekst": ["Sofaen på kontoret. Her kan du hvile."] },
+    { "id": "fagkontor-mva", "rolle": "fagkontor", "x": 10, "y": 5, "fagkontor": {"id": "mva", "navn": "MVA-kontoret", "temaer": ["mva"]}, "tekst": ["Jeg leder MVA-kontoret. Her prøves de vanskeligste mva-sakene."] },
+    { "id": "skilt-mva", "rolle": "skilt", "x": 10, "y": 7, "tekst": ["Fagkontor MVA"] }
+  ]
+}

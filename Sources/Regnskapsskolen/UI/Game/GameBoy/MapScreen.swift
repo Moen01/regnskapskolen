@@ -13,16 +13,18 @@ struct MapScreen: View {
     private static let visibleRows = 5
     private static let trainingId = "trening"
     private static let collectionId = "samling"
+    private static let backId = "tilbake"
 
     private var regions: [Region] { store.regions }
 
     private var rows: [PanelRow] {
         regions.map { region in
-            let count = region.isEmpty ? "bygges" : "\(region.caught)/\(region.puzzles.count)"
+            // The name has the row; the dialog carries the name in full. Locked rows are dimmed.
+            let count = region.isEmpty ? "" : " \(region.caught)/\(region.puzzles.count)"
             let prefix = region.gymBadge != nil ? "*" : ""
-            let text = region.unlocked ? "\(prefix)\(region.navn) \(count)" : "LÅST \(region.navn)"
-            return PanelRow.fitting(id: region.tema, text, columns: AnswerPanel.columns)
-        } + [PanelRow(id: Self.trainingId, text: "TRENING"), PanelRow(id: Self.collectionId, text: "SAMLING")]
+            let name = TextWrap.truncate(prefix + region.navn, to: AnswerPanel.columns - count.count)
+            return PanelRow(id: region.tema, text: name + count, full: region.navn, marked: !region.unlocked)
+        } + [PanelRow(id: Self.trainingId, text: "TRENING"), PanelRow(id: Self.collectionId, text: "SAMLING"), PanelRow(id: Self.backId, text: "TILBAKE")]
     }
 
     private var visible: Range<Int> {
@@ -37,13 +39,15 @@ struct MapScreen: View {
         let text: String
         if cursor < regions.count {
             let region = regions[cursor]
-            if !region.unlocked { text = "Låst. Fang 60 % av forrige region først." }
-            else if region.isEmpty { text = "Under bygging: ingen skapninger her ennå." }
-            else { text = region.theme.setning.isEmpty ? region.navn : region.theme.setning }
+            if !region.unlocked { text = "\(region.navn) er låst. Fang 60 % av forrige region først." }
+            else if region.isEmpty { text = "\(region.navn) er under bygging: ingen skapninger her ennå." }
+            else { text = region.theme.setning.isEmpty ? region.navn : "\(region.navn): \(region.theme.setning)" }
         } else if rows[cursor].id == Self.trainingId {
             text = "Arena, Dojo og Ukens utfordring. \(level.navn), \(store.progress.game.xp) XP."
-        } else {
+        } else if rows[cursor].id == Self.collectionId {
             text = "Samlingen: \(store.collectionTotal) av \(store.pool.count) fanget."
+        } else {
+            text = "Tilbake til byen."
         }
         return TextWrap.pages(TextWrap.lines(text, columns: BattleFlow.columns), rows: BattleFlow.rows)
     }
@@ -74,6 +78,7 @@ struct MapScreen: View {
         case .up: cursor = max(0, cursor - 1); follow()
         case .down: cursor = min(rows.count - 1, cursor + 1); follow()
         case .a: select()
+        case .b: store.showTraining = false
         case .tab: page = page < pages.count - 1 ? page + 1 : 0
         default: break
         }
@@ -89,6 +94,7 @@ struct MapScreen: View {
         let id = rows[cursor].id
         if id == Self.trainingId { showTraining = true }
         else if id == Self.collectionId { store.showCollection = true }
+        else if id == Self.backId { store.showTraining = false }
         else if let region = regions.first(where: { $0.tema == id }), region.unlocked, !region.isEmpty { store.openRegion(region.tema) }
     }
 }

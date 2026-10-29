@@ -100,7 +100,7 @@ public struct RenteSats: Codable, Hashable, Sendable {
 
 /// `Innhold/satser.json`: every rate, threshold and deadline rule the puzzles, the validator and
 /// the sandbox use. Nothing here is hard-coded in Swift.
-public struct Rates: Sendable {
+public struct Rates: Hashable, Sendable {
     public let verifisert: DayKey
     public let kilder: [String: String]
     public let mvaSatser: [MVARate]

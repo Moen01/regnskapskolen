@@ -22,6 +22,7 @@ public final class ContentLibrary: @unchecked Sendable {
         var puzzles: [Puzzle] = []
         var rules: [RuleCard] = []
         var laws: LawNames = .empty
+        var town: TownContent = .empty
         var loadErrors: [ContentLoadError] = []
         var generatedInMemory: [Puzzle] = []
         var byId: [String: Puzzle] = [:]
@@ -38,6 +39,8 @@ public final class ContentLibrary: @unchecked Sendable {
     public var rules: [RuleCard] { lock.withLock { state.rules } }
     /// Short law names from `lover.json`; empty when the folder has none.
     public var laws: LawNames { lock.withLock { state.laws } }
+    /// The town from `by/`; `.empty` when the folder is missing.
+    public var town: TownContent { lock.withLock { state.town } }
     public var loadErrors: [ContentLoadError] { lock.withLock { state.loadErrors } }
     /// Puzzles Claude wrote this session, visible until the next reload reads their files.
     public var generatedInMemory: [Puzzle] {
@@ -89,6 +92,9 @@ public final class ContentLibrary: @unchecked Sendable {
         } catch {
             errors.append(ContentLoadError(file: lawsURL.path, message: describe(error)))
         }
+        let townLoad = TownContent.loadReporting(folder: root.appendingPathComponent("by", isDirectory: true))
+        state.town = townLoad.town
+        errors += townLoad.errors.map { ContentLoadError(file: $0.file, message: describe($0.underlying)) }
         state.loadErrors = errors
         state.generatedInMemory = generated.filter { state.byId[$0.id] == nil }
         state.lastSignature = signature(root: root, extraRoots: extraRoots)
@@ -99,7 +105,7 @@ public final class ContentLibrary: @unchecked Sendable {
     func signature() -> String { Self.signature(root: root, extraRoots: extraPuzzleRoots) }
 
     private static func signature(root: URL, extraRoots: [URL]) -> String {
-        let roots = [root.appendingPathComponent("oppgaver", isDirectory: true), root.appendingPathComponent("regler", isDirectory: true)] + extraRoots
+        let roots = [root.appendingPathComponent("oppgaver", isDirectory: true), root.appendingPathComponent("regler", isDirectory: true), root.appendingPathComponent("by", isDirectory: true)] + extraRoots
         return roots.flatMap { folder -> [String] in
             (FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.contentModificationDateKey], options: [.skipsHiddenFiles])?
                 .compactMap { $0 as? URL } ?? []).map { "\($0.lastPathComponent):\((try? $0.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate?.timeIntervalSince1970) ?? 0)" }

@@ -54,6 +54,26 @@ final class AppStore {
     var encounterSession: PuzzleSession?
     var lastRunSummary: RunSummary?
     var showCollection = false
+    /// Rubin: the town on screen, a bilag or correction run at a client, a trial or fagkontor run,
+    /// and the score of that run. `showTraining` opens Paragrafjakten's map from the town menu.
+    var town: TownFlow?
+    var bilagRun: BilagRun?
+    var townRun: RegionRun?
+    var trialScore = TrialScore()
+    var showTraining = false
+    /// The input for the town's current encounter, and what the town run is for.
+    var townSession: PuzzleSession?
+    var townRunGoal: TownRunGoal?
+    /// The month a correction run is closing.
+    var correctionMonth: MonthKey?
+    /// The bilag's stage before booking, kept so the battle never shows the box moving.
+    var bilagStage: Stage?
+    /// Steps walked, so the player's two walking frames take turns.
+    var townSteps = 0
+    /// Lines to tell when the player is back in town, such as a deadline missed as a run started.
+    var townNotice: [String] = []
+    /// A run started by a town action is under way; its action is spent when the player is back in town.
+    var townActionPending = false
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
     /// The last summary came from the weekly challenge, so it shows the shareable code.

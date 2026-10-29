@@ -1,0 +1,22 @@
+{
+  "id": "kontoret",
+  "navn": "Kontoret",
+  "bredde": 8,
+  "hoyde": 6,
+  "ruter": [
+    "########",
+    "#......#",
+    "#=.....#",
+    "#......#",
+    "#......#",
+    "###D####"
+  ],
+  "dorer": [{ "x": 3, "y": 5, "til": "sentrum", "tilX": 4, "tilY": 3 }],
+  "folk": [
+    { "id": "sjef", "rolle": "sjef", "x": 3, "y": 2, "tekst": ["Velkommen til kontoret."] },
+    { "id": "skranke", "rolle": "skranke", "x": 1, "y": 1, "tekst": ["Hva skal leveres?"] },
+    { "id": "fagkontor-mva", "rolle": "fagkontor", "x": 5, "y": 1, "fagkontor": { "id": "mva", "navn": "Mva-kontoret", "temaer": ["mva"] }, "tekst": ["Her prøves mva."] },
+    { "id": "seng", "rolle": "seng", "x": 6, "y": 1, "tekst": [] },
+    { "id": "skilt", "rolle": "skilt", "x": 6, "y": 4, "tekst": ["Kontoret er åpent hver dag."] }
+  ]
+}

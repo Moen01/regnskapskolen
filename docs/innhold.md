@@ -218,3 +218,69 @@ Kortene vises under *Regler* og legges ved systemprompten når Claude forklarer 
 To valgfrie felt gjør casen avstembar: `kontoutskrift` (`konto` 1920, `utgaaende`, `linjer` med `id`, `dato`, `tekst`, `belop` signert sett fra kontoen og `bilag`: 1-baserte numre på bilagene i `fasitJournal` som linjen gjør opp) og `valutakurser` (valuta → liste av `dato` og `kurs`; casens egne tall, aldri fra `satser.json`). Bare bilag med en 1920-linje pekes på. `SandboxCaseValidator` krever at hver gruppe av linjer og bilag summerer likt, at hvert bilag med bankbevegelse har en linje, og at summen av linjene er lik `utgaaende` og 1920 i `fasitSaldobalanse`.
 
 Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnløser betaler ut flere dagers salg samlet); (3) flere linjer ↔ ett bilag (ett lønnsbilag, én utbetaling per ansatt); (4) gebyr og renter som føres fra banklinjen; (5) åpen post uten banklinje; (6) valuta med kursdifferanse på 8060/8160. `bank-001` har alle seks.
+
+## Byen (`by/`)
+
+`Innhold/by/` er byen Hovedbok i Rubin-utgaven: bransjer, klienter og kart. All tekst i byen vises i en dialogboks på 18 tegn; et ord over 18 tegn er en valideringsfeil, så velg et kortere ord.
+
+**`bransjer.json`**: én liste. `id`, `navn` (vises på behovskortet), `temaer` (fra `temaer.json`), `regelkort` (filnavn i `Innhold/regler/` uten `.md`) og `setning`. Ingen bransje får en regel uten regelkort.
+
+**`klienter/<id>.json`**: én klient per fil.
+
+```json
+{
+  "id": "kafe-lysthuset",
+  "navn": "Kafé Lysthuset AS",
+  "bransje": "servering",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 4,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "restauranten", "x": 4, "y": 2 },
+  "oppgaver": ["mva-behandling-003", "grunnlag-001"],
+  "provesak": ["mva-behandling-004", "mva-regnut-001", "mva-quiz-001"],
+  "replikker": {
+    "hilsen": ["Hei! Så fint at du kom."],
+    "drift": ["Vi har servering i salen og take-away i disken."],
+    "haug": ["Her er bilagene."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut."]
+  },
+  "startklient": true,
+  "status": "utkast"
+}
+```
+
+- `mvaTermin` (`tomaanedlig` eller `aarlig`) står der hvis og bare hvis `mvaRegistrert` er `true`.
+- `oppgaver` er papirhaugen; bare oppgaver som er i utvalget (godkjent, eller utkast når de vises) havner i haugen. `provesak` er nøyaktig tre oppgave-id-er.
+- En klient som ikke er mva-registrert, får ingen oppgave av typen `mva` og ingen `postering` med konto 2700–2799. Fasiten antar ellers et mva-registrert selskap. Det gjelder også kontoer som ikke er mva (2770 og 2780 for arbeidsgiveravgift).
+- `drift` er eieren som forteller om driften med egne ord. Den peker på bransjens fallgruve, men gir ikke svaret.
+- `sted` må ha en person med `rolle: "klient"` og samme `klient` på samme rute.
+- Nøyaktig én klient har `startklient: true`; sjefen gir den ved start.
+
+**`kart/<id>.json`**: ett kart per bydel og per rom. `ruter` er rader med ett tegn per rute:
+
+| Tegn | Rute | Gangbar |
+|---|---|---|
+| `.` | gulv, gate | ja |
+| `,` | gress | ja |
+| `D` | dør | ja |
+| `#` | vegg | nei |
+| `^` | tak | nei |
+| `~` | vann | nei |
+| `=` | disk | nei; A over disken snakker med den som står bak |
+
+`dorer`: `x`, `y` (en `D`-rute), `til` (kart-id), `tilX`, `tilY` (en gangbar rute uten person). Legg dører i begge retninger: ut av rommet lander på ruten foran døren i bydelen. `folk`: `id`, `rolle`, `x`, `y`, `tekst`, og for noen roller et ekstra felt:
+
+| `rolle` | Gjør | Ekstra |
+|---|---|---|
+| `sjef` | Sier `tekst`. Spilleren starter på ruten under den første sjefen i `kontoret`, vendt opp. | |
+| `skranke` | Lukker måneder og leverer. Står bak en `=`. | |
+| `seng` | Sier `tekst`, spør «Sove?». | |
+| `fagkontor` | Gym for temaene. Et tema hører til ett fagkontor. | `fagkontor`: `id`, `navn`, `temaer` |
+| `klient` | Eieren. Bruker klientens `replikker`, ikke `tekst`. | `klient`: klient-id |
+| `skilt`, `folk` | Sier `tekst`. | |
+
+Alle kart må kunne nås fra `kontoret` gjennom dører. Hold klientene nær: ingen klientdør mer enn 20 steg fra kontorets dør i samme bydel.
+
+Validatoren sjekker byen sammen med oppgavene: kjør `swift test --filter ContentValidatorTests`.

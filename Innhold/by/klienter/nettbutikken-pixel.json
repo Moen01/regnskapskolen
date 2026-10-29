@@ -1,0 +1,20 @@
+{
+  "id": "nettbutikken-pixel",
+  "navn": "Pixel Nettbutikk AS",
+  "bransje": "nettbutikk",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 0,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "nettbutikken", "x": 4, "y": 2 },
+  "oppgaver": ["valuta-postering-001", "valuta-postering-002", "valuta-regnut-001"],
+  "provesak": ["mva-behandling-001", "mva-postering-001", "mva-behandling-006"],
+  "replikker": {
+    "hilsen": ["Hei! Vi selger alt mulig på nett."],
+    "drift": ["Vi kjøper annonser og programvare fra utlandet."],
+    "haug": ["Fakturaene ligger i innboksen. Her er de."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Vi får brev nå."]
+  },
+  "status": "utkast"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "legekontoret-bryggen",
+  "navn": "Legekontoret på Bryggen",
+  "bransje": "helse",
+  "selskapsform": "ENK",
+  "mvaRegistrert": false,
+  "ansatte": 3,
+  "sted": { "kart": "legekontoret", "x": 4, "y": 2 },
+  "oppgaver": ["periodisering-postering-001", "avskrivning-postering-001", "lonn-regnut-002", "reskontro-finnfeil-001", "korrigering-postering-002", "lonn-regnut-001", "avskrivning-regnut-001", "periodisering-regnut-001", "reskontro-regnut-001", "avskrivning-sorter-001"],
+  "provesak": ["mva-quiz-004", "lonn-quiz-002", "periodisering-quiz-001"],
+  "replikker": {
+    "hilsen": ["God dag. Vi trenger en ny regnskapsfører."],
+    "drift": ["Vi tar betalt for konsultasjoner og selger litt hudkrem."],
+    "haug": ["Kvitteringene ligger i denne mappen."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det er ikke bra."]
+  },
+  "status": "utkast"
+}

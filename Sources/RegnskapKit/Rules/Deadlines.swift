@@ -2,7 +2,7 @@ import Foundation
 
 /// Statutory deadlines computed from `Rates`. Every date is rolled to the next working day when it
 /// lands on a weekend or a Norwegian public holiday.
-public struct Deadlines: Sendable {
+public struct Deadlines: Hashable, Sendable {
     public let rates: Rates
 
     public init(rates: Rates) { self.rates = rates }
