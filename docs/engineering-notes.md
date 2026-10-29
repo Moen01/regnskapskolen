@@ -52,6 +52,15 @@ Ting som kostet tid, så de ikke koster tid igjen.
 - **Bindinger lever lenger enn visningen.** `EncounterView` bandt inndata til `store.encounterSession!`; når `endRun()` nullstilte økten, oppdaterte SwiftUI fortsatt bindingene på vei ut og trappet på nil. Bindinger inn i valgfri tilstand må ha en fallback (`PuzzleAttempt.empty(for:)`).
 - **Trekk er (lov, paragraf)-par, ikke regelkort.** Sju temaer har ett kort, og et kort kan dekke flere lover, så parene gir valg der kortene ikke gjør det. Avledere hentes fra andre temaer og treffer aldri oppgaven.
 
+## Byen (Rubin-utgaven)
+
+- **`TownFlow` er ren tilstand, som `BattleFlow`.** Den tar `GameKey` inn, eier fase, sider og rader, og gir en `TownAction` ut. Butikken (`AppStore+Town`) utfører handlingen. Flyten bruker aldri kalendertid selv; det er butikken som bestemmer hva som koster tid.
+- **`BattleHost` gjør `BattleScreen` uavhengig av spillet.** Skjermen får hente møte, økt, utfall og HP, og velge, angripe, flykte og gå videre, gjennom closures. Paragrafjakten og byen gir hver sine closures (`BattleHost.adventure(store)` og byens egne), så skjermen vet ikke hvilket spill den tjener.
+- **Rekkefølgen: handlingen skjer først, tiden brukes etterpå.** Et bilag, en retting, en prøvesak eller et fagkontor setter `townActionPending`. Tiden brukes (`spendPendingAction`) når spilleren er tilbake i byen (`showTown`), ikke når økten starter. Da får et bilag som føres med dagens siste handling dagens dato. `deliver` leverer før den bruker handlingen, så fristdagens siste handling teller. «Glippet» registreres først dagen etter fristen.
+- **Skjulte utkast.** Klientens haug filtreres mot `pool` (det spilleren ser). Feil på skjulte oppgaver kan aldri vises som rettinger, så de blokkerer ikke lukkingen (`closeIfClean(_, pool:)`) og slettes når måneden lukkes. Ellers kunne en måned aldri lukkes. En haug kan også bli tom; da kan måneden lukkes uten møter.
+- **Dommen holdes tilbake i byen, ikke i Leitner.** `Scheduler.record` kalles i det spilleren svarer, også for et bilag; boksene og rekken er like ærlige som overalt ellers. Bare byens dialog venter: et bilag sier «ført», og om det var riktig kommer først ved månedslukking. Det er spillets poeng (en bokfører ser ikke egne feil før avstemmingen). En retting sier dommen med en gang. Skadepoeng (`regionDamage`) telles bare på dagens første svar, som i `RegionRun`, så byen ikke kan brukes til å tjene opp fagkontorets port.
+- **Lagring.** `GameProgress.town` er valgfritt. En bilagsøkt lagres ikke: ved omstart står spilleren ved klienten, førte bilag er lagret og uførte ligger i haugen.
+
 ## Game Boy-skallet
 
 - **Én logisk skjerm, heltallsskala.** Alt under `UI/Game/GameBoy/` regner i piksler på en 160 × 144-skjerm og ganger med `gbScale` (3–5, det største som får plass). Plassering skjer med `offset` i en `ZStack(alignment: .topLeading)`; rammen må ha `alignment: .topLeading` på `frame`, ellers sentreres innholdet (første skjermbilde viste det).
