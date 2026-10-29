@@ -8,7 +8,7 @@
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "verkstedet", "x": 4, "y": 2 },
   "oppgaver": ["avskrivning-postering-002", "avskrivning-quiz-001", "avskrivning-regnut-001"],
-  "provesak": ["mva-behandling-002", "avskrivning-quiz-003", "avskrivning-postering-002"],
+  "provesak": ["mva-behandling-002", "avskrivning-quiz-003", "avskrivning-postering-001"],
   "replikker": {
     "hilsen": ["Hei! Pass deg for oljen på gulvet."],
     "drift": ["Vi kjøpte ny løftebukk og en varebil i år."],
