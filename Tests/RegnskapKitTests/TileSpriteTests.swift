@@ -36,4 +36,14 @@ final class TileSpriteTests: XCTestCase {
         XCTAssertNotEqual(TileSprite.person(.sjef, facing: .down), TileSprite.person(.klient, facing: .down))
         XCTAssertNotEqual(TileSprite.person(.fagkontor, facing: .down), TileSprite.person(.klient, facing: .down))
     }
+
+    func testSignsAndTheSofaAreObjectsNotPeople() throws {
+        let sign = try XCTUnwrap(TileSprite.object(.skilt))
+        let sofa = try XCTUnwrap(TileSprite.object(.seng))
+        assertSixteen(sign, "sign")
+        assertSixteen(sofa, "sofa")
+        XCTAssertNotEqual(sign, sofa)
+        XCTAssertNotEqual(sign, TileSprite.person(.skilt, facing: .down))
+        for role in [PersonRole.klient, .fagkontor, .sjef, .skranke, .folk] { XCTAssertNil(TileSprite.object(role), "\(role)") }
+    }
 }

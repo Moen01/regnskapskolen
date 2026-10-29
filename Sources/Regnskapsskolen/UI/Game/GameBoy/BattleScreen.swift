@@ -37,7 +37,8 @@ struct BattleScreen: View {
     var body: some View {
         GBScreen(onKey: handle) {
             if let encounter = host.encounter(), let flow {
-                BattleField(encounter: encounter, hp: host.hp(), species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught)
+                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(),
+                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught)
                 switch flow.phase {
                 case .moves:
                     ListPanel(title: "HVILKEN REGEL?", rows: flow.moveRows, cursor: flow.moveCursor, onClick: { index in click(row: index) })
@@ -135,11 +136,10 @@ struct BattleScreen: View {
 private struct BattleField: View {
     @Environment(\.gbScale) private var scale
     let encounter: Encounter
+    let stage: Stage
     let hp: Int?
     let species: String
     let caught: Bool
-
-    private var stage: Stage { encounter.stageBefore }
 
     var body: some View {
         GBBox(x: 4, y: 6, width: 96, height: 30, padding: 3) {

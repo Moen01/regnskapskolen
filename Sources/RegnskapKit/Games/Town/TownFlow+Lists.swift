@@ -3,7 +3,7 @@ import Foundation
 /// Fristnav, the portfolio and the counter: the lists the town opens, and the needs card.
 extension TownFlow {
     static let monthAbbreviations = ["JAN", "FEB", "MAR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DES"]
-    static let monthNames = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"]
+    public static let monthNames = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"]
 
     /// The first word of the name in capitals ("Bakeren AS" → "BAKEREN"), so rows stay short.
     static func shortName(_ client: TownClient) -> String {

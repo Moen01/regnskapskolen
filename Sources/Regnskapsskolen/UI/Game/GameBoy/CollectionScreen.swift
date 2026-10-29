@@ -32,7 +32,7 @@ struct CollectionScreen: View {
         case .creatures(let tema):
             guard let region = regions.first(where: { $0.tema == tema }) else { return [] }
             return region.puzzles.map { puzzle in
-                let stage = Stage.of(box: store.progress.puzzles[puzzle.id]?.box)
+                let stage = shownStage(puzzle.id)
                 let leader = puzzle.id == region.gymLeader?.id ? "*" : ""
                 let name = stage == .vill ? "???" : SpeciesName.name(for: puzzle.id)
                 return PanelRow(id: puzzle.id, text: TextWrap.truncate("\(leader)\(name) \(stage.navn.uppercased())", to: 12), marked: stage != .vill)
@@ -43,7 +43,13 @@ struct CollectionScreen: View {
     private var highlighted: (puzzle: Puzzle, stage: Stage)? {
         guard case .creatures(let tema) = level, let region = regions.first(where: { $0.tema == tema }), region.puzzles.indices.contains(cursor.index) else { return nil }
         let puzzle = region.puzzles[cursor.index]
-        return (puzzle, Stage.of(box: store.progress.puzzles[puzzle.id]?.box))
+        return (puzzle, shownStage(puzzle.id))
+    }
+
+    /// A bilag booked wrong in town shows its stage from before, so the collection does not give the error away.
+    private func shownStage(_ id: String) -> Stage {
+        let box = store.progress.puzzles[id]?.box
+        return Stage.of(box: store.progress.game.town?.maskedBox(id) ?? box)
     }
 
     private var pages: [[String]] {

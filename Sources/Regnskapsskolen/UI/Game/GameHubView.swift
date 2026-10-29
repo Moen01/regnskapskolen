@@ -1,7 +1,7 @@
 import RegnskapKit
 import SwiftUI
 
-/// Spill: routes between the map, a region, a running game, a round summary and the collection.
+/// Spill: routes between the town, a fight in town, Paragrafjakten (map, region, fight), a round and the collection.
 struct GameHubView: View {
     @Environment(AppStore.self) private var store
 
@@ -16,7 +16,21 @@ struct GameHubView: View {
                              onHub: { store.lastSummary = nil })
         } else if store.showCollection {
             CollectionScreen()
-        } else if store.run?.current != nil {
+        } else if store.bilagRun?.current != nil {
+            BattleScreen(host: .bilag(store))
+        } else if store.townRun?.current != nil {
+            BattleScreen(host: .townTrial(store))
+        } else if store.showTraining {
+            training
+        } else {
+            TownScreen()
+        }
+    }
+
+    /// Paragrafjakten, opened from the town menu: the map, a region, a fight, the run's summary.
+    @ViewBuilder
+    private var training: some View {
+        if store.run?.current != nil {
             BattleScreen(host: .adventure(store))
         } else if let summary = store.lastRunSummary {
             SummaryScreen(summary: summary, newBadges: store.newBadges, onRegion: { store.lastRunSummary = nil }, onMap: { store.closeRegion() })
