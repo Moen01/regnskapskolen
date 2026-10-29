@@ -31,10 +31,19 @@ extension TownState {
         return newly
     }
 
-    /// Spends one action. On a new day, returns the deadlines that were missed.
+    /// Spends one action. Call it *after* the action is done: spent first, the last action of a
+    /// day would already see the next day (a delivery on the deadline marked missed, a bilag
+    /// booked on the wrong date). On a new day, returns the deadlines that were missed.
     public mutating func spendAction(content: TownContent, deadlines: Deadlines) -> [TownDeadline] {
         guard calendar.act() else { return [] }
         return checkMissed(content: content, deadlines: deadlines)
+    }
+
+    /// Delivers at the counter, then spends the action, so a delivery on the deadline day counts
+    /// even when it is the day's last action. Returns the deadlines missed on a new day.
+    public mutating func deliver(client: String, kind: DeadlineKind, content: TownContent, deadlines: Deadlines) -> [TownDeadline] {
+        clients[client]?.deliver(kind)
+        return spendAction(content: content, deadlines: deadlines)
     }
 
     /// The days a sleep stops at: the first of next month and, for every active client, each

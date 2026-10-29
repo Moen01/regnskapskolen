@@ -217,4 +217,51 @@ final class TownStoryTests: XCTestCase {
         XCTAssertTrue(TownAction.deliver(client: cafe, kind: .mva(termin: 1, year: 2026)).spendsAction)
         XCTAssertTrue(TownAction.startTrial(client: cafe).spendsAction)
     }
+
+    func testDeliveringWithTheLastActionOnTheDeadlineDayCounts() {
+        var state = TownState.new(content: town, year: 2026)
+        let due = deadlines.mvaFrist(termin: 1, year: 2026)
+        let kind = DeadlineKind.mva(termin: 1, year: 2026)
+        state.calendar = TownCalendar(start: due)
+        for _ in 0..<(TownRules.actionsPerDay - 1) { _ = state.spendAction(content: town, deadlines: deadlines) }
+        XCTAssertEqual(state.calendar.today, due, "eleven actions keep the day")
+        let before = state.clients[cafe]!.satisfaction
+
+        let missed = state.deliver(client: cafe, kind: kind, content: town, deadlines: deadlines)
+
+        XCTAssertEqual(state.calendar.today, due.adding(days: 1), "the twelfth action ends the day")
+        XCTAssertEqual(missed, [], "delivered before the day ended")
+        XCTAssertEqual(state.clients[cafe]?.missed, [])
+        XCTAssertEqual(state.clients[cafe]?.delivered, [kind.id])
+        XCTAssertEqual(state.clients[cafe]?.satisfaction, min(TownRules.maxSatisfaction, before + TownRules.deliverBonus))
+    }
+
+    func testAnErrorOnAHiddenDraftDoesNotBlockTheClose() throws {
+        var state = TownState.new(content: town, year: 2026)
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 2, day: 2))
+        let client = try XCTUnwrap(town.client(cafe))
+        let ids = Ledger.pile(for: client, month: jan, start: state.start, state: state.clients[cafe]!, pool: pool)
+        for (i, id) in ids.enumerated() {
+            state.clients[cafe]?.book(BookedBilag(puzzleId: id, month: jan, day: jan.first, correct: i != 0), boxBefore: 2, client: cafe)
+        }
+        let wrong = ids[0]
+        // "Show drafts" switched off after the booking: the wrong bilag's puzzle is no longer visible.
+        let hidden = pool.subtracting([wrong])
+        XCTAssertEqual(state.clients[cafe]?.errors(in: jan).count, 1)
+        XCTAssertEqual(state.clients[cafe]?.errors(in: jan, pool: hidden), [])
+
+        var f = TownFlow(content: town, state: state, deadlines: deadlines, pool: hidden, regions: [], damage: [:], ruleCards: [])
+        let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LUKK JAN"])
+        XCTAssertEqual(f.key(.a), .none, "no correction offered for a puzzle that cannot be shown")
+        XCTAssertEqual(f.state.clients[cafe]?.closedMonths, [jan])
+        XCTAssertEqual(f.state.clients[cafe]?.openErrors, [], "the hidden error goes with the closed month")
+        XCTAssertNil(f.state.maskedBox(wrong))
+
+        // With the puzzle visible, the same error still blocks the close.
+        var visible = state.clients[cafe]!
+        visible.closeIfClean(jan, pool: pool)
+        XCTAssertEqual(visible.closedMonths, [])
+    }
 }

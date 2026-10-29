@@ -39,7 +39,11 @@ extension AppStore {
         let action = flow.key(key)
         town = flow
         // Copying out is always safe; only writing *into* the flow must wait until it walks again.
+        // A talk or a clean close changes the clients without an action: save it now. Steps are
+        // saved at doors and LAGRE, not on every square.
+        let clientsChanged = flow.state.clients != progress.game.town?.clients
         progress.game.town = flow.state
+        if clientsChanged { saveProgress() }
         perform(action)
     }
 
@@ -68,16 +72,20 @@ extension AppStore {
         case .startTrial where activeClientCount >= TownRules.portfolioSize:
             showTown(["Porteføljen er full."])
             return
-        case .startBilag, .startCorrection, .startTrial, .startFagkontor, .deliver:
+        case .deliver(let id, let kind):
+            deliver(id, kind: kind)
+            return
+        case .startBilag, .startCorrection, .startTrial, .startFagkontor:
             break
         }
-        spendTownAction()
+        // The action happens first and costs its time when the player is back in town (`showTown`),
+        // so a bilag booked with the day's last action still gets that day's date.
+        townActionPending = true
         switch action {
         case .startBilag(let id): startBilag(id)
         case .startCorrection(let id, let month): startCorrection(id, month: month)
         case .startTrial(let id): startTrial(id)
         case .startFagkontor(let ref): startFagkontor(ref)
-        case .deliver(let id, let kind): deliver(id, kind: kind)
         default: break
         }
     }
@@ -86,11 +94,13 @@ extension AppStore {
         progress.game.town?.clients.values.filter { $0.status == .active }.count ?? 0
     }
 
-    /// One of the day's actions; a missed deadline on the new day is told when the player is back in town.
-    private func spendTownAction() {
-        guard let library else { return }
+    /// Spends the pending action's time; a deadline missed on the new day is told with the rest.
+    private func spendPendingAction() {
+        guard townActionPending, let library else { return }
+        townActionPending = false
         let missed = progress.game.town?.spendAction(content: library.town, deadlines: library.deadlines) ?? []
         townNotice += missedLines(missed)
+        saveProgress()
     }
 
     private func sleepInTown() {
@@ -103,7 +113,10 @@ extension AppStore {
     }
 
     private func deliver(_ id: String, kind: DeadlineKind) {
-        progress.game.town?.clients[id]?.deliver(kind)
+        guard let library else { return }
+        // Kit delivers before it spends the action, so the deadline day's last action still counts.
+        let missed = progress.game.town?.deliver(client: id, kind: kind, content: library.town, deadlines: library.deadlines) ?? []
+        townNotice += missedLines(missed)
         saveProgress()
         let what: String
         switch kind {
@@ -124,6 +137,7 @@ extension AppStore {
 
     /// Back to walking: the flow is rebuilt, and anything to tell (a notice from before a run, then `texts`) is shown.
     private func showTown(_ texts: [String] = []) {
+        spendPendingAction()
         refreshTown()
         let all = townNotice + texts
         townNotice = []
@@ -145,11 +159,14 @@ extension AppStore {
     }
 
     private func startCorrection(_ id: String, month: MonthKey) {
-        guard let library, let client = library.town.client(id), let errors = progress.game.town?.clients[id]?.errors(in: month) else { return }
         let visible = poolIds
+        guard let library, let client = library.town.client(id), let errors = progress.game.town?.clients[id]?.errors(in: month, pool: visible) else {
+            showTown()
+            return
+        }
         let cards = ruleCards(for: client)
         correctionMonth = month
-        // An error whose puzzle is hidden again (a draft) cannot be shown; BilagRun leaves it out.
+        // Only visible errors: a hidden draft cannot be shown, and it does not block the close either.
         begin(BilagRun(client: client, puzzles: errors.compactMap { visible.contains($0.puzzleId) ? library.puzzle(id: $0.puzzleId) : nil },
                        kind: .correction, errors: errors, bransjeCards: cards.own, otherCards: cards.other, seed: townSeed))
     }
@@ -219,7 +236,7 @@ extension AppStore {
         guard let run = bilagRun else { return }
         var lines: [String] = []
         if case .correction = run.kind, let month = correctionMonth {
-            progress.game.town?.clients[run.client]?.closeIfClean(month)
+            progress.game.town?.clients[run.client]?.closeIfClean(month, pool: poolIds)
             let name = TownFlow.monthNames[month.month - 1]
             let closed = progress.game.town?.clients[run.client]?.closedMonths.contains(month) == true
             lines = [closed ? "\(clientName(run.client)): \(name) er lukket." : "Det er fortsatt feil i \(name)."]
@@ -235,7 +252,10 @@ extension AppStore {
     // MARK: Trials and the fagkontor
 
     private func startTrial(_ id: String) {
-        guard let library, let client = library.town.client(id) else { return }
+        guard let library, let client = library.town.client(id) else {
+            showTown()
+            return
+        }
         let region = TownTrials.trialRegion(for: client, pool: pool, progress: progress)
         guard region.puzzles.count >= TownRules.trialWinsNeeded else {
             showTown(["Prøvesaken er ikke klar ennå."])

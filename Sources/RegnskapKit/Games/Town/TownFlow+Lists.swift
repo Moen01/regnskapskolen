@@ -117,11 +117,11 @@ extension TownFlow {
         guard counterTasks.indices.contains(cursor) else { return .none }
         switch counterTasks[cursor] {
         case let .close(id, month):
-            guard state.clients[id]?.errors(in: month).isEmpty == true else {
+            guard state.clients[id]?.errors(in: month, pool: pool).isEmpty == true else {
                 walk()
                 return .startCorrection(client: id, month: month)
             }
-            state.clients[id]?.closeIfClean(month)
+            state.clients[id]?.closeIfClean(month, pool: pool)
             let name = content.client(id)?.navn ?? id
             return say(["\(name): \(Self.monthNames[month.month - 1]) er lukket."])
         case let .deliver(id, kind):

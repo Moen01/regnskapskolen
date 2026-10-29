@@ -44,8 +44,10 @@ extension ClientState {
         openErrors.append(OpenError(puzzleId: bilag.puzzleId, client: client, month: bilag.month, day: bilag.day, boxBefore: boxBefore))
     }
 
-    public func errors(in month: MonthKey) -> [OpenError] {
-        openErrors.filter { $0.month == month }
+    /// The month's open errors; with `pool`, only those whose puzzle is visible, since a hidden
+    /// draft can never be shown as a correction.
+    public func errors(in month: MonthKey, pool: Set<String>? = nil) -> [OpenError] {
+        openErrors.filter { $0.month == month && pool?.contains($0.puzzleId) != false }
     }
 
     public mutating func correct(_ error: OpenError, ok: Bool) {
@@ -56,8 +58,12 @@ extension ClientState {
         }
     }
 
-    public mutating func closeIfClean(_ month: MonthKey) {
-        guard errors(in: month).isEmpty else { return }
+    /// Closes the month when no error is left. With `pool`, errors on hidden puzzles do not block
+    /// it (Review Focus 1: otherwise the month could never close); they are dropped with the close,
+    /// because a closed month is never corrected again.
+    public mutating func closeIfClean(_ month: MonthKey, pool: Set<String>? = nil) {
+        guard errors(in: month, pool: pool).isEmpty else { return }
+        openErrors.removeAll { $0.month == month }
         closedMonths.insert(month)
     }
 

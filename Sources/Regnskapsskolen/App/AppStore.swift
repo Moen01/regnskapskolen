@@ -72,6 +72,8 @@ final class AppStore {
     var townSteps = 0
     /// Lines to tell when the player is back in town, such as a deadline missed as a run started.
     var townNotice: [String] = []
+    /// A run started by a town action is under way; its action is spent when the player is back in town.
+    var townActionPending = false
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
     /// The last summary came from the weekly challenge, so it shows the shareable code.
