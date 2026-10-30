@@ -1,9 +1,10 @@
 import Foundation
 
 /// Pixel art for the town, drawn as 16 × 16 string literals (one character per pixel, `0`-`3`).
-/// Tiles fill the whole square, and slot 0 there means the screen's lightest colour. Person and
-/// player sprites use slot 0 as transparent, so the floor shows through. Slots: 1 outline,
-/// 2 body, 3 eye.
+/// Each thing has its own four-colour palette in the app, as on the Game Boy Color. Tiles fill
+/// the whole square, so slot 0 there is a colour of the tile. Person and player sprites use
+/// slot 0 as transparent, so the floor shows through. Slots: 1 outline (and hair and eyes),
+/// 2 body (clothes), 3 detail (skin).
 public enum TileSprite {
     public static func sprite(for tile: Tile) -> PixelSprite {
         switch tile {
@@ -306,9 +307,9 @@ public enum TileSprite {
         "................",
         ".....111111.....",
         "....11111111....",
-        "....12222221....",
-        "....12322321....",
-        "....12222221....",
+        "....13333331....",
+        "....13133131....",
+        "....13333331....",
         ".....111111.....",
         "....11222211....",
         "...1122222211...",
@@ -344,10 +345,10 @@ public enum TileSprite {
         "................",
         ".....111111.....",
         "....11111111....",
-        "....11222211....",
-        "....13222211....",
-        "....12222211....",
-        ".....122211.....",
+        "....11333311....",
+        "....13133311....",
+        "....13333311....",
+        ".....133311.....",
         ".....112211.....",
         "....1122221.....",
         "....1222221.....",
@@ -365,10 +366,10 @@ public enum TileSprite {
         ".....111111.....",
         "....11111111....",
         "...1111111111...",
-        "....12222221....",
-        "....12322321....",
-        "....12222221....",
-        ".....122221.....",
+        "....13333331....",
+        "....13133131....",
+        "....13333331....",
+        ".....133331.....",
         "....11111111....",
         "...1121111211...",
         "...1211111121...",
@@ -395,10 +396,10 @@ public enum TileSprite {
         ".....111111.....",
         "....11111111....",
         "...1111111111...",
-        "....11222211....",
-        "....13222211....",
-        "....12222211....",
-        ".....122211.....",
+        "....11333311....",
+        "....13133311....",
+        "....13333311....",
+        ".....133311.....",
         ".....111111.....",
         "....1121111.....",
         "....1211121.....",

@@ -106,7 +106,8 @@ enum Screenshots {
             await snap(MainView().environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent(name))
         }
 
-        stage(map: "sentrum", x: 14, y: 6, facing: .down, day: DayKey(year: 2026, month: 1, day: 5))
+        // In front of a customer case, with a roof, a door, a sign, the grass and a passer-by in view.
+        stage(map: "sentrum", x: 23, y: 11, facing: .up, day: DayKey(year: 2026, month: 1, day: 5))
         await shot("spill-by.png")
 
         // January and February booked and closed; March has no bilag, so it can close on 2 April.

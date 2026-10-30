@@ -22,7 +22,7 @@ struct AnswerPanelView: View {
                 GBText(headline)
                 if let entry = panel.entry {
                     GBEntry(label: panel.entryLabel, text: entry)
-                    GBText(panel.puzzle.kind == .frist ? "dd.mm.åååå" : "Enter = slå", color: GBPalette.dark)
+                    GBText(panel.puzzle.kind == .frist ? "dd.mm.åååå" : "Enter = slå", color: GBTheme.textDim)
                 } else {
                     GBList(rows: panel.rows, cursor: panel.cursor, visible: panel.visibleRange, highlight: hitLine, onClick: onClick)
                 }

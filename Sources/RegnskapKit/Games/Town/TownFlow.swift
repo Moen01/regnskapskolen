@@ -33,8 +33,8 @@ public enum TownAction: Hashable, Sendable {
 /// draws `phase`, `pages` and `rows` and performs the returned `TownAction`.
 public struct TownFlow: Hashable, Sendable {
     public static let mainMenu = ["FRISTNAV", "PORTEFØLJE", "BAG", "SAMLING", "TRENING", "LAGRE"]
-    public static let columns = 18
-    public static let rows = 3
+    public static let columns = DialogBox.columns
+    public static let rows = DialogBox.rows
     /// List rows leave one column for the cursor.
     public static let rowColumns = 17
     static let choiceRows = [PanelRow(id: "ja", text: "JA"), PanelRow(id: "nei", text: "NEI")]

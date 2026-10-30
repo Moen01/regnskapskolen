@@ -21,8 +21,8 @@ public enum BattleAction: Hashable, Sendable {
 /// explanation. Pure state; the app maps `BattleAction` to `AppStore` calls.
 public struct BattleFlow: Hashable, Sendable {
     public static let menu = ["KJEMP", "LES", "REGLER", "FLYKT"]
-    public static let columns = 18
-    public static let rows = 3
+    public static let columns = DialogBox.columns
+    public static let rows = DialogBox.rows
 
     let encounter: Encounter
     let laws: LawNames

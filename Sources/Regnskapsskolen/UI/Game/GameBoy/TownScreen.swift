@@ -108,40 +108,35 @@ private struct TownMapView: View {
     /// The player's square on screen: column 4 of 10, row 4 of 9.
     private static let playerSquare = 4
 
-    /// Tiles: slot 0 is the screen's lightest colour. Sprites: slot 0 is transparent, 3 is lightest.
-    private static let tileColors: [Color] = [GBPalette.lightest, GBPalette.darkest, GBPalette.dark, GBPalette.light]
-    private static let spriteColors: [Color?] = [nil, GBPalette.darkest, GBPalette.dark, GBPalette.lightest]
-
     var body: some View {
         Canvas { context, _ in
             let camera = (x: Self.axis(walker.x, tiles: map.bredde, view: Self.screen.width),
                           y: Self.axis(walker.y, tiles: map.hoyde, view: Self.screen.height))
             context.fill(Path(CGRect(x: 0, y: 0, width: CGFloat(Self.screen.width) * scale, height: CGFloat(Self.screen.height) * scale)),
-                         with: .color(GBPalette.darkest))
-            var ground = Array(repeating: Path(), count: 4)
+                         with: .color(GBTheme.mapVoid))
+            var ground = Layers()
             for ty in 0..<map.hoyde {
                 for tx in 0..<map.bredde {
                     let px = tx * Self.tile - camera.x, py = ty * Self.tile - camera.y
                     guard px > -Self.tile, px < Self.screen.width, py > -Self.tile, py < Self.screen.height, let tile = map.tile(x: tx, y: ty) else { continue }
-                    plot(TileSprite.sprite(for: tile), x: px, y: py, into: &ground, opaque: true)
+                    plot(TileSprite.sprite(for: tile), palette: GBTheme.palette(for: tile), x: px, y: py, into: &ground, opaque: true)
                 }
             }
-            for (slot, path) in ground.enumerated() { context.fill(path, with: .color(Self.tileColors[slot])) }
+            ground.draw(in: context)
 
-            var figures = Array(repeating: Path(), count: 4)
+            var figures = Layers()
             for spot in piles {
-                plot(TileSprite.paperPile, x: spot.x * Self.tile - camera.x, y: spot.y * Self.tile - camera.y, into: &figures, opaque: false)
+                plot(TileSprite.paperPile, palette: GBTheme.paper, x: spot.x * Self.tile - camera.x, y: spot.y * Self.tile - camera.y,
+                     into: &figures, opaque: false)
             }
             for person in map.folk {
                 let sprite = TileSprite.object(person.rolle) ?? TileSprite.person(person.rolle, facing: .down)
-                plot(sprite, x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y, into: &figures, opaque: false)
+                plot(sprite, palette: GBTheme.palette(for: person.rolle), x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y,
+                     into: &figures, opaque: false)
             }
-            plot(TileSprite.player(facing: walker.facing, frame: step), x: walker.x * Self.tile - camera.x, y: walker.y * Self.tile - camera.y,
-                 into: &figures, opaque: false)
-            for (slot, path) in figures.enumerated() {
-                guard let color = Self.spriteColors[slot] else { continue }
-                context.fill(path, with: .color(color))
-            }
+            plot(TileSprite.player(facing: walker.facing, frame: step), palette: GBTheme.player,
+                 x: walker.x * Self.tile - camera.x, y: walker.y * Self.tile - camera.y, into: &figures, opaque: false)
+            figures.draw(in: context)
         }
         .frame(width: CGFloat(Self.screen.width) * scale, height: CGFloat(Self.screen.height) * scale)
     }
@@ -153,9 +148,9 @@ private struct TownMapView: View {
         return min(max(position * tile - playerSquare * tile, 0), size - view)
     }
 
-    /// Adds the sprite's pixels at (x, y) to the path of their slot, one rectangle per run of equal
-    /// pixels in a row, cut to the screen. `opaque` draws slot 0 too (tiles cover their square).
-    private func plot(_ sprite: PixelSprite, x: Int, y: Int, into paths: inout [Path], opaque: Bool) {
+    /// Adds the sprite's pixels at (x, y) to the path of their palette and slot, one rectangle per run
+    /// of equal pixels in a row, cut to the screen. `opaque` draws slot 0 too (tiles cover their square).
+    private func plot(_ sprite: PixelSprite, palette: SpritePalette, x: Int, y: Int, into layers: inout Layers, opaque: Bool) {
         for (row, pixels) in sprite.pixels.enumerated() {
             let sy = y + row
             guard sy >= 0, sy < Self.screen.height else { continue }
@@ -166,9 +161,34 @@ private struct TownMapView: View {
                 while end < pixels.count, pixels[end] == slot { end += 1 }
                 let from = max(0, x + start), to = min(Self.screen.width, x + end)
                 if (opaque || slot != 0), from < to {
-                    paths[Int(slot)].addRect(CGRect(x: CGFloat(from) * scale, y: CGFloat(sy) * scale, width: CGFloat(to - from) * scale, height: scale))
+                    layers.add(CGRect(x: CGFloat(from) * scale, y: CGFloat(sy) * scale, width: CGFloat(to - from) * scale, height: scale),
+                               palette: palette, slot: slot)
                 }
                 start = end
+            }
+        }
+    }
+}
+
+/// One path per palette and slot, so a screen of tiles is a few dozen fills. Palettes draw in the
+/// order they first appear, so the player, added last, stays on top.
+private struct Layers {
+    private var order: [SpritePalette] = []
+    private var paths: [SpritePalette: [Path]] = [:]
+
+    mutating func add(_ rect: CGRect, palette: SpritePalette, slot: UInt8) {
+        if paths[palette] == nil {
+            order.append(palette)
+            paths[palette] = Array(repeating: Path(), count: 4)
+        }
+        paths[palette]?[Int(slot)].addRect(rect)
+    }
+
+    func draw(in context: GraphicsContext) {
+        for palette in order {
+            for (slot, path) in (paths[palette] ?? []).enumerated() {
+                guard let color = palette.color(UInt8(slot)) else { continue }
+                context.fill(path, with: .color(color))
             }
         }
     }
@@ -214,7 +234,7 @@ private struct TownListBox: View {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 if let title { GBText(title) }
                 if rows.isEmpty {
-                    GBText("Ingen her.", color: GBPalette.dark)
+                    GBText("Ingen her.", color: GBTheme.textDim)
                 } else {
                     GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
                 }

@@ -209,7 +209,8 @@ extension ContentValidator {
 
     // MARK: Text
 
-    /// Rule 9: the dialog box is 18 columns wide, so a longer word could not be shown.
+    /// Rule 9: no word over 18 characters. The dialog box is 36 columns wide since phase 2b, but
+    /// the rule stays as it was: stricter than the box, and a short word reads better.
     private static func longWords(in texts: [String], where owner: String) -> [String] {
         texts.flatMap { $0.split(separator: " ") }
             .filter { $0.count > townMaxWordLength }

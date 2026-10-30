@@ -128,8 +128,8 @@ final class TownFlowTests: XCTestCase {
         while g.rows[g.cursor].id != "konsulenten" { _ = g.key(.down) }
         _ = g.key(.a)
         let card = text(g)
-        // "Konsulentvirksomhet" is 19 characters, so TextWrap cuts it with a hyphen.
-        XCTAssertTrue(card.contains("Konsulentvirksomh-"), card)
+        // "Konsulentvirksomhet" is 19 characters: whole in the 36-column dialog.
+        XCTAssertTrue(card.contains("Konsulentvirksomhet"), card)
         XCTAssertTrue(card.contains("Ikke mva-registrert"), card)
         XCTAssertTrue(card.contains("Mva-terminer og frister"), card)
     }
@@ -378,13 +378,13 @@ final class TownFlowTests: XCTestCase {
     }
 
 
-    func testEveryPageLineFitsEighteen() throws {
+    func testEveryPageLineFitsTheDialogBox() throws {
         var seen: [[[String]]] = []
         func check(_ f: TownFlow, _ label: String) {
             seen.append(f.pages)
             for page in f.pages {
-                XCTAssertLessThanOrEqual(page.count, 3, "\(label): \(page)")
-                for line in page { XCTAssertLessThanOrEqual(line.count, 18, "\(label): «\(line)»") }
+                XCTAssertLessThanOrEqual(page.count, DialogBox.rows, "\(label): \(page)")
+                for line in page { XCTAssertLessThanOrEqual(line.count, DialogBox.columns, "\(label): «\(line)»") }
             }
             for row in f.rows { XCTAssertLessThanOrEqual(row.text.count, 17, "\(label): row «\(row.text)»") }
         }

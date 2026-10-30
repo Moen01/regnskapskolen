@@ -132,7 +132,7 @@ final class TownCaseTests: XCTestCase {
         for status in [ClientStatus.prospect, .archived] {
             var f = flow(status: status)
             _ = f.talk(to: person)
-            XCTAssertEqual(f.pages, [["Jeg er ikke kunde", "hos deg."]], "\(status)")
+            XCTAssertEqual(f.pages, [["Jeg er ikke kunde hos deg."]], "\(status)")
             read(&f)
             XCTAssertEqual(f.phase, .walking)
         }

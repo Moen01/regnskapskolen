@@ -221,7 +221,7 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 
 ## Byen (`by/`)
 
-`Innhold/by/` er byen Hovedbok i Rubin-utgaven: bransjer, klienter og kart. All tekst i byen vises i en dialogboks på 18 tegn; et ord over 18 tegn er en valideringsfeil, så velg et kortere ord.
+`Innhold/by/` er byen Hovedbok i Rubin-utgaven: bransjer, klienter og kart. All tekst i byen vises i en dialogboks på 36 tegn og 6 linjer; et ord over 18 tegn er likevel en valideringsfeil, så velg et kortere ord.
 
 **`bransjer.json`**: én liste. `id`, `navn` (vises på behovskortet), `temaer` (fra `temaer.json`), `regelkort` (filnavn i `Innhold/regler/` uten `.md`) og `setning`. Ingen bransje får en regel uten regelkort.
 

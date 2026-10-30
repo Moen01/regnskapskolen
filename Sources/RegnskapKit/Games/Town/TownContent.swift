@@ -19,7 +19,7 @@ public struct TownPlace: Codable, Hashable, Sendable {
     public let y: Int
 }
 
-/// What a client says in each situation. Every line goes through `TextWrap` at 18 columns.
+/// What a client says in each situation. Every line goes through `TextWrap` at `DialogBox.columns`.
 public struct ClientLines: Codable, Hashable, Sendable {
     public let hilsen: [String]
     public let drift: [String]

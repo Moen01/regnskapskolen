@@ -141,29 +141,32 @@ private struct BattleField: View {
     let species: String
     let caught: Bool
 
+    private var creature: SpritePalette { GBTheme.creature(topic: encounter.puzzle.tema) }
+
     var body: some View {
         GBBox(x: 4, y: 6, width: 96, height: 30, padding: 3) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(TextWrap.truncate(species, to: 11))
-                GBText(":L\(encounter.puzzle.vanskelighet) \(stage.navn.uppercased())", color: GBPalette.dark)
+                GBText(":L\(encounter.puzzle.vanskelighet) \(stage.navn.uppercased())", color: GBTheme.textDim)
                 HStack(spacing: 2 * scale) {
                     ForEach(1...4, id: \.self) { box in
-                        Rectangle().fill(box <= stage.rawValue ? GBPalette.darkest : GBPalette.light).frame(width: 8 * scale, height: 3 * scale)
+                        Rectangle().fill(box <= stage.rawValue ? GBTheme.stageOn : GBTheme.stageOff).frame(width: 8 * scale, height: 3 * scale)
                     }
                 }
             }
         }
-        GBAt(x: 100, y: 46) { Ellipse().fill(GBPalette.light).frame(width: 56 * scale, height: 6 * scale) }
+        GBAt(x: 100, y: 46) { Ellipse().fill(GBTheme.platform).frame(width: 56 * scale, height: 6 * scale) }
         if encounter.isGymLeader {
-            GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), pixel: 3) }
+            GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), palette: creature, pixel: 3) }
                 .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
         } else {
-            GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), pixel: 3) }
+            GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), palette: creature, pixel: 3) }
                 .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
         }
-        GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, pixel: 3) }
+        GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, palette: GBTheme.player, pixel: 3) }
         if let hp {
-            GBBox(x: 62, y: 60, width: 94, height: 32, padding: 3) {
+            // Three 8 px rows, two 2 px gaps and 3 px padding top and bottom: 34 px, so the text stays inside the border.
+            GBBox(x: 62, y: 60, width: 94, height: 34, padding: 3) {
                 VStack(alignment: .leading, spacing: 2 * scale) {
                     GBText("KUNDEN")
                     HStack(spacing: 2 * scale) {
@@ -195,7 +198,7 @@ private struct ListPanel: View {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(title)
                 if rows.isEmpty {
-                    GBText("Ingen her.", color: GBPalette.dark)
+                    GBText("Ingen her.", color: GBTheme.textDim)
                 } else {
                     GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
                 }

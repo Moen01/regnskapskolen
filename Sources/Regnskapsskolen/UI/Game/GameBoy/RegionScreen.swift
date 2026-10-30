@@ -80,10 +80,10 @@ private struct RegionPanel: View {
         GBBox(x: 4, y: 4, width: 152, height: 90, padding: 4) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(name)
-                GBText(hpText, color: GBPalette.dark)
+                GBText(hpText, color: GBTheme.textDim)
                 GBBar(value: hp, width: 136)
-                GBText(gymText, color: GBPalette.dark)
-                GBBar(value: gym, width: 136)
+                GBText(gymText, color: GBTheme.textDim)
+                GBBar(value: gym, width: 136, tint: GBTheme.gymBar)
                 GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
             }
         }

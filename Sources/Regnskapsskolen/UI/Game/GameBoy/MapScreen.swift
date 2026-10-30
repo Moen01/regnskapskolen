@@ -112,7 +112,7 @@ private struct MapPanel: View {
         GBBox(x: 4, y: 4, width: 152, height: 90, padding: 5) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText("PARAGRAFJAKTEN")
-                GBText(levelLine, color: GBPalette.dark)
+                GBText(levelLine, color: GBTheme.textDim)
                 GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
             }
         }

@@ -74,6 +74,7 @@ struct CollectionScreen: View {
         GBScreen(onKey: handle) {
             CollectionPanel(title: title, rows: rows, cursor: cursor.index, visible: cursor.range(count: rows.count),
                             sprite: highlighted.flatMap { $0.stage == .vill ? nil : PixelSprite.creature(seed: $0.puzzle.id) },
+                            palette: GBTheme.creature(topic: highlighted?.puzzle.tema ?? ""),
                             onClick: { index in cursor.set(index, count: rows.count); select() })
             GBDialog(pages: pages, page: page, typing: !AppStore.isScreenshotRun, onTurn: { page = page < pages.count - 1 ? page + 1 : 0 })
         }
@@ -132,6 +133,7 @@ private struct CollectionPanel: View {
     let cursor: Int
     let visible: Range<Int>
     let sprite: PixelSprite?
+    let palette: SpritePalette
     let onClick: (Int) -> Void
 
     var body: some View {
@@ -142,7 +144,7 @@ private struct CollectionPanel: View {
                     GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
                 }
                 if let sprite {
-                    GBSprite(sprite, pixel: 3).offset(x: 102 * scale, y: 22 * scale)
+                    GBSprite(sprite, palette: palette, pixel: 3).offset(x: 102 * scale, y: 22 * scale)
                 }
             }
         }
