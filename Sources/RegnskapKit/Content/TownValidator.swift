@@ -283,6 +283,11 @@ extension ContentValidator {
             out.append("mvaTermin skal være satt hvis og bare hvis mvaRegistrert er true")
         }
 
+        // Rule 16: the planner only knows the company forms below.
+        if !DeadlinePlanner.skattemeldingForms.contains(client.selskapsform) {
+            out.append("selskapsform skal være AS eller ENK, ikke «\(client.selskapsform)»")
+        }
+
         // Rule 10: payroll deadlines need a pay day, and only clients with staff have one.
         if (client.ansatte > 0) != (client.lonnsdag != nil) {
             out.append("lonnsdag skal være satt hvis og bare hvis klienten har ansatte")

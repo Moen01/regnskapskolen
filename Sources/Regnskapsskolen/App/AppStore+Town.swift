@@ -190,6 +190,8 @@ extension AppStore {
         case .amelding: what = "A-meldingen"
         case .forskuddstrekk: what = "Forskuddstrekket"
         case .aga: what = "Arbeidsgiveravgiften"
+        case let .skattemelding(year): what = "Skattemeldingen for \(year)"
+        case let .aarsregnskap(year): what = "Årsregnskapet for \(year)"
         }
         showTown(["\(what) er levert for \(clientName(id))."])
     }

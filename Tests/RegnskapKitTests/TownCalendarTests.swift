@@ -11,7 +11,8 @@ final class TownCalendarTests: XCTestCase {
     func testRestaurantGetsSixVatDeadlines2026() throws {
         let d = try deadlines()
         let client = try XCTUnwrap(try town().client("butikken"))
-        let list = DeadlinePlanner.deadlines(for: client, year: 2026, deadlines: d)
+        // The annual deadlines (skattemelding, årsregnskap) come after the six terms.
+        let list = DeadlinePlanner.deadlines(for: client, year: 2026, deadlines: d).filter { !$0.kind.isAnnual }
         XCTAssertEqual(list.count, 6)
         XCTAssertEqual(list.first?.day, d.mvaFrist(termin: 1, year: 2026))
         XCTAssertEqual(list.map(\.day), d.mvaFrister(year: 2026))
@@ -28,7 +29,8 @@ final class TownCalendarTests: XCTestCase {
 
     func testDoctorGetsNoVatDeadline() throws {
         let client = try XCTUnwrap(try town().client("konsulenten"))
-        XCTAssertEqual(DeadlinePlanner.deadlines(for: client, year: 2026, deadlines: try deadlines()), [])
+        // An ENK without vat still files a tax return.
+        XCTAssertEqual(DeadlinePlanner.deadlines(for: client, year: 2026, deadlines: try deadlines()).map(\.kind), [.skattemelding(year: 2026)])
     }
 
     func testDeadlineOnSaturdayMovesToMonday() throws {

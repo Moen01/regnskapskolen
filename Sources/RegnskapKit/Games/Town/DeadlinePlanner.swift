@@ -41,6 +41,10 @@ public enum DeadlineKind: Hashable, Codable, Sendable {
     /// Withholding tax for the pay day in `month`.
     case forskuddstrekk(month: MonthKey)
     case aga(termin: Int, year: Int)
+    /// The tax return for `year`, due the year after.
+    case skattemelding(year: Int)
+    /// The annual accounts for `year`, due the year after.
+    case aarsregnskap(year: Int)
 
     public var id: String {
         switch self {
@@ -49,6 +53,16 @@ public enum DeadlineKind: Hashable, Codable, Sendable {
         case let .amelding(month): return String(format: "amelding-%04d-%02d", month.year, month.month)
         case let .forskuddstrekk(month): return String(format: "trekk-%04d-%02d", month.year, month.month)
         case let .aga(termin, year): return "aga-\(year)-\(termin)"
+        case let .skattemelding(year): return "skatt-\(year)"
+        case let .aarsregnskap(year): return "arsregnskap-\(year)"
+        }
+    }
+
+    /// The year the deadline reports for. A month deadline reports for the year of its month.
+    public var year: Int {
+        switch self {
+        case let .mva(_, year), let .mvaAarlig(year), let .aga(_, year), let .skattemelding(year), let .aarsregnskap(year): return year
+        case let .amelding(month), let .forskuddstrekk(month): return month.year
         }
     }
 
@@ -58,7 +72,7 @@ public enum DeadlineKind: Hashable, Codable, Sendable {
         case let .mva(termin, year):
             let nums = rates.mvaTerminer.first { $0.nr == termin }?.maaneder ?? []
             return nums.map { MonthKey(year: year, month: $0) }
-        case let .mvaAarlig(year):
+        case let .mvaAarlig(year), let .skattemelding(year), let .aarsregnskap(year):
             return (1...12).map { MonthKey(year: year, month: $0) }
         case let .amelding(month):
             return [month]
@@ -94,6 +108,8 @@ public struct TownDeadline: Hashable, Sendable {
         case let .amelding(month): return "\(date) A-MELDING \(Self.monthNames[month.month - 1])"
         case let .forskuddstrekk(month): return "\(date) TREKK \(Self.monthNames[month.month - 1])"
         case let .aga(termin, _): return "\(date) AGA \(termin). TERMIN"
+        case let .skattemelding(year): return "\(date) SKATTEMELDING \(year)"
+        case let .aarsregnskap(year): return "\(date) ÅRSREGNSKAP \(year)"
         }
     }
 
@@ -114,13 +130,34 @@ extension DeadlineKind {
         case let .amelding(month): return "AMELD\(month.month)"
         case let .forskuddstrekk(month): return "TREKK\(month.month)"
         case let .aga(termin, _): return "AGA\(termin)"
+        case .skattemelding: return "SKATT"
+        case .aarsregnskap: return "ÅRSREGN"
         }
     }
 }
 
 public enum DeadlinePlanner {
+    /// Company forms that file a tax return, and those that also send annual accounts.
+    public static let skattemeldingForms: Set<String> = ["AS", "ENK"]
+    public static let aarsregnskapForms: Set<String> = ["AS"]
+
     public static func deadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {
-        vatDeadlines(for: client, year: year, deadlines: deadlines) + payrollDeadlines(for: client, year: year, deadlines: deadlines)
+        vatDeadlines(for: client, year: year, deadlines: deadlines)
+            + payrollDeadlines(for: client, year: year, deadlines: deadlines)
+            + annualDeadlines(for: client, year: year, deadlines: deadlines)
+    }
+
+    private static func annualDeadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {
+        var list: [TownDeadline] = []
+        if skattemeldingForms.contains(client.selskapsform) {
+            let kind = DeadlineKind.skattemelding(year: year)
+            list.append(TownDeadline(day: deadlines.skattemeldingFrist(year: year), kind: kind, client: client.id, opens: opens(kind, rates: deadlines.rates)))
+        }
+        if aarsregnskapForms.contains(client.selskapsform) {
+            let kind = DeadlineKind.aarsregnskap(year: year)
+            list.append(TownDeadline(day: deadlines.aarsregnskapFrist(year: year), kind: kind, client: client.id, opens: opens(kind, rates: deadlines.rates)))
+        }
+        return list
     }
 
     private static func vatDeadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {

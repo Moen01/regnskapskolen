@@ -42,8 +42,8 @@ final class TownPayrollTests: XCTestCase {
 
     func testShopWithoutStaffGetsNoPayrollDeadlines() throws {
         let list = DeadlinePlanner.deadlines(for: try client(ansatte: 0, lonnsdag: nil), year: 2026, deadlines: try deadlines())
-        XCTAssertEqual(count(list) { if case .mva = $0 { false } else { true } }, 0)
-        XCTAssertEqual(list.count, 6)
+        XCTAssertEqual(count(list) { $0.isPayroll }, 0)
+        XCTAssertEqual(list.count, 8, "six vat terms, skattemelding and årsregnskap")
     }
 
     func testTrekkAfterFridayPayDayIsMonday() throws {

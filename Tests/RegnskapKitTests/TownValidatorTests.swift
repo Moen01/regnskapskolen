@@ -125,6 +125,11 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(t, id: "klient:konsulenten", contains: "mvaTermin")
     }
 
+    func testRejectsUnknownSelskapsform() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["selskapsform"] = "ANS" }
+        assertOneProblem(t, id: "klient:butikken", contains: "selskapsform")
+    }
+
     func testRejectsRegisteredClientWithoutVatTerm() throws {
         let t = try town(editing: "klienter/butikken.json") { $0["mvaTermin"] = nil }
         assertOneProblem(t, id: "klient:butikken", contains: "mvaTermin")

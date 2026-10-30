@@ -15,6 +15,9 @@ public struct TownState: Hashable, Codable, Sendable {
     /// the start. A save from phase 2a has no such field and gets the day it is opened, so the
     /// payroll deadlines of the months before do not all go missed in that moment.
     public var payrollFrom: DayKey?
+    /// Like `payrollFrom`, for the annual deadlines (skattemelding, årsregnskap). A save without the
+    /// field gets the day it is opened, so a deadline already past does not go missed in that moment.
+    public var annualFrom: DayKey?
     /// Spent by every encounter; at 0 the player collapses (`collapse`). The bed fills it.
     public var energy: Int = TownRules.maxEnergy
     /// Cups in the bag, taken from the office machine, one per day.
@@ -34,7 +37,7 @@ public struct TownState: Hashable, Codable, Sendable {
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = [], found: Set<String> = [], equippedCard: String? = nil, sandboxCleared: Set<String> = []) {
+                payrollFrom: DayKey? = nil, annualFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = [], found: Set<String> = [], equippedCard: String? = nil, sandboxCleared: Set<String> = []) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -42,6 +45,7 @@ public struct TownState: Hashable, Codable, Sendable {
         self.clients = clients
         self.contracts = contracts
         self.payrollFrom = payrollFrom
+        self.annualFrom = annualFrom
         self.energy = energy
         self.coffee = coffee
         self.coffeeTakenOn = coffeeTakenOn
@@ -52,7 +56,7 @@ public struct TownState: Hashable, Codable, Sendable {
         self.sandboxCleared = sandboxCleared
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter, found, equippedCard, sandboxCleared }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, annualFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter, found, equippedCard, sandboxCleared }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -64,6 +68,7 @@ public struct TownState: Hashable, Codable, Sendable {
         contracts = try c.decode(Int.self, forKey: .contracts)
         // `nil` is written as an explicit null, so only a missing key (a 2a save) means "from today".
         payrollFrom = c.contains(.payrollFrom) ? try c.decodeIfPresent(DayKey.self, forKey: .payrollFrom) : calendar.today
+        annualFrom = c.contains(.annualFrom) ? try c.decodeIfPresent(DayKey.self, forKey: .annualFrom) : calendar.today
         energy = try c.decodeIfPresent(Int.self, forKey: .energy) ?? TownRules.maxEnergy
         coffee = try c.decodeIfPresent(Int.self, forKey: .coffee) ?? 0
         coffeeTakenOn = try c.decodeIfPresent(DayKey.self, forKey: .coffeeTakenOn)
@@ -83,6 +88,7 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encode(clients, forKey: .clients)
         try c.encode(contracts, forKey: .contracts)
         try c.encode(payrollFrom, forKey: .payrollFrom)
+        try c.encode(annualFrom, forKey: .annualFrom)
         try c.encode(energy, forKey: .energy)
         try c.encode(coffee, forKey: .coffee)
         try c.encodeIfPresent(coffeeTakenOn, forKey: .coffeeTakenOn)
@@ -208,12 +214,13 @@ public struct TownState: Hashable, Codable, Sendable {
     }
 
     /// Whether the deadline counts for the client: it falls on or after the day the client was won
-    /// and, for payroll, on or after `payrollFrom`. The counter, Fristnav, missed deadlines and the
+    /// for a year no earlier than the game's start and, for payroll and annual deadlines, on or after `payrollFrom` and `annualFrom`. The counter, Fristnav, missed deadlines and the
     /// sleep stops all ask this one question.
     public func counts(_ deadline: TownDeadline, client: ClientState) -> Bool {
-        guard client.covers(deadline) else { return false }
-        guard deadline.kind.isPayroll, let from = payrollFrom else { return true }
-        return deadline.day >= from
+        guard client.covers(deadline), deadline.kind.year >= start.year else { return false }
+        if deadline.kind.isAnnual { return annualFrom.map { deadline.day >= $0 } ?? true }
+        if deadline.kind.isPayroll { return payrollFrom.map { deadline.day >= $0 } ?? true }
+        return true
     }
 }
 
@@ -221,7 +228,14 @@ extension DeadlineKind {
     var isPayroll: Bool {
         switch self {
         case .amelding, .forskuddstrekk, .aga: true
-        case .mva, .mvaAarlig: false
+        case .mva, .mvaAarlig, .skattemelding, .aarsregnskap: false
+        }
+    }
+
+    var isAnnual: Bool {
+        switch self {
+        case .skattemelding, .aarsregnskap: true
+        case .mva, .mvaAarlig, .amelding, .forskuddstrekk, .aga: false
         }
     }
 }
