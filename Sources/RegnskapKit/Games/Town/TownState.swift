@@ -89,22 +89,31 @@ public struct TownState: Hashable, Codable, Sendable {
         return (office?.id ?? "kontoret", TownWalker(x: boss?.x ?? 0, y: boss.map { $0.y + 1 } ?? 0, facing: .up))
     }
 
-    /// The box the puzzle had before its oldest open error, so the collection does not give the error away.
+    /// The box the puzzle had before its oldest held-back verdict: an open error, or a booking in a
+    /// month that is not closed yet. Right bookings count too (spec Mål 7): a right answer moves the
+    /// box as well, so masking only the wrong ones would give the verdict away. A booking saved
+    /// before `BookedBilag.boxBefore` existed has no box to show and is left out.
     public func maskedBox(_ puzzleId: String) -> Int? {
-        clients.values
-            .flatMap(\.openErrors)
-            .filter { $0.puzzleId == puzzleId }
-            .min { $0.day < $1.day }?
-            .boxBefore
+        heldBack.filter { $0.puzzleId == puzzleId }.min { $0.day < $1.day }?.box
     }
 
-    /// A copy of the progress where every puzzle with an open error sits in the box it had before
-    /// the wrong booking, so region counts and totals do not tell whether a bilag was right.
+    /// Every booking whose verdict the town still holds back, with the box from before it.
+    private var heldBack: [(puzzleId: String, day: DayKey, box: Int)] {
+        clients.values.flatMap { client in
+            client.openErrors.map { ($0.puzzleId, $0.day, $0.boxBefore) }
+                + client.booked.compactMap { bilag in
+                    guard let box = bilag.boxBefore, !client.closedMonths.contains(bilag.month) else { return nil }
+                    return (bilag.puzzleId, bilag.day, box)
+                }
+        }
+    }
+
+    /// A copy of the progress where every puzzle with a held-back verdict sits in the box it had
+    /// before the booking, so region counts and totals do not tell whether a bilag was right.
     /// A puzzle with no entry stays without one when that box is 0: it reads as uncaught, as before.
     public func masked(_ progress: LearnerProgress) -> LearnerProgress {
         var result = progress
-        let ids = Set(clients.values.flatMap(\.openErrors).map(\.puzzleId))
-        for id in ids {
+        for id in Set(heldBack.map(\.puzzleId)) {
             guard let box = maskedBox(id) else { continue }
             if result.puzzles[id] != nil {
                 result.puzzles[id]?.box = box

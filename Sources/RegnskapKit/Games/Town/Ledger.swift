@@ -8,16 +8,21 @@ public struct BookedBilag: Hashable, Codable, Sendable {
     /// The topic damage the booking earned. Held back until the month closes: added at once, the
     /// gym count would tell whether the bilag was right. Saves from before the field read as 0.
     public let damage: Int
+    /// The puzzle's box before the booking, set by `ClientState.book`. `TownState.masked` shows it
+    /// until the month closes, right or wrong: a right booking moves the box too. Saves from before
+    /// the field read as `nil`, and such a booking is not masked.
+    public var boxBefore: Int?
 
-    public init(puzzleId: String, month: MonthKey, day: DayKey, correct: Bool, damage: Int = 0) {
+    public init(puzzleId: String, month: MonthKey, day: DayKey, correct: Bool, damage: Int = 0, boxBefore: Int? = nil) {
         self.puzzleId = puzzleId
         self.month = month
         self.day = day
         self.correct = correct
         self.damage = damage
+        self.boxBefore = boxBefore
     }
 
-    private enum CodingKeys: String, CodingKey { case puzzleId, month, day, correct, damage }
+    private enum CodingKeys: String, CodingKey { case puzzleId, month, day, correct, damage, boxBefore }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -26,6 +31,7 @@ public struct BookedBilag: Hashable, Codable, Sendable {
         day = try c.decode(DayKey.self, forKey: .day)
         correct = try c.decode(Bool.self, forKey: .correct)
         damage = try c.decodeIfPresent(Int.self, forKey: .damage) ?? 0
+        boxBefore = try c.decodeIfPresent(Int.self, forKey: .boxBefore)
     }
 }
 

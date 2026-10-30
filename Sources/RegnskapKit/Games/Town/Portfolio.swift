@@ -66,6 +66,8 @@ extension ClientState {
 
     /// `client` is the client id; the state does not know its own id, so the caller passes it.
     public mutating func book(_ bilag: BookedBilag, boxBefore: Int, client: String) {
+        var bilag = bilag
+        bilag.boxBefore = boxBefore
         booked.append(bilag)
         guard !bilag.correct else { return }
         openErrors.append(OpenError(puzzleId: bilag.puzzleId, client: client, month: bilag.month, day: bilag.day, boxBefore: boxBefore))

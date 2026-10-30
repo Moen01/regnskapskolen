@@ -132,6 +132,52 @@ final class TownStateTests: XCTestCase {
         XCTAssertEqual(masked.puzzles[other.id], progress.puzzles[other.id])
     }
 
+    /// Spec Mål 7: a right booking moves the box too, so every booking in an open month is masked,
+    /// right or wrong; only the close shows the real box.
+    func testMaskedProgressHidesEveryBookingUntilTheMonthCloses() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let pool = library.pool(includeDrafts: true)
+        let target = try XCTUnwrap(pool.first)
+        let jan = MonthKey(year: 2026, month: 1)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        func region(_ progress: LearnerProgress) -> Region {
+            Regions.build(topics: library.topics, pool: pool, progress: progress).first { $0.tema == target.tema }!
+        }
+        // Box 2 before: right goes to 3 (mastered), wrong goes down.
+        func booked(correct: Bool) -> (state: TownState, progress: LearnerProgress) {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles[target.id] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: target.id, correctFirstTry: correct), on: day(1, 5), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: correct), boxBefore: 2, client: id)
+            return (state, progress)
+        }
+        let right = booked(correct: true)
+        let wrong = booked(correct: false)
+        XCTAssertNotEqual(right.progress.puzzles[target.id]?.box, wrong.progress.puzzles[target.id]?.box, "the raw boxes differ")
+
+        let shownRight = right.state.masked(right.progress)
+        let shownWrong = wrong.state.masked(wrong.progress)
+        XCTAssertEqual(region(shownRight).caught, region(shownWrong).caught)
+        XCTAssertEqual(region(shownRight).mastered, region(shownWrong).mastered)
+        XCTAssertEqual(Stage.of(box: shownRight.puzzles[target.id]?.box), Stage.of(box: shownWrong.puzzles[target.id]?.box))
+        XCTAssertEqual(shownRight.puzzles[target.id]?.box, 2)
+
+        // The month closes: the right booking shows its real box.
+        var closed = right.state
+        closed.clients[id]?.closeIfClean(jan)
+        XCTAssertEqual(closed.masked(right.progress).puzzles[target.id]?.box, right.progress.puzzles[target.id]?.box)
+
+        // A booking saved before `boxBefore` existed is not masked.
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(right.state.clients[id]!.booked[0])) as? [String: Any])
+        object["boxBefore"] = nil
+        let old = try JSONDecoder().decode(BookedBilag.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertNil(old.boxBefore)
+        var oldState = right.state
+        oldState.clients[id]?.booked = [old]
+        XCTAssertEqual(oldState.masked(right.progress), right.progress)
+    }
+
     func testMaskedProgressIsUnchangedWithoutOpenErrors() throws {
         let state = TownState.new(content: Self.town, year: 2026)
         var progress = LearnerProgress()
