@@ -226,6 +226,81 @@ final class LedgerTests: XCTestCase {
     }
 }
 
+final class LedgerNewYearTests: XCTestCase {
+    let jan26 = MonthKey(year: 2026, month: 1)
+    let jan27 = MonthKey(year: 2027, month: 1)
+    let ids = Set((0..<10).map { "p\($0)" })
+
+    func day(_ y: Int, _ m: Int, _ d: Int) -> DayKey { DayKey(year: y, month: m, day: d) }
+
+    /// A client with 10 bilag, like the cafe: two piles of five.
+    private func bookedJanuary(_ state: inout ClientState) {
+        for i in 0..<5 {
+            state.book(BookedBilag(puzzleId: "p\(i)", month: jan26, day: day(2026, 1, 10), correct: true), boxBefore: 1, client: "k1")
+        }
+    }
+
+    func testJanuaryOfTheNextYearStartsThePileAgain() {
+        let c = makeLedgerClient(count: 10)
+        var state = ClientState.fresh(.active)
+        bookedJanuary(&state)
+        XCTAssertEqual(Ledger.pile(for: c, month: jan27, start: jan26, state: state, pool: ids), ["p0", "p1", "p2", "p3", "p4"])
+        XCTAssertEqual(Ledger.pile(for: c, month: jan26, start: jan26, state: state, pool: ids), [])
+    }
+
+    func testClientWonInAprilStartsAgainInJanuary() {
+        let c = makeLedgerClient(count: 10)
+        var state = ClientState.fresh(.active)
+        state.activeFrom = day(2026, 4, 12)
+        let first = ["p0", "p1", "p2", "p3", "p4"]
+        XCTAssertEqual(Ledger.pile(for: c, month: MonthKey(year: 2026, month: 4), start: jan26, state: state, pool: ids), first)
+        XCTAssertEqual(Ledger.pile(for: c, month: jan27, start: jan26, state: state, pool: ids), first)
+    }
+
+    func testDecemberBeforeTheStartIsStillEmpty() {
+        let c = makeLedgerClient(count: 10)
+        let state = ClientState.fresh(.active)
+        XCTAssertEqual(Ledger.pile(for: c, month: MonthKey(year: 2025, month: 12), start: jan26, state: state, pool: ids), [])
+    }
+
+    func testPileMonthCrossesTheYear() {
+        let c = makeLedgerClient(count: 10)
+        var state = ClientState.fresh(.active)
+        for m in 1...12 { state.closedMonths.insert(MonthKey(year: 2026, month: m)) }
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan26, today: day(2027, 1, 15), state: state, pool: ids), jan27)
+    }
+
+    func testCanCloseDecemberOnTheFirstOfJanuary() {
+        let empty = makeLedgerClient(count: 0)
+        let state = ClientState.fresh(.active)
+        let dec = MonthKey(year: 2026, month: 12)
+        XCTAssertFalse(Ledger.canClose(dec, client: empty, start: jan26, state: state, today: day(2026, 12, 31), pool: ids))
+        XCTAssertTrue(Ledger.canClose(dec, client: empty, start: jan26, state: state, today: day(2027, 1, 1), pool: ids))
+    }
+
+    func testFirstOpenMonthCrossesTheYear() {
+        var state = ClientState.fresh(.active)
+        for m in 1...10 { state.closedMonths.insert(MonthKey(year: 2026, month: m)) }
+        XCTAssertEqual(state.firstOpenMonth(start: jan26, today: day(2027, 1, 10)), MonthKey(year: 2026, month: 11))
+    }
+
+    /// The same puzzle booked again a year later must not touch the old booking's verdict or damage.
+    func testRebookingInTheNewYearKeepsTheMaskAndDamagePerMonth() {
+        var state = ClientState.fresh(.active)
+        state.book(BookedBilag(puzzleId: "p0", month: jan26, day: day(2026, 1, 10), correct: true, damage: 3), boxBefore: 1, client: "k1")
+        state.closedMonths.insert(jan26)
+        state.book(BookedBilag(puzzleId: "p0", month: jan27, day: day(2027, 1, 12), correct: true, damage: 5), boxBefore: 4, client: "k1")
+        XCTAssertEqual(state.bookingDamage(in: jan26, tema: { _ in "t" }), ["t": 3])
+        XCTAssertEqual(state.bookingDamage(in: jan27, tema: { _ in "t" }), ["t": 5])
+        var town = TownState(mapId: "m", walker: TownWalker(x: 0, y: 0, facing: .up), calendar: TownCalendar(start: day(2027, 1, 12)),
+                             start: jan26, clients: ["k1": state], contracts: 0)
+        // Only the open January 2027 booking is held back, so its box shows, not the closed year's.
+        XCTAssertEqual(town.maskedBox("p0"), 4)
+        town.clients["k1"]!.closedMonths.insert(jan27)
+        XCTAssertNil(town.maskedBox("p0"))
+    }
+}
+
 final class LedgerArchiveTests: XCTestCase {
     func testPileMonthSkipsClosedMonths() {
         let jan = MonthKey(year: 2026, month: 1)

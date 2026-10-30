@@ -75,12 +75,14 @@ public enum Ledger {
     /// pool filter, so a month keeps its content when "show drafts" is switched on and off.
     /// `start` is the game's first month; the client's own books begin at `booksFrom(start:)`.
     public static func pile(for client: TownClient, month: MonthKey, start: MonthKey, state: ClientState, pool: Set<String>) -> [String] {
-        let from = state.booksFrom(start: start)
+        // The piles start again every January: a new accounting year begins with the first slice,
+        // and only bookings from that year count as booked.
+        let from = max(state.booksFrom(start: start), MonthKey(year: month.year, month: 1))
         let i = (month.year - from.year) * 12 + (month.month - from.month)
         let size = TownRules.bilagPerMonth
         guard i >= 0, i * size < client.oppgaver.count else { return [] }
         let slice = client.oppgaver[(i * size)..<min((i + 1) * size, client.oppgaver.count)]
-        let booked = Set(state.booked.map(\.puzzleId))
+        let booked = Set(state.booked.filter { $0.month.year == month.year }.map(\.puzzleId))
         return slice.filter { pool.contains($0) && !booked.contains($0) }
     }
 

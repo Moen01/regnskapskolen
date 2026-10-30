@@ -71,6 +71,16 @@ final class TownCalendarTests: XCTestCase {
         XCTAssertEqual(cal.today, DayKey(year: 2026, month: 4, day: 11))
     }
 
+    func testSleepInDecemberStopsOnTheFirstOfJanuary() throws {
+        let content = try town()
+        var s = TownState.new(content: content, year: 2026)
+        // Only the consultant is active: no staff and no vat, so its only deadlines are far off.
+        for id in s.clients.keys { s.clients[id]!.status = id == "konsulenten" ? .active : .parked }
+        s.calendar = TownCalendar(start: DayKey(year: 2026, month: 12, day: 29))
+        _ = s.sleep(content: content, deadlines: try deadlines(), pool: [])
+        XCTAssertEqual(s.calendar.today, DayKey(year: 2027, month: 1, day: 1))
+    }
+
     func testUpcomingListsSevenDays() throws {
         let d = try deadlines()
         let clients = try town().klienter
