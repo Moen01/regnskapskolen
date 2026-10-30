@@ -95,7 +95,9 @@ public enum Ledger {
         return nil
     }
 
+    /// A month before the client's books start is never the player's to close.
     public static func canClose(_ month: MonthKey, client: TownClient, start: MonthKey, state: ClientState, today: DayKey, pool: Set<String>) -> Bool {
-        today >= month.next.first && pile(for: client, month: month, start: start, state: state, pool: pool).isEmpty
+        month >= state.booksFrom(start: start) && today >= month.next.first
+            && pile(for: client, month: month, start: start, state: state, pool: pool).isEmpty
     }
 }

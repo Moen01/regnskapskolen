@@ -116,7 +116,8 @@ extension TownFlow {
     }
 
     /// R2: the earliest open month when it can be closed, then every deadline that has opened, whose
-    /// months (withholding has none) are all closed and that is neither delivered nor missed.
+    /// months (withholding has none) are all closed (`ClientState.hasClosed`) and that is neither
+    /// delivered nor missed.
     private func counterTasks(for client: TownClient) -> [(task: CounterTask, row: PanelRow)] {
         guard let clientState = state.clients[client.id] else { return [] }
         let name = Self.shortName(client)
@@ -135,7 +136,7 @@ extension TownFlow {
         for year in state.start.year...max(state.start.year, today.year) {
             for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) {
                 let months = d.kind.months(rates: deadlines.rates)
-                guard state.counts(d, client: clientState), today >= d.opens, months.allSatisfy(clientState.closedMonths.contains),
+                guard state.counts(d, client: clientState), today >= d.opens, clientState.hasClosed(months, start: state.start),
                       !clientState.delivered.contains(d.kind.id), !clientState.missed.contains(d.kind.id) else { continue }
                 add(.deliver(client: client.id, kind: d.kind), "LEVER \(d.kind.shortName)", full: "Lever \(d.label) for \(client.navn)")
             }

@@ -407,13 +407,66 @@ final class TownStoryTests: XCTestCase {
         _ = f.talk(to: counter)
         XCTAssertFalse(f.rows.contains { $0.text.hasPrefix("PIXEL LEVER") }, "\(f.rows.map(\.text))")
 
-        // Term 2 (due in June) is Pixel's: Fristnav lists it, and it is missed when not delivered.
+        // Term 2 (March and April, due in June) is Pixel's: Fristnav lists it. March belongs to the
+        // previous accountant, so with April closed the counter offers the delivery.
         state.calendar = TownCalendar(start: deadlines.mvaFrist(termin: 2, year: 2026).adding(days: -2))
         f = flow(state)
         _ = f.openFristnav()
         XCTAssertTrue(f.rows.contains { $0.id == "\(pixel):mva-2026-2" }, "\(f.rows.map(\.id))")
+        state.clients[pixel]?.closedMonths = [MonthKey(year: 2026, month: 4)]
+        f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertTrue(f.rows.contains { $0.text == "PIXEL LEVER MVA2" }, "\(f.rows.map(\.text))")
+
+        // Not delivered, it is missed like any other deadline.
         while state.calendar.today <= deadlines.mvaFrist(termin: 2, year: 2026) { missed += state.sleep(content: town, deadlines: deadlines, pool: []) }
         XCTAssertTrue(missed.contains { $0.client == pixel && $0.kind == .mva(termin: 2, year: 2026) })
+    }
+
+    /// Books every bilag of the client right, then closes and delivers everything the counter offers.
+    func playPerfectly(_ id: String, state: inout TownState) throws {
+        let client = try XCTUnwrap(town.client(id))
+        while let month = Ledger.pileMonth(for: client, start: state.start, today: state.calendar.today, state: state.clients[id]!, pool: pool) {
+            for puzzle in Ledger.pile(for: client, month: month, start: state.start, state: state.clients[id]!, pool: pool) {
+                state.clients[id]?.book(BookedBilag(puzzleId: puzzle, month: month, day: state.calendar.today, correct: true), boxBefore: 0, client: id)
+            }
+        }
+        let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
+        for _ in 0..<50 {
+            var f = flow(state)
+            _ = f.talk(to: counter)
+            guard f.phase != .dialog, let row = f.rows.firstIndex(where: { $0.id.hasSuffix(":\(id)") }) else { return }
+            for _ in 0..<row { _ = f.key(.down) }
+            let action = f.key(.a)
+            if f.phase == .dialog { _ = readDialog(&f) }
+            state = f.state
+            guard case let .deliver(who, kind) = action else { continue }
+            state.clients[who]?.deliver(kind)
+        }
+        XCTFail("the counter never ran out of tasks for \(id)")
+    }
+
+    /// Won partway through the first term: the months before belong to the previous accountant, so
+    /// A-MELDING FEB, AGA 1 and MVA 1 can be delivered from what the player booked.
+    func testAClientWonMidTermAndPlayedPerfectlyMissesNothing() throws {
+        var state = TownState.new(content: town, year: 2026)
+        state.clients[cafe]?.status = .archived
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 3, day: 2))
+        try winTrial(motor, state: &state)
+        XCTAssertEqual(state.clients[motor]?.booksFrom(start: state.start), MonthKey(year: 2026, month: 3))
+
+        var missed: [TownDeadline] = []
+        while state.calendar.today < DayKey(year: 2026, month: 12, day: 31) {
+            try playPerfectly(motor, state: &state)
+            missed += state.sleep(content: town, deadlines: deadlines, pool: pool)
+        }
+        XCTAssertEqual(missed.filter { $0.client == motor }.map(\.kind.id), [])
+        XCTAssertEqual(state.clients[motor]?.missed, [])
+        XCTAssertEqual(state.clients[motor]?.status, .active)
+        let delivered = try XCTUnwrap(state.clients[motor]?.delivered)
+        for kind in [DeadlineKind.mva(termin: 1, year: 2026), .aga(termin: 1, year: 2026), .amelding(month: feb)] {
+            XCTAssertTrue(delivered.contains(kind.id), kind.id)
+        }
     }
 
     func testAClientWonInAprilBooksAprilAndClosesItOnTheFirstOfMay() throws {

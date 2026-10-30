@@ -40,6 +40,8 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(Ledger.pile(for: c, month: mar, start: jan, state: state, pool: allIds), [])
         XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(4, 20), state: state, pool: allIds), apr)
         XCTAssertFalse(Ledger.canClose(apr, client: c, start: jan, state: state, today: day(5, 1), pool: allIds), "the bilag are not booked")
+        // March has no pile and has ended, but it is the previous accountant's month.
+        XCTAssertFalse(Ledger.canClose(mar, client: c, start: jan, state: state, today: day(5, 1), pool: allIds))
     }
 
     func testStartClientStillStartsInJanuary() {

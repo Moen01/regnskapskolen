@@ -141,6 +141,14 @@ extension ClientState {
         return max(start, MonthKey(activeFrom))
     }
 
+    /// Whether every month a deadline reports on is closed, so it can be delivered. Months before
+    /// `booksFrom` count as closed: the previous accountant kept them, and the player is never
+    /// offered them, so a client won mid-term can still deliver the term.
+    public func hasClosed(_ months: [MonthKey], start: MonthKey) -> Bool {
+        let from = booksFrom(start: start)
+        return months.filter { $0 >= from }.allSatisfy(closedMonths.contains)
+    }
+
     public mutating func deliver(_ kind: DeadlineKind) {
         delivered.insert(kind.id)
         adjustSatisfaction(by: TownRules.deliverBonus)
