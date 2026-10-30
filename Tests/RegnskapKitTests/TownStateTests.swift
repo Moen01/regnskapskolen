@@ -209,4 +209,43 @@ final class TownStateTests: XCTestCase {
         progress.puzzles["a"] = PuzzleProgress(box: 2, attempts: 3, correct: 2)
         XCTAssertEqual(state.masked(progress), progress)
     }
+
+    func testMaskedClearsDueOfHeldBackPuzzles() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        for correct in [false, true] {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles["p1"] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: "p1", correctFirstTry: correct), on: day(1, 1), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: correct), boxBefore: 2, client: id)
+            XCTAssertNotNil(progress.puzzles["p1"]?.due, "the raw due gives the verdict away")
+            XCTAssertNil(state.masked(progress).puzzles["p1"]?.due)
+        }
+    }
+
+    func testMaskedKeepsDueOfOtherPuzzles() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+        state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: false), boxBefore: 2, client: id)
+        var progress = LearnerProgress()
+        progress.puzzles["p1"] = PuzzleProgress(box: 1, attempts: 1, correct: 0, lastSeen: day(1, 1), due: day(1, 2))
+        progress.puzzles["p2"] = PuzzleProgress(box: 2, attempts: 1, correct: 1, lastSeen: day(1, 1), due: day(1, 4))
+        XCTAssertEqual(state.masked(progress).puzzles["p2"], progress.puzzles["p2"])
+    }
+
+    func testQuitClientIsNotHeldBack() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+        state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: false), boxBefore: 4, client: id)
+        XCTAssertEqual(state.maskedBox("p1"), 4)
+        state.clients[id]?.satisfaction = 0
+        state.clients[id]?.status = .archived
+        XCTAssertNil(state.maskedBox("p1"))
+        var progress = LearnerProgress()
+        progress.puzzles["p1"] = PuzzleProgress(box: 1, attempts: 1, correct: 0, lastSeen: day(1, 1), due: day(1, 2))
+        XCTAssertEqual(state.masked(progress), progress)
+    }
 }

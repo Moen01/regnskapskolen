@@ -3,9 +3,10 @@ import RegnskapKit
 
 // Paragrafjakten: the map's regions, a run in one of them, and the encounter in front of the learner.
 extension AppStore {
-    /// The progress as the screens may show it: a bilag booked wrong in town sits in the box it had
-    /// before, so no count, stage or unlock tells whether it was right. Only the boxes are masked:
-    /// never show attempts, correct counts, `lastSeen` or `due` from this copy.
+    /// The progress as the screens may show it: every bilag in a month the town has not closed
+    /// (right or wrong) sits in the box it had before, and its `due` is cleared, so no count, stage,
+    /// unlock or creature order tells whether it was right. Never show attempts, correct counts or
+    /// `lastSeen` from this copy.
     var maskedProgress: LearnerProgress { progress.game.town?.masked(progress) ?? progress }
     /// Built from the masked progress: the map, the collection and the town's fagkontor all count from it.
     var regions: [Region] { Regions.build(topics: library?.topics ?? [], pool: pool, progress: maskedProgress) }

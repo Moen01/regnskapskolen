@@ -98,8 +98,9 @@ public struct TownState: Hashable, Codable, Sendable {
     }
 
     /// Every booking whose verdict the town still holds back, with the box from before it.
+    /// A client that quit is skipped: the verdict is no secret any more.
     private var heldBack: [(puzzleId: String, day: DayKey, box: Int)] {
-        clients.values.flatMap { client in
+        clients.values.filter { $0.status != .archived }.flatMap { client in
             client.openErrors.map { ($0.puzzleId, $0.day, $0.boxBefore) }
                 + client.booked.compactMap { bilag in
                     guard let box = bilag.boxBefore, !client.closedMonths.contains(bilag.month) else { return nil }
@@ -109,12 +110,14 @@ public struct TownState: Hashable, Codable, Sendable {
     }
 
     /// A copy of the progress where every puzzle with a held-back verdict sits in the box it had
-    /// before the booking, so region counts and totals do not tell whether a bilag was right.
+    /// before the booking and with no `due` day, so region counts, totals and the order of the
+    /// creatures do not tell whether a bilag was right (a wrong answer is due tomorrow).
     /// A puzzle with no entry stays without one when that box is 0: it reads as uncaught, as before.
     public func masked(_ progress: LearnerProgress) -> LearnerProgress {
         var result = progress
         for id in Set(heldBack.map(\.puzzleId)) {
             guard let box = maskedBox(id) else { continue }
+            defer { result.puzzles[id]?.due = nil }
             if result.puzzles[id] != nil {
                 result.puzzles[id]?.box = box
             } else if box > 0 {
