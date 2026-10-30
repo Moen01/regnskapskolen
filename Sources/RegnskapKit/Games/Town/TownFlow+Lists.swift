@@ -107,9 +107,9 @@ extension TownFlow {
         return out
     }
 
-    /// The earliest month from the start of the game that has ended and is not closed.
+    /// The earliest month from the client's books start that has ended and is not closed.
     private func firstOpenMonth(_ clientState: ClientState) -> MonthKey? {
-        var month = state.start
+        var month = clientState.booksFrom(start: state.start)
         while month < MonthKey(today) {
             if !clientState.closedMonths.contains(month) { return month }
             month = month.next

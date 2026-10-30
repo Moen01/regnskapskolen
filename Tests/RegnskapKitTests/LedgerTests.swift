@@ -30,6 +30,29 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(Ledger.pile(for: c, month: MonthKey(year: 2025, month: 12), start: jan, state: state, pool: allIds), [])
     }
 
+    func testClientWonInAprilStartsInApril() {
+        let c = makeLedgerClient()
+        let apr = MonthKey(year: 2026, month: 4)
+        var state = ClientState.fresh(.active)
+        state.activeFrom = day(4, 12)
+        XCTAssertEqual(state.booksFrom(start: jan), apr)
+        XCTAssertEqual(Ledger.pile(for: c, month: apr, start: jan, state: state, pool: allIds), ["p0", "p1", "p2", "p3", "p4"])
+        XCTAssertEqual(Ledger.pile(for: c, month: mar, start: jan, state: state, pool: allIds), [])
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(4, 20), state: state, pool: allIds), apr)
+        XCTAssertFalse(Ledger.canClose(apr, client: c, start: jan, state: state, today: day(5, 1), pool: allIds), "the bilag are not booked")
+    }
+
+    func testStartClientStillStartsInJanuary() {
+        let c = makeLedgerClient()
+        let state = ClientState.fresh(.active)
+        XCTAssertEqual(state.booksFrom(start: jan), jan)
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(2, 10), state: state, pool: allIds), jan)
+        // A client won before the game's start month never starts earlier than the game.
+        var early = ClientState.fresh(.active)
+        early.activeFrom = DayKey(year: 2025, month: 11, day: 3)
+        XCTAssertEqual(early.booksFrom(start: jan), jan)
+    }
+
     func testPileIgnoresPuzzlesOutsideThePoolButKeepsTheSlice() {
         let c = makeLedgerClient()
         let pool = allIds.subtracting(["p1", "p3"])

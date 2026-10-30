@@ -414,6 +414,33 @@ final class TownStoryTests: XCTestCase {
         XCTAssertTrue(missed.contains { $0.client == pixel && $0.kind == .mva(termin: 2, year: 2026) })
     }
 
+    func testAClientWonInAprilBooksAprilAndClosesItOnTheFirstOfMay() throws {
+        var state = TownState.new(content: town, year: 2026)
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 4, day: 12))
+        try winTrial(pixel, state: &state)
+        let client = try XCTUnwrap(town.client(pixel))
+        let apr = MonthKey(year: 2026, month: 4)
+        var clientState = try XCTUnwrap(state.clients[pixel])
+        XCTAssertEqual(Ledger.pileMonth(for: client, start: state.start, today: state.calendar.today, state: clientState, pool: pool), apr)
+        let pile = Ledger.pile(for: client, month: apr, start: state.start, state: clientState, pool: pool)
+        XCTAssertEqual(pile, Array(client.oppgaver.prefix(TownRules.bilagPerMonth)).filter(pool.contains))
+        XCTAssertFalse(pile.isEmpty)
+
+        for (i, id) in pile.enumerated() {
+            clientState.book(BookedBilag(puzzleId: id, month: apr, day: state.calendar.today, correct: true), boxBefore: 1, client: pixel)
+            XCTAssertEqual(clientState.booked.count, i + 1)
+        }
+        state.clients[pixel] = clientState
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 5, day: 1))
+
+        // January to March are not offered: the first close at the counter is April.
+        var f = flow(state)
+        let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
+        _ = f.talk(to: counter)
+        XCTAssertTrue(f.rows.contains { $0.text.hasPrefix("PIXEL LUKK APR") }, "\(f.rows.map(\.text))")
+        XCTAssertFalse(f.rows.contains { $0.text.hasPrefix("PIXEL LUKK JAN") }, "\(f.rows.map(\.text))")
+    }
+
     func testFristnavRowsKeepTheClientName() throws {
         var state = TownState.new(content: town, year: 2026)
         for id in [pixel, motor] { state.clients[id]?.status = .active }

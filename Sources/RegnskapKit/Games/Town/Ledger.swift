@@ -36,8 +36,10 @@ public struct OpenError: Hashable, Codable, Sendable, Identifiable {
 public enum Ledger {
     /// The month's bilag still to book. The monthly slice is cut from the whole list *before* the
     /// pool filter, so a month keeps its content when "show drafts" is switched on and off.
+    /// `start` is the game's first month; the client's own books begin at `booksFrom(start:)`.
     public static func pile(for client: TownClient, month: MonthKey, start: MonthKey, state: ClientState, pool: Set<String>) -> [String] {
-        let i = (month.year - start.year) * 12 + (month.month - start.month)
+        let from = state.booksFrom(start: start)
+        let i = (month.year - from.year) * 12 + (month.month - from.month)
         let size = TownRules.bilagPerMonth
         guard i >= 0, i * size < client.oppgaver.count else { return [] }
         let slice = client.oppgaver[(i * size)..<min((i + 1) * size, client.oppgaver.count)]
@@ -45,10 +47,10 @@ public enum Ledger {
         return slice.filter { pool.contains($0) && !booked.contains($0) }
     }
 
-    /// The oldest month, from `start` through the month of `today`, that still has bilag to book.
+    /// The oldest month, from the client's books start through the month of `today`, that still has bilag to book.
     public static func pileMonth(for client: TownClient, start: MonthKey, today: DayKey, state: ClientState, pool: Set<String>) -> MonthKey? {
         let last = MonthKey(today)
-        var month = start
+        var month = state.booksFrom(start: start)
         while month <= last {
             if !pile(for: client, month: month, start: start, state: state, pool: pool).isEmpty { return month }
             month = month.next

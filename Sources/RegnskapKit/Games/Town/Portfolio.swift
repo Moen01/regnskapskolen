@@ -77,6 +77,12 @@ extension ClientState {
         activeFrom.map { deadline.day >= $0 } ?? true
     }
 
+    /// The month the client's books start: the month it was won, never before the game's start.
+    public func booksFrom(start: MonthKey) -> MonthKey {
+        guard let activeFrom else { return start }
+        return max(start, MonthKey(activeFrom))
+    }
+
     public mutating func deliver(_ kind: DeadlineKind) {
         delivered.insert(kind.id)
         adjustSatisfaction(by: TownRules.deliverBonus)
