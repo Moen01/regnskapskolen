@@ -44,6 +44,38 @@ final class LedgerTests: XCTestCase {
         XCTAssertFalse(Ledger.canClose(mar, client: c, start: jan, state: state, today: day(5, 1), pool: allIds))
     }
 
+    /// Phase 2a cut every pile from the game's start, so a client won in April may hold January's
+    /// slice, booked on month January and with an open error there. The books start at the earliest
+    /// booked month, so that slice is not lost and its error can still be corrected and closed.
+    func testA2aSaveWithALateWonClientKeepsItsBookedMonths() throws {
+        let c = makeLedgerClient()
+        let json = """
+        {"status":"active","satisfaction":50,"met":true,"activeFrom":"2026-04-12",
+         "booked":[{"puzzleId":"p0","month":"2026-01","day":"2026-04-13","correct":false},
+                   {"puzzleId":"p1","month":"2026-01","day":"2026-04-13","correct":true}],
+         "openErrors":[{"puzzleId":"p0","client":"k1","month":"2026-01","day":"2026-04-13","boxBefore":0}],
+         "closedMonths":[],"delivered":[],"missed":[]}
+        """
+        let state = try JSONDecoder().decode(ClientState.self, from: Data(json.utf8))
+        XCTAssertEqual(state.booksFrom(start: jan), jan)
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: day(4, 20), state: state, pool: allIds), jan)
+        XCTAssertEqual(Ledger.pile(for: c, month: jan, start: jan, state: state, pool: allIds), ["p2", "p3", "p4"])
+        XCTAssertEqual(Ledger.pile(for: c, month: feb, start: jan, state: state, pool: allIds), ["p5", "p6", "p7", "p8", "p9"])
+        XCTAssertFalse(state.hasClosed([jan, feb], start: jan), "January is the player's month now")
+        var done = state
+        for i in 2..<5 {
+            done.book(BookedBilag(puzzleId: "p\(i)", month: jan, day: day(4, 20), correct: true), boxBefore: 0, client: "k1")
+        }
+        XCTAssertTrue(Ledger.canClose(jan, client: c, start: jan, state: done, today: day(4, 20), pool: allIds))
+        XCTAssertEqual(done.errors(in: jan).map(\.puzzleId), ["p0"])
+
+        // Without bookings the books still start in the month the client was won.
+        var fresh = state
+        fresh.booked = []
+        fresh.openErrors = []
+        XCTAssertEqual(fresh.booksFrom(start: jan), MonthKey(year: 2026, month: 4))
+    }
+
     func testStartClientStillStartsInJanuary() {
         let c = makeLedgerClient()
         let state = ClientState.fresh(.active)

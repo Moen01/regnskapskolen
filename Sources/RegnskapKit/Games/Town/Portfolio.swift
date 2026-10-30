@@ -136,9 +136,13 @@ extension ClientState {
     }
 
     /// The month the client's books start: the month it was won, never before the game's start.
+    /// A save from phase 2a may hold bookings on earlier months (its piles began at the game's
+    /// start), so the earliest booked month moves the start back and those bookings stay the player's.
     public func booksFrom(start: MonthKey) -> MonthKey {
         guard let activeFrom else { return start }
-        return max(start, MonthKey(activeFrom))
+        let won = MonthKey(activeFrom)
+        let first = booked.map(\.month).min().map { min(won, $0) } ?? won
+        return max(start, first)
     }
 
     /// Whether every month a deadline reports on is closed, so it can be delivered. Months before
