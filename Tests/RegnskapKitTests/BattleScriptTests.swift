@@ -45,9 +45,9 @@ final class BattleScriptTests: XCTestCase {
         if name.count <= 8 {
             XCTAssertEqual(TextWrap.lines(correction[0], columns: 18), ["Avstemmingen går", "ikke opp: \(name)", "07.03."])
         }
-        XCTAssertEqual(BattleScript.intro(encounter(context: .kundesak(client: "k", name: "KAFÉ"))), ["KAFÉ lurer på", "noe!", "Kontantsalg av en tjeneste"])
+        XCTAssertEqual(BattleScript.intro(encounter(context: .kundesak(client: "k", name: "KAFÉ"))), ["KAFÉ lurer på noe!", "Kontantsalg av en tjeneste"])
         let e = encounter()
-        XCTAssertEqual(BattleScript.result(.answered(ok: true), encounter: e), ["Kunden er", "fornøyd."])
+        XCTAssertEqual(BattleScript.result(.answered(ok: true), encounter: e), ["Kunden er fornøyd."])
         XCTAssertEqual(BattleScript.result(.answered(ok: false), encounter: e), ["Det stemte ikke."])
         XCTAssertEqual(BattleScript.result(.booked, encounter: e).map { TextWrap.lines($0, columns: 18) }, [["Bilaget er", "bokført."]])
         XCTAssertEqual(BattleScript.result(.corrected(ok: true), encounter: e), ["Feilen er rettet."])

@@ -142,14 +142,16 @@ final class TownCaseTests: XCTestCase {
         let p = try puzzle()
         for name in ["KAFÉ", "NETTBUTIKKEN", "LEGEKONTORET"] {
             let e = Encounter(puzzle: p, stageBefore: .vill, moves: [], isGymLeader: false, context: .kundesak(client: client, name: name))
-            let intro = BattleScript.intro(e)
-            XCTAssertEqual(intro, ["\(name) lurer på", "noe!", p.tittel])
-            for text in intro + BattleScript.result(.answered(ok: true), encounter: e) + BattleScript.result(.answered(ok: false), encounter: e) {
-                XCTAssertTrue(TextWrap.lines(text, columns: 18).allSatisfy { $0.count <= 18 }, text)
+            XCTAssertEqual(BattleScript.intro(e), ["\(name) lurer på noe!", p.tittel])
+            let texts = BattleScript.intro(e) + BattleScript.result(.answered(ok: true), encounter: e) + BattleScript.result(.answered(ok: false), encounter: e)
+            for page in BattleFlow.paged(texts) {
+                XCTAssertLessThanOrEqual(page.count, BattleFlow.rows, "\(page)")
+                XCTAssertTrue(page.allSatisfy { $0.count <= BattleFlow.columns }, "\(page)")
             }
         }
         let e = Encounter(puzzle: p, stageBefore: .vill, moves: [], isGymLeader: false, context: .kundesak(client: client, name: "KAFÉ"))
-        XCTAssertEqual(BattleScript.result(.answered(ok: true), encounter: e), ["Kunden er", "fornøyd."])
+        XCTAssertEqual(BattleScript.result(.answered(ok: true), encounter: e), ["Kunden er fornøyd."])
+        XCTAssertEqual(BattleFlow.paged(BattleScript.result(.answered(ok: true), encounter: e)), [["Kunden er fornøyd."]], "one page")
         XCTAssertEqual(BattleScript.result(.answered(ok: false), encounter: e), ["Det stemte ikke."])
     }
 }

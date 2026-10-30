@@ -14,7 +14,7 @@ public enum BattleScript {
             return ["Avstemmingen går ikke opp: \(name) \(String(format: "%02d.%02d", day.day, day.month))."]
         case .trial: return ["Prøvesak!", title]
         case .fagkontor(let office): return ["\(office) vil teste deg!", title]
-        case .kundesak(_, let name): return ["\(name) lurer på", "noe!", title]
+        case .kundesak(_, let name): return ["\(name) lurer på noe!", title]
         }
         let first: String
         if encounter.isGymLeader {
@@ -46,7 +46,7 @@ public enum BattleScript {
         case .corrected(let ok):
             return [ok ? "Feilen er rettet." : "Fortsatt feil. Kunden er mindre fornøyd."]
         case .answered(let ok):
-            return ok ? ["Kunden er", "fornøyd."] : ["Det stemte ikke."]
+            return [ok ? "Kunden er fornøyd." : "Det stemte ikke."]
         }
     }
 
