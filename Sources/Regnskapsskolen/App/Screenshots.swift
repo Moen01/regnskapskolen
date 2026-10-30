@@ -206,6 +206,75 @@ enum Screenshots {
         store.finishBilag()
         store.town = nil
         store.progress.game.town = nil
+
+        await snapAudit(store: store, folder: folder, stage: { stage(map: $0, x: $1, y: $2, facing: $3, day: $4, $5) }, shot: shot)
+    }
+
+    /// The bokettersyn at Avgiftskontoret, the new year and the annual deadlines. All fagkontor badges
+    /// are set for the shots and removed again at the end, with the staged town.
+    @MainActor
+    private static func snapAudit(store: AppStore, folder: URL, stage: (String, Int, Int, Facing, DayKey, (inout TownState) -> Void) -> Void, shot: (String) async -> Void) async {
+        guard let library = store.library else { return }
+        let town = library.town
+        let visible = Set(store.pool.map(\.id))
+        let cafe = "kafe-lysthuset"
+        let auditDay = DayKey(year: 2027, month: 1, day: 4)
+        let badgeKeys = town.kart.flatMap(\.folk).compactMap(\.fagkontor).map(TownTrials.badgeKey)
+        for key in badgeKeys { store.progress.game.badges[key] = auditDay }
+        let districts: Set<String> = ["havna", "industri", "bryggen"]
+
+        // The desk, A through the dialog to the question. The cards the badges give are in the bag
+        // already, so opening the town does not read them out first.
+        func atDesk(_ change: @escaping (inout TownState) -> Void = { _ in }) {
+            stage("avgiftskontoret", 4, 4, .up, auditDay) { state in
+                state.fullmakter = districts
+                state.regelkort = Set(library.rules.map(\.id))
+                change(&state)
+            }
+            for _ in 0..<40 where store.town?.phase == .dialog { store.townKey(.a) }
+            store.townKey(.a)
+            for _ in 0..<10 where store.town?.phase == .dialog { store.townKey(.a) }
+        }
+
+        atDesk()
+        await shot("spill-avgiftskontoret.png")
+
+        // One wrong bilag at the cafe in November: the review opens on it, at full HP.
+        atDesk { state in
+            // The café's slices may run out before November; any of its visible puzzles will do as the error.
+            guard let client = town.client(cafe), let id = client.oppgaver.first(where: visible.contains) else { return }
+            state.clients[cafe]?.book(BookedBilag(puzzleId: id, month: MonthKey(year: 2026, month: 11), day: DayKey(year: 2026, month: 12, day: 1), correct: false), boxBefore: 0, client: cafe)
+        }
+        store.townKey(.a)
+        await shot("spill-bokettersyn.png")
+        store.finishAudit()
+
+        // No open errors: the first controller takes over at once.
+        atDesk()
+        store.townKey(.a)
+        await shot("spill-kontrollor.png")
+        store.finishAudit()
+        store.progress.game.town?.auditTriedOn = nil
+
+        // The pass: the dialog on the desk's map, in the new year.
+        stage("avgiftskontoret", 4, 4, .up, auditDay) { $0.fullmakter = districts }
+        store.town?.tell(TownFlow.auditResultTexts(won: true, year: 2026, today: auditDay, standing: 0, newBadge: true))
+        await shot("spill-nytt-aar.png")
+
+        // Fristnav on 28 May 2027: every 2026 month is closed, the 31 May tax return is the next row.
+        stage("kontoret", 3, 3, .left, DayKey(year: 2027, month: 5, day: 28)) { state in
+            for month in 1...12 { state.clients[cafe]?.closedMonths.insert(MonthKey(year: 2026, month: month)) }
+            state.fullmakter = districts
+            state.regelkort = Set(library.rules.map(\.id))
+        }
+        for _ in 0..<40 where store.town?.phase == .dialog { store.townKey(.a) }
+        store.townKey(.a)
+        store.townKey(.a)
+        await shot("spill-arsfrister.png")
+
+        for key in badgeKeys { store.progress.game.badges[key] = nil }
+        store.town = nil
+        store.progress.game.town = nil
     }
 
     @MainActor
