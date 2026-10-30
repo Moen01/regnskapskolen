@@ -38,7 +38,7 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(f.handle(.a, attempt: &a), .none)      // KJEMP
         XCTAssertEqual(f.phase, .moves)
         XCTAssertEqual(f.moveRows.last?.text, "Ingen regel")
-        XCTAssertTrue(f.moveRows.allSatisfy { $0.text.count <= 17 })
+        XCTAssertTrue(f.moveRows.allSatisfy { $0.text.count <= ListBox.columns })
         let action = f.handle(.a, attempt: &a)
         guard case .chooseMove = action else { return XCTFail("\(action)") }
         XCTAssertTrue(f.hasChosen)
@@ -102,13 +102,21 @@ final class BattleFlowTests: XCTestCase {
     func testBookedSkipsTheExplanationButCorrectedShowsIt() {
         var (f, a) = flow()
         f.showOutcome(.booked)
-        XCTAssertEqual(f.pages, [["Bilaget er", "bokført."]])
+        XCTAssertEqual(f.pages, [["Bilaget er bokført."]])
         XCTAssertEqual(f.handle(.a, attempt: &a), .next, "the explanation would give the verdict away")
         var (g, b) = flow()
         g.showOutcome(.corrected(ok: false))
         while g.hasMorePages { _ = g.handle(.a, attempt: &b) }
         XCTAssertEqual(g.handle(.a, attempt: &b), .none)
         XCTAssertEqual(g.phase, .explanation)
+    }
+
+    func testAuditedOutcomeShowsTheExplanation() {
+        var (f, a) = flow()
+        f.showOutcome(.audited(ok: false, hpLost: 1_000))
+        while f.hasMorePages { _ = f.handle(.a, attempt: &a) }
+        XCTAssertEqual(f.handle(.a, attempt: &a), .none)
+        XCTAssertEqual(f.phase, .explanation)
     }
 
     func testClickOnTheDialogAdvancesLikeAInThePagePhases() {
@@ -143,7 +151,7 @@ final class BattleFlowTests: XCTestCase {
 
     func testAnswerPagesShowTheRowThenTheTask() {
         let puzzle = Self.library.puzzles.first { p in
-            p.kind == .quiz && Moves.canHit(p, regionCards: Self.library.rules(tema: p.tema)) && p.payloadQuiz!.alternativer[0].count > 17
+            p.kind == .quiz && Moves.canHit(p, regionCards: Self.library.rules(tema: p.tema)) && p.payloadQuiz!.alternativer[0].count > ListBox.columns
         }!
         let cards = Self.library.rules(tema: puzzle.tema)
         let moves = Moves.options(for: puzzle, regionCards: cards, otherCards: Self.library.rules.filter { $0.tema != puzzle.tema }, seed: 1)
@@ -152,8 +160,8 @@ final class BattleFlowTests: XCTestCase {
         var a = PuzzleAttempt.empty(for: .quiz)
         for _ in 0..<4 { _ = f.handle(.a, attempt: &a) }
         XCTAssertEqual(f.phase, .answer)
-        let taskPages = TextWrap.pages(TextWrap.lines(TextWrap.plain(markdown: puzzle.oppgave), columns: 18), rows: 3)
-        let rowPages = TextWrap.pages(TextWrap.lines(puzzle.payloadQuiz!.alternativer[0], columns: 18), rows: 3)
+        let taskPages = TextWrap.pages(TextWrap.lines(TextWrap.plain(markdown: puzzle.oppgave), columns: DialogBox.columns), rows: DialogBox.rows)
+        let rowPages = TextWrap.pages(TextWrap.lines(puzzle.payloadQuiz!.alternativer[0], columns: DialogBox.columns), rows: DialogBox.rows)
         XCTAssertEqual(Array(f.pages.suffix(taskPages.count)), taskPages)
         XCTAssertEqual(Array(f.pages.dropFirst().prefix(rowPages.count)), rowPages)
     }
@@ -164,6 +172,6 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(f.phase, .answer)
         let action = f.handle(.a, attempt: &a)
         guard case .invalid(let message) = action else { return XCTFail("\(action)") }
-        XCTAssertEqual(f.pages.first, TextWrap.pages(TextWrap.lines(message, columns: 18), rows: 3).first)
+        XCTAssertEqual(f.pages.first, TextWrap.pages(TextWrap.lines(message, columns: DialogBox.columns), rows: DialogBox.rows).first)
     }
 }

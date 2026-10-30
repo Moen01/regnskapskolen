@@ -11,7 +11,7 @@ struct AnswerPanelView: View {
     private var headline: String {
         // While the voucher's lines are listed, the title gives way to the running sums.
         if panel.isListingLines, let sums = panel.sums {
-            return TextWrap.truncate("BILAG D\(AnswerPanel.amountText(sums.debet)) K\(AnswerPanel.amountText(sums.kredit))", to: AnswerPanel.columns)
+            return TextWrap.truncate("BILAG D\(AnswerPanel.amountText(sums.debet)) K\(AnswerPanel.amountText(sums.kredit))", to: ListBox.titleColumns)
         }
         return panel.title
     }
@@ -22,7 +22,7 @@ struct AnswerPanelView: View {
                 GBText(headline)
                 if let entry = panel.entry {
                     GBEntry(label: panel.entryLabel, text: entry)
-                    GBText(panel.puzzle.kind == .frist ? "dd.mm.åååå" : "Enter = slå", color: GBPalette.dark)
+                    GBText(panel.puzzle.kind == .frist ? "dd.mm.åååå" : "Enter = slå", color: GBTheme.textDim)
                 } else {
                     GBList(rows: panel.rows, cursor: panel.cursor, visible: panel.visibleRange, highlight: hitLine, onClick: onClick)
                 }

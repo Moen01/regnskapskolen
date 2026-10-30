@@ -3,10 +3,19 @@ import RegnskapKit
 
 // Paragrafjakten: the map's regions, a run in one of them, and the encounter in front of the learner.
 extension AppStore {
-    var regions: [Region] { Regions.build(topics: library?.topics ?? [], pool: pool, progress: progress) }
+    /// The progress as the screens may show it: every bilag in a month the town has not closed
+    /// (right or wrong) sits in the box it had before, and its `due` is cleared, so no count, stage,
+    /// unlock or creature order tells whether it was right. Never show attempts, correct counts or
+    /// `lastSeen` from this copy.
+    var maskedProgress: LearnerProgress { progress.game.town?.masked(progress) ?? progress }
+    /// Built from the masked progress: the map, the collection and the town's fagkontor all count from it.
+    var regions: [Region] { Regions.build(topics: library?.topics ?? [], pool: pool, progress: maskedProgress) }
     var currentRegion: Region? { selectedRegion.flatMap { tema in regions.first { $0.tema == tema } } }
-    /// Puzzles in the pool the learner has caught (box 1 or higher).
-    var collectionTotal: Int { pool.filter { (progress.puzzles[$0.id]?.box ?? 0) >= 1 }.count }
+    /// Puzzles in the pool the learner has caught (box 1 or higher), counted from the masked boxes.
+    var collectionTotal: Int {
+        let shown = maskedProgress
+        return pool.filter { (shown.puzzles[$0.id]?.box ?? 0) >= 1 }.count
+    }
 
     func openRegion(_ tema: String) {
         selectedRegion = tema
@@ -23,10 +32,13 @@ extension AppStore {
         guard let library, let region = currentRegion, !region.isEmpty else { return }
         lastRunSummary = nil
         newBadges = []
-        var fresh = RegionRun(region: region, progress: progress, today: todayKey,
+        // The masked boxes pick and show the creatures, like the town's runs: the real box of a
+        // bilag in an open month would tell its verdict. `record` still writes the real progress.
+        let shown = maskedProgress
+        var fresh = RegionRun(region: region, progress: shown, today: todayKey,
                               regionCards: library.rules(tema: region.tema), otherCards: library.rules.filter { $0.tema != region.tema },
                               seed: UInt64(Date().timeIntervalSince1970))
-        fresh.nextEncounter(progress: progress, today: todayKey)
+        fresh.nextEncounter(progress: shown, today: todayKey)
         run = fresh
         encounterSession = fresh.current.map { PuzzleSession(puzzle: $0.puzzle) }
         if fresh.phase == .finished { endRun() }
@@ -39,7 +51,7 @@ extension AppStore {
     /// The learner pressed «Sjekk»: the run judges the attempt, the scheduler hears the result, XP and badges follow.
     func answerEncounter() {
         guard var current = run, let session = encounterSession, session.attempt.isAnswered,
-              let (outcome, result) = current.answer(session.attempt, progress: progress, today: todayKey) else { return }
+              let (outcome, result) = current.answer(session.attempt, progress: maskedProgress, today: todayKey) else { return }
         run = current
         record(result, countXP: false)
         if case .caught = outcome {
@@ -56,7 +68,7 @@ extension AppStore {
     func proceedEncounter() {
         guard var current = run else { return }
         current.proceed()
-        current.nextEncounter(progress: progress, today: todayKey)
+        current.nextEncounter(progress: maskedProgress, today: todayKey)
         run = current
         encounterSession = current.current.map { PuzzleSession(puzzle: $0.puzzle) }
         if current.phase == .finished { endRun() }

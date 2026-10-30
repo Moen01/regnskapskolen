@@ -1,0 +1,24 @@
+{
+  "id": "bilagskontoret",
+  "navn": "Bilagskontoret",
+  "bydel": "sentrum",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "sentrum", "tilX": 14, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "fagkontor-bilag", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "bilag", "navn": "Bilagskontoret", "temaer": ["grunnlag", "kontoplan", "bilag-bokforingsloven"]}, "tekst": ["Jeg leder Bilagskontoret. Her prøves bilag, kontoer og bokføringsloven."] },
+    { "id": "folk-bilag", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Ingen bilag, ingen bokføring."] }
+  ]
+}

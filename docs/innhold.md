@@ -221,7 +221,7 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 
 ## Byen (`by/`)
 
-`Innhold/by/` er byen Hovedbok i Rubin-utgaven: bransjer, klienter og kart. All tekst i byen vises i en dialogboks på 18 tegn; et ord over 18 tegn er en valideringsfeil, så velg et kortere ord.
+`Innhold/by/` er byen Hovedbok i Rubin-utgaven: bransjer, klienter og kart. All tekst i byen vises i en dialogboks på 36 tegn og 6 linjer; et ord over 18 tegn er likevel en valideringsfeil, så velg et kortere ord.
 
 **`bransjer.json`**: én liste. `id`, `navn` (vises på behovskortet), `temaer` (fra `temaer.json`), `regelkort` (filnavn i `Innhold/regler/` uten `.md`) og `setning`. Ingen bransje får en regel uten regelkort.
 
@@ -235,6 +235,7 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
   "selskapsform": "AS",
   "mvaRegistrert": true,
   "ansatte": 4,
+  "lonnsdag": 20,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "restauranten", "x": 4, "y": 2 },
   "oppgaver": ["mva-behandling-003", "grunnlag-001"],
@@ -244,16 +245,20 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
     "drift": ["Vi har servering i salen og take-away i disken."],
     "haug": ["Her er bilagene."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut."]
+    "glippetFrist": ["Fristen gikk ut."],
+    "oppdagetFeil": ["Gjesten vår så noe rart i regnskapet!"]
   },
   "startklient": true,
   "status": "utkast"
 }
 ```
 
+- `selskapsform` er `AS` eller `ENK`. Den styrer årsfristene: skattemeldingen og årsregnskapet regnes ut fra `satser.json` (regelkortet `arsregnskap-frister`). AS får begge fristene, ENK bare skattemeldingen.
 - `mvaTermin` (`tomaanedlig` eller `aarlig`) står der hvis og bare hvis `mvaRegistrert` er `true`.
 - `oppgaver` er papirhaugen; bare oppgaver som er i utvalget (godkjent, eller utkast når de vises) havner i haugen. `provesak` er nøyaktig tre oppgave-id-er.
 - En klient som ikke er mva-registrert, får ingen oppgave av typen `mva` og ingen `postering` med konto 2700–2799. Fasiten antar ellers et mva-registrert selskap. Det gjelder også kontoer som ikke er mva (2770 og 2780 for arbeidsgiveravgift).
+- `lonnsdag` (1–28) er dagen lønnen utbetales. Den står der hvis og bare hvis `ansatte` er over 0, og er casens eget tall (ikke fra `satser.json`). Klienter uten ansatte får ingen lønnsfrister.
+- `oppdagetFeil` er replikken når klienten selv har oppdaget en gammel feil (en korrigering). Feltet er valgfritt.
 - `drift` er eieren som forteller om driften med egne ord. Den peker på bransjens fallgruve, men gir ikke svaret.
 - `sted` må ha en person med `rolle: "klient"` og samme `klient` på samme rute.
 - Nøyaktig én klient har `startklient: true`; sjefen gir den ved start.
@@ -270,6 +275,8 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 | `~` | vann | nei |
 | `=` | disk | nei; A over disken snakker med den som står bak |
 
+Bydeler og porter: et kart med `bydel` lik sin egen id er en bydel. Den har `rekkefolge` (1, 2, 3 uten hull), `ankomst` (en gangbar rute uten person, innenfor porten) og, fra bydel 2, `fullmakt` lik sin egen id. Bydel 1 har ingen `fullmakt`, og `kontoret` ligger i bydel 1. Alle andre kart er innendørskart med `bydel` lik bydelen de ligger i, og har verken `rekkefolge`, `ankomst` eller `fullmakt`. En port er en `D` i ytterveggen mellom to bydeler; dører mellom bydeler går bare mellom bydelskart, aldri via et rom. Hvert tema i `temaer.json` hører til ett fagkontor, og hver bydel har to fagkontor.
+
 `dorer`: `x`, `y` (en `D`-rute), `til` (kart-id), `tilX`, `tilY` (en gangbar rute uten person). Legg dører i begge retninger: ut av rommet lander på ruten foran døren i bydelen. `folk`: `id`, `rolle`, `x`, `y`, `tekst`, og for noen roller et ekstra felt:
 
 | `rolle` | Gjør | Ekstra |
@@ -279,7 +286,15 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 | `seng` | Sier `tekst`, spør «Sove?». | |
 | `fagkontor` | Gym for temaene. Et tema hører til ett fagkontor. | `fagkontor`: `id`, `navn`, `temaer` |
 | `klient` | Eieren. Bruker klientens `replikker`, ikke `tekst`. | `klient`: klient-id |
+| `arkiv` | PC-en på kontoret. Her legger spilleren en klient bort, henter den tilbake eller vinner den tilbake. Sier `tekst`. | |
+| `sandkasse` | Åpner en sandkasse-case. Gir enten en måned for en klient eller et regelkort, eller begge deler. | `sandkasse`: case-id i `Innhold/sandkasse/`; `klient` og/eller `gir` |
+| `funn` | En bunke papirer som gir ett regelkort, én gang. Sier `tekst`. | `gir`: kort-id i `Innhold/regler/` |
+| `kaffe` | Kaffemaskinen på kontoret. Spilleren kjøper en kopp for å få energi. Sier `tekst`. Står på en ledig rute som ikke sperrer døren, disken, sengen eller sjefen. | |
+| `kundesak` | En klient som står utenfor bygget sitt og spør om en sak. Spilleren svarer, og dommen vises. | `klient`: klient-id; `oppgave`: id til en godkjent `sak`- eller `quiz`-oppgave |
+| `bokettersyn` | Skranken på Avgiftskontoret. Går gjennom regnskapsåret som er omme: fire kontrollører og en sensor stiller oppgaver. Nøyaktig én i byen. Sier `tekst`. | `kontrollorer`: fire `{id, navn, temaer}`; `sensor`: `{id, navn, temaer}` med alle tema |
 | `skilt`, `folk` | Sier `tekst`. | |
+
+En `kundesak`-oppgave er av typen `sak` eller `quiz` og må ikke stå i klientens `oppgaver` eller `provesak`. Validatoren sjekker begge deler. En oppgave av typen `mva` kan derfor aldri bli en kundesak. Er klienten ikke mva-registrert, kan kundesaken heller ikke ha `tema` lik `mva` (heller ikke en quiz), for fasiten antar et registrert selskap. `tekst` er klienten som spør, uten svaret. Ingen kundesak står på selve døra eller sperrer den eneste veien.
 
 Alle kart må kunne nås fra `kontoret` gjennom dører. Hold klientene nær: ingen klientdør mer enn 20 steg fra kontorets dør i samme bydel.
 

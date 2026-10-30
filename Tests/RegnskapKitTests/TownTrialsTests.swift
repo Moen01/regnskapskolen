@@ -8,7 +8,7 @@ final class TownTrialsTests: XCTestCase {
 
     func trialClient(_ provesak: [String]) -> TownClient {
         let ids = provesak.map { "\"\($0)\"" }.joined(separator: ",")
-        let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[]}"
+        let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[],\"oppdagetFeil\":[]}"
         let json = """
         {"id":"kafe","navn":"Kafé AS","bransje":"b","selskapsform":"as","mvaRegistrert":true,"ansatte":1,
          "sted":{"kart":"m","x":0,"y":0},"oppgaver":[],"provesak":[\(ids)],"replikker":\(lines),"status":"godkjent"}
@@ -87,6 +87,21 @@ final class TownTrialsTests: XCTestCase {
         XCTAssertTrue(region.unlocked)
         XCTAssertNil(TownTrials.fagkontorRegion(ref, pool: Array(puzzles.prefix(2)), progress: LearnerProgress()), "fewer than three")
         XCTAssertEqual(TownTrials.badgeKey(ref), "fag-mva")
+    }
+
+    func testReadyAgreesWithFagkontorRegion() throws {
+        let approved = Self.library.approved
+        let regions = Regions.build(topics: Self.library.topics, pool: approved, progress: LearnerProgress())
+        var refs = Self.library.town.kart.flatMap(\.folk).compactMap(\.fagkontor)
+        refs.append(FagkontorRef(id: "tom", navn: "Tomt", temaer: ["finnes-ikke"]))
+        refs.append(FagkontorRef(id: "fixture", navn: "Fixture", temaer: ["mva"]))
+        for ref in refs {
+            XCTAssertEqual(TownTrials.fagkontorReady(ref, regions: regions),
+                           TownTrials.fagkontorRegion(ref, pool: approved, progress: LearnerProgress()) != nil, ref.id)
+        }
+        XCTAssertFalse(TownTrials.fagkontorReady(refs.last!, regions: regions.map { r in
+            Region(tema: r.tema, navn: r.navn, rekkefolge: r.rekkefolge, theme: r.theme, puzzles: Array(r.puzzles.prefix(2)), gymLeader: nil, caught: 0, mastered: 0, unlocked: true, gymBadge: nil)
+        }))
     }
 
     func testFagkontorOpensWhenEveryThemeReachedItsTarget() {

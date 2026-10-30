@@ -1,0 +1,24 @@
+{
+  "id": "valutakontoret",
+  "navn": "Valutakontoret",
+  "bydel": "bryggen",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "bryggen", "tilX": 18, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "fagkontor-valuta", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "valuta", "navn": "Valutakontoret", "temaer": ["valuta-korrigeringer"]}, "tekst": ["Jeg leder Valutakontoret. Her prøves kursforskjeller og rettelser."] },
+    { "id": "folk-valuta", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Kursen er aldri den samme to dager."] }
+  ]
+}

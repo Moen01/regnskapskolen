@@ -42,17 +42,20 @@ final class BattleScriptTests: XCTestCase {
         XCTAssertEqual(BattleScript.intro(encounter(context: .fagkontor(name: "MVA-kontoret"))), ["MVA-kontoret vil teste deg!", "Kontantsalg av en tjeneste"])
         let correction = BattleScript.intro(encounter(context: .correction(client: "k", day: day)))
         XCTAssertEqual(correction.count, 1, "one page")
-        if name.count <= 8 {
-            XCTAssertEqual(TextWrap.lines(correction[0], columns: 18), ["Avstemmingen går", "ikke opp: \(name)", "07.03."])
-        }
+        let correctionLines = TextWrap.lines(correction[0], columns: DialogBox.columns)
+        XCTAssertEqual(correctionLines.joined(separator: " "), "Avstemmingen går ikke opp: \(name) 07.03.")
+        XCTAssertLessThanOrEqual(correctionLines.count, 2)
+        XCTAssertEqual(BattleScript.intro(encounter(context: .kundesak(client: "k", name: "KAFÉ"))), ["KAFÉ lurer på noe!", "Kontantsalg av en tjeneste"])
         let e = encounter()
-        XCTAssertEqual(BattleScript.result(.booked, encounter: e).map { TextWrap.lines($0, columns: 18) }, [["Bilaget er", "bokført."]])
+        XCTAssertEqual(BattleScript.result(.answered(ok: true), encounter: e), ["Kunden er fornøyd."])
+        XCTAssertEqual(BattleScript.result(.answered(ok: false), encounter: e), ["Det stemte ikke."])
+        XCTAssertEqual(BattleScript.result(.booked, encounter: e).map { TextWrap.lines($0, columns: DialogBox.columns) }, [["Bilaget er bokført."]])
         XCTAssertEqual(BattleScript.result(.corrected(ok: true), encounter: e), ["Feilen er rettet."])
-        XCTAssertEqual(BattleScript.result(.corrected(ok: false), encounter: e).map { TextWrap.lines($0, columns: 18) },
-                       [["Fortsatt feil.", "Kunden er mindre", "fornøyd."]])
+        XCTAssertEqual(BattleScript.result(.corrected(ok: false), encounter: e).map { TextWrap.lines($0, columns: DialogBox.columns) },
+                       [["Fortsatt feil. Kunden er mindre", "fornøyd."]])
     }
 
-    func testScriptLinesFitEighteenColumns() throws {
+    func testScriptLinesFitTheDialogBox() throws {
         // The longest species name the generator makes, so the correction intro is tested at its widest.
         let longest = try XCTUnwrap((0..<2000).map { "mva-quiz-\($0)" }.first { SpeciesName.name(for: $0).count == SpeciesName.maxLength })
         let day = DayKey(year: 2026, month: 12, day: 31)
@@ -60,19 +63,59 @@ final class BattleScriptTests: XCTestCase {
         for context in contexts {
             let pages = BattleScript.intro(encounter(id: longest, context: context))
             for page in pages {
-                let lines = TextWrap.lines(page, columns: 18)
-                XCTAssertTrue(lines.allSatisfy { $0.count <= 18 }, "\(context): \(lines)")
+                let lines = TextWrap.lines(page, columns: DialogBox.columns)
+                XCTAssertTrue(lines.allSatisfy { $0.count <= DialogBox.columns }, "\(context): \(lines)")
                 if case .correction = context {
-                    XCTAssertLessThanOrEqual(lines.count, 3, "one dialog page: \(lines)")
+                    XCTAssertLessThanOrEqual(lines.count, DialogBox.rows, "one dialog page: \(lines)")
                     XCTAssertTrue(lines.joined(separator: " ").contains(SpeciesName.name(for: longest)), "wrapped, not cut: \(lines)")
                 }
             }
         }
         for outcome: EncounterOutcome in [.booked, .corrected(ok: true), .corrected(ok: false)] {
             for page in BattleScript.result(outcome, encounter: encounter(id: longest)) {
-                let lines = TextWrap.lines(page, columns: 18)
-                XCTAssertTrue(lines.allSatisfy { $0.count <= 18 } && lines.count <= 3, "\(outcome): \(lines)")
+                let lines = TextWrap.lines(page, columns: DialogBox.columns)
+                XCTAssertTrue(lines.allSatisfy { $0.count <= DialogBox.columns } && lines.count <= DialogBox.rows, "\(outcome): \(lines)")
             }
+        }
+    }
+
+    func testAuditErrorIntro() {
+        let day = DayKey(year: 2026, month: 3, day: 14)
+        let species = SpeciesName.name(for: "mva-quiz-01")
+        XCTAssertEqual(BattleScript.intro(encounter(context: .auditError(client: "k", name: "KAFÉ", day: day))), ["Åpen feil hos KAFÉ: \(species) 14.03."])
+    }
+
+    func testExaminerIntro() {
+        let title = "Kontantsalg av en tjeneste"
+        XCTAssertEqual(BattleScript.intro(encounter(context: .examiner(name: "Kontrollør Aas", first: true))), ["Kontrollør Aas tar over!", title])
+        XCTAssertEqual(BattleScript.intro(encounter(context: .examiner(name: "Kontrollør Aas", first: false))), ["Kontrollør Aas spør videre.", title])
+    }
+
+    func testAuditResults() {
+        let day = DayKey(year: 2026, month: 3, day: 14)
+        let error = encounter(context: .auditError(client: "k", name: "KAFÉ", day: day))
+        let examiner = encounter(context: .examiner(name: "Aas", first: true))
+        XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: error), ["Feilen er rettet."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_000), encounter: error), ["Feilen står.", "Tilliten falt med 1 000 kr."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: examiner), ["Ingen merknad."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_500), encounter: examiner), ["Merknad!", "Tilliten falt med 1 500 kr."])
+    }
+
+    func testAuditLinesFitTheBox() throws {
+        let longest = try XCTUnwrap((0..<2000).map { "mva-quiz-\($0)" }.first { SpeciesName.name(for: $0).count == SpeciesName.maxLength })
+        let day = DayKey(year: 2026, month: 12, day: 31)
+        var pages: [String] = []
+        for context: EncounterContext in [.auditError(client: "k", name: "SPAREBANKEN", day: day), .examiner(name: "Kontrollør Johannessen", first: true), .examiner(name: "Sensor Johannessen", first: false)] {
+            let e = encounter(id: longest, context: context)
+            pages += BattleScript.intro(e)
+            for outcome: EncounterOutcome in [.audited(ok: true, hpLost: 0), .audited(ok: false, hpLost: 10_000)] { pages += BattleScript.result(outcome, encounter: e) }
+        }
+        pages += TownFlow.auditResultTexts(won: true, year: 2026, today: day, standing: 0, newBadge: true)
+        pages += TownFlow.auditResultTexts(won: false, year: 2026, today: day, standing: 10, newBadge: false)
+        pages += TownFlow.auditResultTexts(won: true, year: 2026, today: day, standing: 10, newBadge: true)
+        for page in pages {
+            let lines = TextWrap.lines(page, columns: DialogBox.columns)
+            XCTAssertTrue(lines.allSatisfy { $0.count <= DialogBox.columns } && lines.count <= DialogBox.rows, "\(lines)")
         }
     }
 

@@ -1,0 +1,21 @@
+{
+  "id": "kaikanten-radgivning",
+  "navn": "Kaikanten Rådgivning AS",
+  "bransje": "konsulent",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 0,
+  "mvaTermin": "aarlig",
+  "sted": { "kart": "radgivning", "x": 4, "y": 2 },
+  "oppgaver": ["periodisering-postering-004", "periodisering-postering-003", "periodisering-postering-005", "arsoppgjor-postering-001", "arsoppgjor-sorter-001", "arsoppgjor-frist-001", "arsoppgjor-frist-003", "perioder-frist-mva-aarlig-2026", "periodisering-regnut-001"],
+  "provesak": ["arsoppgjor-quiz-001", "periodisering-quiz-001", "arsoppgjor-frist-002"],
+  "replikker": {
+    "hilsen": ["God dag. Vi hjelper bedrifter med strategi."],
+    "drift": ["Vi fakturerer prosjekter over nyttår."],
+    "haug": ["Prosjektavtalene og fakturaene ligger her."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det var uheldig."],
+    "oppdagetFeil": ["Revisoren så en gammel feil i prosjektene."]
+  },
+  "status": "utkast"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "arsoppgjorskontoret",
+  "navn": "Årsoppgjørskontor",
+  "bydel": "bryggen",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "bryggen", "tilX": 18, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "fagkontor-arsoppgjor", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "arsoppgjor", "navn": "Årsoppgjørskontor", "temaer": ["arsoppgjor", "resultat-balanse"]}, "tekst": ["Jeg leder kontoret for årsoppgjør. Her prøves resultat, balanse og årsoppgjør."] },
+    { "id": "folk-arsoppgjor", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Året går. Tallene blir igjen."] }
+  ]
+}

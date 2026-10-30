@@ -1,6 +1,7 @@
 {
   "id": "legekontoret",
   "navn": "Legekontoret",
+  "bydel": "sentrum",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [

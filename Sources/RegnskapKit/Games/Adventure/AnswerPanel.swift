@@ -4,8 +4,8 @@ import Foundation
 /// driven by Game Boy keys. Pure state: the view draws `rows`, `cursor`, `entry`; the app hands
 /// keys in and reads the event out. The attempt is kept in step with what the learner did.
 public struct AnswerPanel: Hashable, Sendable {
-    public static let columns = 17
-    public static let visibleRows = 6
+    public static let columns = ListBox.columns
+    public static let visibleRows = ListBox.rows(in: ListBox.windowRowSpace)
 
     enum Mode: Hashable, Sendable {
         case list                       // quiz, sak, mva treatment
@@ -279,7 +279,7 @@ public struct AnswerPanel: Hashable, Sendable {
         if case .posting(let lines) = attempt { lines } else { [] }
     }
 
-    /// `1920 Bank  D 2500` in 17 columns: the name gives way so the amount always fits.
+    /// `1920 Bank  D 2500` in the list's columns: the name gives way so the amount always fits.
     public static func format(line: PostingAttemptLine, accounts: [AccountOption]) -> String {
         guard !line.konto.isEmpty else { return "---- (tom)" }
         let side = line.debet != nil ? "D" : (line.kredit != nil ? "K" : " ")

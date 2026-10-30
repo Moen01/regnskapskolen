@@ -79,3 +79,31 @@ public struct SandboxCase: Codable, Hashable, Sendable, Identifiable {
         }
     }
 }
+
+/// What an entrance to a sandbox case does: the town's sandbox people and the bank region's
+/// dungeon share it, so neither ever wipes a half-done case.
+public enum SandboxEntrance: Equatable, Sendable {
+    /// The case is the active one: show the sandbox as it is.
+    case show
+    /// Start the case on the empty journal.
+    case start
+    /// The journal holds entries of another case; the player empties it first.
+    case busy
+    /// No case has the id.
+    case missing
+
+    public static func decide(caseId: String, activeCaseId: String?, journalEmpty: Bool, exists: Bool) -> SandboxEntrance {
+        if activeCaseId == caseId { return .show }
+        guard journalEmpty else { return .busy }
+        return exists ? .start : .missing
+    }
+
+    /// The lines that tell why the sandbox did not open; empty when it opens.
+    public var texts: [String] {
+        switch self {
+        case .show, .start: []
+        case .busy: ["Sandkassen har en annen sak.", "Tøm den først."]
+        case .missing: ["Saken finnes ikke ennå."]
+        }
+    }
+}

@@ -89,6 +89,27 @@ final class BilagRunTests: XCTestCase {
         XCTAssertEqual(run.phase, .finished)
     }
 
+    func testStepChangesOnEveryEncounterEvenWithTheSamePuzzle() throws {
+        let puzzle = try XCTUnwrap(quizzes(1).first)
+        // The same bilag booked wrong in two years: both errors come back in one run.
+        let errors = [jan, MonthKey(year: 2027, month: 1)].map {
+            OpenError(puzzleId: puzzle.id, client: client.id, month: $0, day: $0.first, boxBefore: 2)
+        }
+        var run = BilagRun(client: client, puzzles: [puzzle], kind: .correction, errors: errors, bransjeCards: mvaCards, otherCards: otherCards, seed: 1)
+        XCTAssertEqual(run.step, 1)
+        run.choose(nil)
+        _ = try XCTUnwrap(run.answer(right(puzzle), progress: LearnerProgress(), today: today))
+        run.proceed()
+        XCTAssertEqual(run.current?.puzzle.id, puzzle.id)
+        XCTAssertEqual(run.currentError, errors[1])
+        XCTAssertEqual(run.step, 2)
+        run.choose(nil)
+        _ = try XCTUnwrap(run.answer(right(puzzle), progress: LearnerProgress(), today: today))
+        run.proceed()
+        XCTAssertEqual(run.phase, .finished)
+        XCTAssertEqual(run.step, 2)
+    }
+
     func testEmptyPileIsFinishedAtOnce() {
         let run = booking([])
         XCTAssertNil(run.current)

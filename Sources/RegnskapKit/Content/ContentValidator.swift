@@ -16,7 +16,7 @@ public enum ContentValidator {
             let messages = validate(puzzle, library: library)
             return messages.isEmpty ? nil : ContentProblem(id: puzzle.id, file: puzzle.sourceURL?.lastPathComponent, messages: messages)
         }
-        return puzzleProblems + validateTown(library.town, library: library)
+        return puzzleProblems + validateTown(library.town, library: library) + validateTownCoverage(library.town, library: library)
     }
 
     public static func validate(_ puzzle: Puzzle, library: ContentLibrary) -> [String] {

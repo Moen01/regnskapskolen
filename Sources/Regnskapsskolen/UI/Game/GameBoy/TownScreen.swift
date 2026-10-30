@@ -2,10 +2,11 @@ import RegnskapKit
 import SwiftUI
 
 /// Rubin's overworld on the handheld: the map around the player, the people, and over it the
-/// dialog, the menu, Fristnav, the portfolio, the counter or a JA/NEI choice. `TownFlow` owns the
+/// dialog, the menu, Fristnav, the portfolio, the bag, the counter or a JA/NEI choice. `TownFlow` owns the
 /// phases; this view draws them and sends every key to the store.
 struct TownScreen: View {
     @Environment(AppStore.self) private var store
+    @Environment(Navigation.self) private var navigation
     /// Whether the dialog has typed out its page; Enter and space first reveal, then advance.
     @State private var dialogComplete = true
     @State private var reveal = 0
@@ -20,6 +21,12 @@ struct TownScreen: View {
             }
         }
         .onAppear { store.openTown() }
+        // A sandbox entrance asks for the sandbox; the store cannot move the window's section itself.
+        .onChange(of: store.pendingSection) {
+            guard let section = store.pendingSection else { return }
+            store.pendingSection = nil
+            navigation.section = section
+        }
     }
 
     @ViewBuilder
@@ -30,10 +37,10 @@ struct TownScreen: View {
         case .dialog:
             dialog(flow, marker: true)
         case .menu:
-            TownDateBox(day: flow.state.calendar.today)
-            TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 64, width: 96, onClick: { click($0, flow) })
+            TownDateBox(day: flow.state.calendar.today, energy: flow.state.energy)
+            TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 100, width: 60, onClick: { click($0, flow) })
             dialog(flow, marker: false)
-        case .fristnav, .portfolio, .counter:
+        case .fristnav, .travel, .portfolio, .bag, .cards, .counter, .archive:
             TownListBox(title: title(flow.phase), rows: flow.rows, cursor: flow.cursor, x: 4, width: 152, onClick: { click($0, flow) })
             dialog(flow, marker: false)
         case .choice:
@@ -52,7 +59,11 @@ struct TownScreen: View {
     private func title(_ phase: TownPhase) -> String {
         switch phase {
         case .fristnav: "FRISTNAV"
+        case .travel: "KART"
         case .portfolio: "PORTEFØLJE"
+        case .bag: "BAG"
+        case .cards: "REGELKORT"
+        case .archive: "ARKIV"
         default: "SKRANKE"
         }
     }
@@ -107,40 +118,35 @@ private struct TownMapView: View {
     /// The player's square on screen: column 4 of 10, row 4 of 9.
     private static let playerSquare = 4
 
-    /// Tiles: slot 0 is the screen's lightest colour. Sprites: slot 0 is transparent, 3 is lightest.
-    private static let tileColors: [Color] = [GBPalette.lightest, GBPalette.darkest, GBPalette.dark, GBPalette.light]
-    private static let spriteColors: [Color?] = [nil, GBPalette.darkest, GBPalette.dark, GBPalette.lightest]
-
     var body: some View {
         Canvas { context, _ in
             let camera = (x: Self.axis(walker.x, tiles: map.bredde, view: Self.screen.width),
                           y: Self.axis(walker.y, tiles: map.hoyde, view: Self.screen.height))
             context.fill(Path(CGRect(x: 0, y: 0, width: CGFloat(Self.screen.width) * scale, height: CGFloat(Self.screen.height) * scale)),
-                         with: .color(GBPalette.darkest))
-            var ground = Array(repeating: Path(), count: 4)
+                         with: .color(GBTheme.mapVoid))
+            var ground = Layers()
             for ty in 0..<map.hoyde {
                 for tx in 0..<map.bredde {
                     let px = tx * Self.tile - camera.x, py = ty * Self.tile - camera.y
                     guard px > -Self.tile, px < Self.screen.width, py > -Self.tile, py < Self.screen.height, let tile = map.tile(x: tx, y: ty) else { continue }
-                    plot(TileSprite.sprite(for: tile), x: px, y: py, into: &ground, opaque: true)
+                    plot(TileSprite.sprite(for: tile), palette: GBTheme.palette(for: tile, district: map.bydel), x: px, y: py, into: &ground, opaque: true)
                 }
             }
-            for (slot, path) in ground.enumerated() { context.fill(path, with: .color(Self.tileColors[slot])) }
+            ground.draw(in: context)
 
-            var figures = Array(repeating: Path(), count: 4)
+            var figures = Layers()
             for spot in piles {
-                plot(TileSprite.paperPile, x: spot.x * Self.tile - camera.x, y: spot.y * Self.tile - camera.y, into: &figures, opaque: false)
+                plot(TileSprite.paperPile, palette: GBTheme.paper, x: spot.x * Self.tile - camera.x, y: spot.y * Self.tile - camera.y,
+                     into: &figures, opaque: false)
             }
             for person in map.folk {
                 let sprite = TileSprite.object(person.rolle) ?? TileSprite.person(person.rolle, facing: .down)
-                plot(sprite, x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y, into: &figures, opaque: false)
+                plot(sprite, palette: GBTheme.palette(for: person.rolle, district: map.bydel), x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y,
+                     into: &figures, opaque: false)
             }
-            plot(TileSprite.player(facing: walker.facing, frame: step), x: walker.x * Self.tile - camera.x, y: walker.y * Self.tile - camera.y,
-                 into: &figures, opaque: false)
-            for (slot, path) in figures.enumerated() {
-                guard let color = Self.spriteColors[slot] else { continue }
-                context.fill(path, with: .color(color))
-            }
+            plot(TileSprite.player(facing: walker.facing, frame: step), palette: GBTheme.player,
+                 x: walker.x * Self.tile - camera.x, y: walker.y * Self.tile - camera.y, into: &figures, opaque: false)
+            figures.draw(in: context)
         }
         .frame(width: CGFloat(Self.screen.width) * scale, height: CGFloat(Self.screen.height) * scale)
     }
@@ -152,9 +158,9 @@ private struct TownMapView: View {
         return min(max(position * tile - playerSquare * tile, 0), size - view)
     }
 
-    /// Adds the sprite's pixels at (x, y) to the path of their slot, one rectangle per run of equal
-    /// pixels in a row, cut to the screen. `opaque` draws slot 0 too (tiles cover their square).
-    private func plot(_ sprite: PixelSprite, x: Int, y: Int, into paths: inout [Path], opaque: Bool) {
+    /// Adds the sprite's pixels at (x, y) to the path of their palette and slot, one rectangle per run
+    /// of equal pixels in a row, cut to the screen. `opaque` draws slot 0 too (tiles cover their square).
+    private func plot(_ sprite: PixelSprite, palette: SpritePalette, x: Int, y: Int, into layers: inout Layers, opaque: Bool) {
         for (row, pixels) in sprite.pixels.enumerated() {
             let sy = y + row
             guard sy >= 0, sy < Self.screen.height else { continue }
@@ -165,7 +171,8 @@ private struct TownMapView: View {
                 while end < pixels.count, pixels[end] == slot { end += 1 }
                 let from = max(0, x + start), to = min(Self.screen.width, x + end)
                 if (opaque || slot != 0), from < to {
-                    paths[Int(slot)].addRect(CGRect(x: CGFloat(from) * scale, y: CGFloat(sy) * scale, width: CGFloat(to - from) * scale, height: scale))
+                    layers.add(CGRect(x: CGFloat(from) * scale, y: CGFloat(sy) * scale, width: CGFloat(to - from) * scale, height: scale),
+                               palette: palette, slot: slot)
                 }
                 start = end
             }
@@ -173,18 +180,48 @@ private struct TownMapView: View {
     }
 }
 
-/// The game's date top left while the menu is open.
-private struct TownDateBox: View {
-    let day: DayKey
+/// One path per palette and slot, so a screen of tiles is a few dozen fills. Palettes draw in the
+/// order they first appear, so the player, added last, stays on top.
+private struct Layers {
+    private var order: [SpritePalette] = []
+    private var paths: [SpritePalette: [Path]] = [:]
 
-    var body: some View {
-        GBBox(x: 4, y: 4, width: 56, height: 22, padding: 7) {
-            GBText(String(format: "%02d.%02d", day.day, day.month))
+    mutating func add(_ rect: CGRect, palette: SpritePalette, slot: UInt8) {
+        if paths[palette] == nil {
+            order.append(palette)
+            paths[palette] = Array(repeating: Path(), count: 4)
+        }
+        paths[palette]?[Int(slot)].addRect(rect)
+    }
+
+    func draw(in context: GraphicsContext) {
+        for palette in order {
+            for (slot, path) in (paths[palette] ?? []).enumerated() {
+                guard let color = palette.color(UInt8(slot)) else { continue }
+                context.fill(path, with: .color(color))
+            }
         }
     }
 }
 
-/// A list over the map: the menu (no title), Fristnav, the portfolio or the counter.
+/// The game's date and the player's energy top left while the menu is open. Two lines: «10.04 E 85»
+/// on one would not fit beside the menu.
+private struct TownDateBox: View {
+    @Environment(\.gbScale) private var scale
+    let day: DayKey
+    let energy: Int
+
+    var body: some View {
+        GBBox(x: 4, y: 4, width: 56, height: 32, padding: 7) {
+            VStack(alignment: .leading, spacing: 2 * scale) {
+                GBText(String(format: "%02d.%02d", day.day, day.month))
+                GBText("E \(energy)")
+            }
+        }
+    }
+}
+
+/// A list over the map: the menu (no title), Fristnav, the portfolio, the bag or the counter.
 private struct TownListBox: View {
     @Environment(\.gbScale) private var scale
     let title: String?
@@ -194,7 +231,8 @@ private struct TownListBox: View {
     let width: CGFloat
     let onClick: (Int) -> Void
 
-    private var visibleCount: Int { title == nil ? TownFlow.mainMenu.count : AnswerPanel.visibleRows }
+    /// The menu shows all its rows; a titled list fills the 90 px box under its 8 px title (5 px padding).
+    private var visibleCount: Int { title == nil ? TownFlow.mainMenu.count : ListBox.rows(in: 90 - 2 * 5 - (8 + 2)) }
 
     private var visible: Range<Int> {
         let start = min(max(0, cursor - visibleCount + 1), max(0, rows.count - visibleCount))
@@ -202,12 +240,12 @@ private struct TownListBox: View {
     }
 
     var body: some View {
-        let height: CGFloat = title == nil ? CGFloat(visibleCount * 12 + 10) : 90
+        let height: CGFloat = title == nil ? CGFloat(visibleCount * ListBox.rowHeight + 10) : 90
         GBBox(x: x, y: 4, width: width, height: height, padding: 5) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 if let title { GBText(title) }
                 if rows.isEmpty {
-                    GBText("Ingen her.", color: GBPalette.dark)
+                    GBText("Ingen her.", color: GBTheme.textDim)
                 } else {
                     GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
                 }
@@ -216,14 +254,14 @@ private struct TownListBox: View {
     }
 }
 
-/// JA / NEI above the dialog's right corner.
+/// JA / NEI above the dialog's right corner: two rows and 5 px padding, ending where the dialog starts at y 112.
 private struct TownChoiceBox: View {
     let rows: [PanelRow]
     let cursor: Int
     let onClick: (Int) -> Void
 
     var body: some View {
-        GBBox(x: 104, y: 60, width: 56, height: 36, padding: 5) {
+        GBBox(x: 120, y: 112 - CGFloat(2 * ListBox.rowHeight + 10), width: 40, height: CGFloat(2 * ListBox.rowHeight + 10), padding: 5) {
             GBList(rows: rows, cursor: cursor, visible: rows.indices, onClick: onClick)
         }
     }

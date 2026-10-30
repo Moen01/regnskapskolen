@@ -63,14 +63,19 @@ final class TownFlowTests: XCTestCase {
         _ = f.key(.down)
         _ = f.key(.down)
         XCTAssertEqual(f.cursor, 2)
+        XCTAssertEqual(f.key(.a), .none)
+        XCTAssertEqual(f.phase, .bag)
+        _ = f.key(.b)
+        _ = f.key(.a)
+        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
         XCTAssertEqual(f.key(.a), .openCollection)
         XCTAssertEqual(f.phase, .walking)
         _ = f.key(.a)
-        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
+        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
         XCTAssertEqual(f.key(.a), .openTraining)
         _ = f.key(.a)
         for _ in 0..<10 { _ = f.key(.down) }
-        XCTAssertEqual(f.cursor, 4)
+        XCTAssertEqual(f.cursor, 5)
         XCTAssertEqual(f.key(.a), .save)
     }
 
@@ -123,8 +128,8 @@ final class TownFlowTests: XCTestCase {
         while g.rows[g.cursor].id != "konsulenten" { _ = g.key(.down) }
         _ = g.key(.a)
         let card = text(g)
-        // "Konsulentvirksomhet" is 19 characters, so TextWrap cuts it with a hyphen.
-        XCTAssertTrue(card.contains("Konsulentvirksomh-"), card)
+        // "Konsulentvirksomhet" is 19 characters: whole in the 36-column dialog.
+        XCTAssertTrue(card.contains("Konsulentvirksomhet"), card)
         XCTAssertTrue(card.contains("Ikke mva-registrert"), card)
         XCTAssertTrue(card.contains("Mva-terminer og frister"), card)
     }
@@ -205,7 +210,9 @@ final class TownFlowTests: XCTestCase {
         XCTAssertEqual(g.key(.a), .none)
         XCTAssertEqual(g.state.clients["butikken"]!.closedMonths, [jan])
         XCTAssertEqual(g.phase, .dialog)
-        XCTAssertEqual(readDialog(&g), .none)
+        // The close costs an action like a correction: the app spends it when the dialog ends.
+        XCTAssertEqual(readDialog(&g), .closedMonth(client: "butikken", month: jan))
+        XCTAssertTrue(TownAction.closedMonth(client: "butikken", month: jan).spendsAction)
         XCTAssertEqual(g.phase, .walking)
 
         // An open error sends the player to correct it instead.
@@ -231,8 +238,8 @@ final class TownFlowTests: XCTestCase {
         var g = flow(s)
         _ = g.key(.a)
         XCTAssertEqual(g.phase, .counter)
-        // "BAKEREN LEVER MVA1" is 18 columns: the name is cut, never the term.
-        XCTAssertEqual(g.rows.map(\.text), ["BAKER… LEVER MVA1"])
+        // "BAKEREN LEVER MVA1" fits the list row whole.
+        XCTAssertEqual(g.rows.map(\.text), ["BAKEREN LEVER MVA1"])
         XCTAssertEqual(g.rows.map(\.full), ["Lever 10.04 MVA 1. TERMIN for Bakeren AS"])
         XCTAssertEqual(g.key(.a), .deliver(client: "butikken", kind: .mva(termin: 1, year: 2026)))
         XCTAssertEqual(g.phase, .walking)
@@ -241,6 +248,72 @@ final class TownFlowTests: XCTestCase {
         var h = flow(s)
         _ = h.key(.a)
         XCTAssertEqual(h.phase, .dialog)
+    }
+
+    // MARK: Counter, payroll
+
+    /// The fixture café has three staff and pay day on the 20th; the shop stays out of the way.
+    func counterRows(_ s: TownState) -> [String] {
+        var f = flow(s)
+        _ = f.key(.a)
+        return f.phase == .counter ? f.rows.map(\.text).filter { $0.hasPrefix("KAFÉ") } : []
+    }
+
+    func cafeState(today: DayKey) -> TownState {
+        var s = state(x: 1, y: 3, today: today)
+        s.clients["kafeen"]!.status = .active
+        return s
+    }
+
+    func testCounterOffersTrekkFromPayDay() {
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 19))), [])
+        // No month has to be closed for withholding.
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 20))), ["KAFÉ LEVER TREKK1"])
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 21))), ["KAFÉ LEVER TREKK1"])
+    }
+
+    func testAmeldingNeedsTheMonthClosed() {
+        var s = cafeState(today: day(2, 1))
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01"]
+        bookAll(&s, client: "kafeen", month: jan)
+        XCTAssertEqual(counterRows(s), ["KAFÉ LUKK JAN"], "January is still open: no a-melding row")
+        s.clients["kafeen"]!.closedMonths = [jan]
+        XCTAssertEqual(counterRows(s), ["KAFÉ LEVER AMELD1"])
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 31))).filter { $0.contains("AMELD") }, [])
+    }
+
+    func testAgaNeedsBothMonthsClosed() {
+        var s = cafeState(today: day(3, 2))
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01", "trekk-2026-02"]
+        s.clients["kafeen"]!.closedMonths = [jan]
+        XCTAssertFalse(counterRows(s).contains("KAFÉ LEVER AGA1"), "February is open")
+        s.clients["kafeen"]!.closedMonths = [jan, feb]
+        XCTAssertTrue(counterRows(s).contains("KAFÉ LEVER AGA1"), "\(counterRows(s))")
+    }
+
+    func testMissedTrekkCostsTwentyFive() {
+        var s = cafeState(today: day(1, 19))
+        let before = s.clients["kafeen"]!.satisfaction
+        var missed: [TownDeadline] = []
+        while s.calendar.today <= day(1, 21) { missed += s.sleep(content: Self.town, deadlines: Self.library.deadlines, pool: []) }
+        XCTAssertEqual(missed.filter { $0.client == "kafeen" }.map(\.kind.id), ["trekk-2026-01"])
+        XCTAssertEqual(s.clients["kafeen"]!.missed, ["trekk-2026-01"])
+        XCTAssertEqual(s.clients["kafeen"]!.satisfaction, before + TownRules.missedDeadline)
+        XCTAssertEqual(s.checkMissed(content: Self.town, deadlines: Self.library.deadlines), [], "counted once")
+    }
+
+    func testFristnavListsPayrollAndLeavesOutDeliveredOnes() {
+        var s = cafeState(today: day(1, 18))
+        s.walker = TownWalker(x: 3, y: 3, facing: .left)
+        var f = flow(s)
+        _ = f.key(.a)
+        _ = f.key(.a)
+        XCTAssertEqual(f.rows.map(\.text), ["21.01 TREKK1 KAFÉ", "KART"])
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01"]
+        var g = flow(s)
+        _ = g.key(.a)
+        XCTAssertEqual(g.key(.a), .none)
+        XCTAssertEqual(g.rows.map(\.id), ["kart"])
     }
 
     // MARK: Fristnav
@@ -252,16 +325,16 @@ final class TownFlowTests: XCTestCase {
             _ = f.key(.a)
             XCTAssertEqual(f.key(.a), .none)
             XCTAssertEqual(f.phase, .fristnav)
-            XCTAssertEqual(f.rows.count, 1)
-            XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKER…")
+            XCTAssertEqual(f.rows.count, 2)
+            XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKEREN")
             XCTAssertEqual(f.rows[0].full, "10.04 MVA 1. TERMIN Bakeren AS")
             XCTAssertEqual(f.rows[0].marked, marked, "\(today)")
-            XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= 17 })
+            XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= ListBox.columns })
         }
         var empty = flow(state(x: 3, y: 3, facing: .left, today: day(1, 5)))
         _ = empty.key(.a)
         _ = empty.key(.a)
-        XCTAssertEqual(empty.rows, [])
+        XCTAssertEqual(empty.rows.map(\.id), ["kart"])
         XCTAssertFalse(text(empty).isEmpty)
         XCTAssertEqual(empty.key(.b), .none)
         XCTAssertEqual(empty.phase, .walking)
@@ -294,26 +367,55 @@ final class TownFlowTests: XCTestCase {
         XCTAssertEqual(readDialog(&done), .none)
     }
 
+    func testOfficeWithTooFewVisiblePuzzlesIsUnderConstruction() throws {
+        let pool = Self.library.pool(includeDrafts: false).filter { $0.tema != "mva" } + Array(Self.library.pool(includeDrafts: false).filter { $0.tema == "mva" }.prefix(2))
+        let thin = Regions.build(topics: Self.library.topics, pool: pool, progress: LearnerProgress())
+        var f = TownFlow(content: Self.town, state: state(x: 5, y: 2), deadlines: Self.library.deadlines, pool: Self.pool, regions: thin,
+                         damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.key(.a)
+        XCTAssertTrue(text(f).contains("Kontoret er under bygging."), text(f))
+        XCTAssertFalse(text(f).contains("GYM"))
+        XCTAssertEqual(readDialog(&f), .none)
+        XCTAssertEqual(f.phase, .walking, "no choice follows")
+    }
+
+    func testGymLinesSkipEmptyTopics() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        let url = folder.appendingPathComponent("kart/kontoret.json")
+        var json = try String(contentsOf: url, encoding: .utf8)
+        json = json.replacingOccurrences(of: "\"temaer\": [\"mva\"]", with: "\"temaer\": [\"mva\", \"lonn\", \"kontoplan\"]")
+        try json.write(to: url, atomically: true, encoding: .utf8)
+        let town = try TownContent.load(folder: folder)
+        let pool = Self.library.pool(includeDrafts: false).filter { $0.tema != "kontoplan" }
+        let regions = Regions.build(topics: Self.library.topics, pool: pool, progress: LearnerProgress())
+        XCTAssertTrue(try XCTUnwrap(regions.first { $0.tema == "kontoplan" }).isEmpty)
+        var f = TownFlow(content: town, state: state(x: 5, y: 2), deadlines: Self.library.deadlines, pool: Self.pool, regions: regions,
+                         damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.key(.a)
+        XCTAssertEqual(text(f).components(separatedBy: "GYM").count - 1, 2, text(f))
+    }
+
     // MARK: Width
 
     func testClientRowCutsTheNameNotTheDeadline() {
-        let annual = TownFlow.clientRow(id: "x", name: "LEGEKONTORET", detail: "LEVER MVAÅR", nameFirst: true, full: "full")
-        XCTAssertEqual(annual.text, "LEGE… LEVER MVAÅR")
+        let annual = TownFlow.clientRow(id: "x", name: "LEGEKONTORET OG TANNKLINIKKEN", detail: "LEVER MVAÅR", nameFirst: true, full: "full")
+        XCTAssertEqual(annual.text, "LEGEKONTORET OG TANNK… LEVER MVAÅR")
         XCTAssertLessThanOrEqual(annual.text.count, TownFlow.rowColumns)
         XCTAssertEqual(annual.full, "full")
         XCTAssertEqual(TownFlow.clientRow(id: "x", name: "KAFÉ", detail: "10.04 MVA1", nameFirst: false, full: "").text, "10.04 MVA1 KAFÉ")
     }
 
 
-    func testEveryPageLineFitsEighteen() throws {
+    func testEveryPageLineFitsTheDialogBox() throws {
         var seen: [[[String]]] = []
         func check(_ f: TownFlow, _ label: String) {
             seen.append(f.pages)
             for page in f.pages {
-                XCTAssertLessThanOrEqual(page.count, 3, "\(label): \(page)")
-                for line in page { XCTAssertLessThanOrEqual(line.count, 18, "\(label): «\(line)»") }
+                XCTAssertLessThanOrEqual(page.count, DialogBox.rows, "\(label): \(page)")
+                for line in page { XCTAssertLessThanOrEqual(line.count, DialogBox.columns, "\(label): «\(line)»") }
             }
-            for row in f.rows { XCTAssertLessThanOrEqual(row.text.count, 17, "\(label): row «\(row.text)»") }
+            for row in f.rows { XCTAssertLessThanOrEqual(row.text.count, ListBox.columns, "\(label): row «\(row.text)»") }
         }
         /// Talks to the person, reads every page, then tries each choice row.
         func talkThrough(_ start: TownFlow, _ person: TownPerson) {

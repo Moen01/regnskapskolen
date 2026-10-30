@@ -13,7 +13,7 @@ public struct TrialScore: Hashable, Sendable {
         case .caught, .repeated: wins += 1
         case .escaped: losses += 1
         // Town bilag outcomes never come from a trial run.
-        case .booked, .corrected: break
+        case .booked, .corrected, .answered, .audited: break
         }
     }
 
@@ -37,11 +37,22 @@ public enum TownTrials {
     /// The three hardest puzzles in the fagkontor's topics: edge cases first, then vanskelighet,
     /// then id, each highest first. Nil when the topics have fewer than three.
     public static func fagkontorRegion(_ ref: FagkontorRef, pool: [Puzzle], progress: LearnerProgress) -> Region? {
-        let ranked = pool.filter { ref.temaer.contains($0.tema) }.sorted { a, b in
+        let top = ranked(ref.temaer, pool: pool)
+        guard top.count >= fagkontorSize else { return nil }
+        return region(tema: fagkontorPrefix + ref.id, navn: ref.navn, puzzles: Array(top.prefix(fagkontorSize)), progress: progress)
+    }
+
+    /// The puzzles in the topics, hardest first: edge cases, then vanskelighet, then id, each highest first.
+    static func ranked(_ temaer: [String], pool: [Puzzle]) -> [Puzzle] {
+        pool.filter { temaer.contains($0.tema) }.sorted { a, b in
             (a.isEdgeCase ? 1 : 0, a.vanskelighet, a.id) > (b.isEdgeCase ? 1 : 0, b.vanskelighet, b.id)
         }
-        guard ranked.count >= fagkontorSize else { return nil }
-        return region(tema: fagkontorPrefix + ref.id, navn: ref.navn, puzzles: Array(ranked.prefix(fagkontorSize)), progress: progress)
+    }
+
+    /// Whether the fagkontor's topics hold enough puzzles for a run. The regions come from the same
+    /// selection as `fagkontorRegion`, so the two always agree. A thin office is still being built.
+    public static func fagkontorReady(_ ref: FagkontorRef, regions: [Region]) -> Bool {
+        regions.filter { ref.temaer.contains($0.tema) }.map(\.puzzles.count).reduce(0, +) >= fagkontorSize
     }
 
     /// Open when every topic's saved damage has reached its region's target, like a gym. A topic

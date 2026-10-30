@@ -5,6 +5,7 @@
   "selskapsform": "AS",
   "mvaRegistrert": true,
   "ansatte": 4,
+  "lonnsdag": 20,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "restauranten", "x": 4, "y": 2 },
   "oppgaver": ["mva-behandling-003", "mva-behandling-004", "mva-behandling-009", "mva-regnut-001", "grunnlag-001", "mva-behandling-010", "mva-behandling-007", "periodisering-postering-003", "reskontro-postering-001", "mva-postering-002"],
@@ -14,7 +15,8 @@
     "drift": ["Vi har servering i salen og take-away i disken."],
     "haug": ["Her er bilagene. Kassen og fakturaene ligger i esken."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det liker jeg ikke."]
+    "glippetFrist": ["Fristen gikk ut. Det liker jeg ikke."],
+    "oppdagetFeil": ["Gjesten vår så noe rart i regnskapet!"]
   },
   "startklient": true,
   "status": "utkast"

@@ -1,0 +1,24 @@
+{
+  "id": "fjordfrakt",
+  "navn": "Fjordfrakt",
+  "bydel": "havna",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "havna", "tilX": 11, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-fjordfrakt", "rolle": "klient", "x": 4, "y": 2, "klient": "fjordfrakt", "tekst": [] },
+    { "id": "folk-sjafor", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Jeg skal levere før klokka to."] }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "fjordfrakt",
+  "navn": "Fjordfrakt AS",
+  "bransje": "transport",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 3,
+  "lonnsdag": 20,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "fjordfrakt", "x": 4, "y": 2 },
+  "oppgaver": ["avskrivning-postering-001", "avskrivning-sorter-001", "avskrivning-regnut-001", "mva-behandling-002", "mva-behandling-009", "periodisering-postering-001", "lonn-regnut-002"],
+  "provesak": ["avskrivning-quiz-001", "mva-quiz-003", "avskrivning-quiz-003"],
+  "replikker": {
+    "hilsen": ["Hei! Vi kjører gods langs fjorden."],
+    "drift": ["Vi kjøpte en ny båt og en varebil."],
+    "haug": ["Fraktbrevene og kvitteringene ligger her."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det kostet oss."],
+    "oppdagetFeil": ["Sjåføren fant en feil i en gammel regning."]
+  },
+  "status": "utkast"
+}

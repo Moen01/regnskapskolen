@@ -7,7 +7,7 @@ struct SummaryScreen: View {
     let newBadges: [Badge]
     let onRegion: () -> Void
     let onMap: () -> Void
-    @State private var cursor = GBCursor(visible: 6)
+    @State private var cursor = GBCursor(visible: ListBox.rows(in: ListBox.windowRowSpace))
     @State private var page = 0
 
     private var rows: [PanelRow] {

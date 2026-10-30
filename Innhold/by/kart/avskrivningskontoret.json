@@ -1,0 +1,24 @@
+{
+  "id": "avskrivningskontoret",
+  "navn": "Avskrivningskontor",
+  "bydel": "industri",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "industri", "tilX": 4, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "fagkontor-avskrivning", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "avskrivning", "navn": "Avskrivningskontor", "temaer": ["avskrivning"]}, "tekst": ["Her prøves driftsmidler: aktivering, saldogrupper og salg."] },
+    { "id": "folk-avskrivning", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Alt slites med tiden. Også maskiner."] }
+  ]
+}

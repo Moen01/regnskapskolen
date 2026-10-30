@@ -6,7 +6,7 @@ import SwiftUI
 /// owns the phases; this view draws them and maps its actions onto the host.
 struct BattleScreen: View {
     let host: BattleHost
-    /// The flow for one creature; a creature with another id gets a fresh one.
+    /// The flow for one encounter; another `host.encounterKey` gets a fresh one.
     @State private var battle: Battle?
     /// Counts the misses, so each one shakes the screen once.
     @State private var misses = 0
@@ -26,7 +26,7 @@ struct BattleScreen: View {
     private var flow: BattleFlow? {
         guard let encounter = host.encounter() else { return nil }
         let library = host.library()
-        if let battle, battle.id == encounter.puzzle.id { return battle.flow }
+        if let battle, battle.id == host.encounterKey { return battle.flow }
         return BattleFlow(encounter: encounter,
                           laws: library?.laws ?? .empty,
                           cards: library?.rules(tema: encounter.puzzle.tema) ?? [],
@@ -37,8 +37,8 @@ struct BattleScreen: View {
     var body: some View {
         GBScreen(onKey: handle) {
             if let encounter = host.encounter(), let flow {
-                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(),
-                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught)
+                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(), hpLabel: host.hpLabel,
+                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught, key: host.encounterKey ?? encounter.puzzle.id)
                 switch flow.phase {
                 case .moves:
                     ListPanel(title: "HVILKEN REGEL?", rows: flow.moveRows, cursor: flow.moveCursor, onClick: { index in click(row: index) })
@@ -58,7 +58,7 @@ struct BattleScreen: View {
                 }
             }
         }
-        .gbFlash(trigger: host.encounter()?.puzzle.id)
+        .gbFlash(trigger: host.encounterKey)
         .gbShake(trigger: misses)
     }
 
@@ -96,7 +96,7 @@ struct BattleScreen: View {
         var attempt = host.session()?.attempt ?? .empty(for: encounter.puzzle.kind)
         let action = step(&current, &attempt)
         host.setAttempt(attempt)
-        battle = Battle(id: encounter.puzzle.id, flow: current)
+        battle = Battle(id: host.encounterKey ?? encounter.puzzle.id, flow: current)
         act(action)
     }
 
@@ -109,7 +109,10 @@ struct BattleScreen: View {
         case .attack:
             host.attack()
             guard let outcome = host.outcome() else { return }
-            if case .escaped = outcome { misses += 1 }
+            switch outcome {
+            case .escaped, .audited(ok: false, _): misses += 1
+            default: break
+            }
             // A correct voucher lands one hit per line before the dialog tells the result.
             if case .caught = outcome, case .posting(let lines) = host.session()?.attempt ?? .quiz(nil), !AppStore.isScreenshotRun {
                 Task { @MainActor in
@@ -138,34 +141,40 @@ private struct BattleField: View {
     let encounter: Encounter
     let stage: Stage
     let hp: Int?
+    let hpLabel: String
     let species: String
     let caught: Bool
+    /// The host's encounter key, so the creature slides in again for a repeated puzzle.
+    let key: String
+
+    private var creature: SpritePalette { GBTheme.creature(topic: encounter.puzzle.tema) }
 
     var body: some View {
         GBBox(x: 4, y: 6, width: 96, height: 30, padding: 3) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(TextWrap.truncate(species, to: 11))
-                GBText(":L\(encounter.puzzle.vanskelighet) \(stage.navn.uppercased())", color: GBPalette.dark)
+                GBText(":L\(encounter.puzzle.vanskelighet) \(stage.navn.uppercased())", color: GBTheme.textDim)
                 HStack(spacing: 2 * scale) {
                     ForEach(1...4, id: \.self) { box in
-                        Rectangle().fill(box <= stage.rawValue ? GBPalette.darkest : GBPalette.light).frame(width: 8 * scale, height: 3 * scale)
+                        Rectangle().fill(box <= stage.rawValue ? GBTheme.stageOn : GBTheme.stageOff).frame(width: 8 * scale, height: 3 * scale)
                     }
                 }
             }
         }
-        GBAt(x: 100, y: 46) { Ellipse().fill(GBPalette.light).frame(width: 56 * scale, height: 6 * scale) }
+        GBAt(x: 100, y: 46) { Ellipse().fill(GBTheme.platform).frame(width: 56 * scale, height: 6 * scale) }
         if encounter.isGymLeader {
-            GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), pixel: 3) }
-                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
+            GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), palette: creature, pixel: 3) }
+                .gbSlideIn(trigger: key).gbShrink(when: caught)
         } else {
-            GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), pixel: 3) }
-                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
+            GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), palette: creature, pixel: 3) }
+                .gbSlideIn(trigger: key).gbShrink(when: caught)
         }
-        GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, pixel: 3) }
+        GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, palette: GBTheme.player, pixel: 3) }
         if let hp {
-            GBBox(x: 62, y: 60, width: 94, height: 32, padding: 3) {
+            // Three 8 px rows, two 2 px gaps and 3 px padding top and bottom: 34 px, so the text stays inside the border.
+            GBBox(x: 62, y: 60, width: 94, height: 34, padding: 3) {
                 VStack(alignment: .leading, spacing: 2 * scale) {
-                    GBText("KUNDEN")
+                    GBText(hpLabel)
                     HStack(spacing: 2 * scale) {
                         GBText("HP:")
                         GBBar(value: Double(hp) / Double(RegionRun.hp), width: 58)
@@ -186,8 +195,9 @@ private struct ListPanel: View {
     let onClick: (Int) -> Void
 
     private var visible: Range<Int> {
-        let start = min(max(0, cursor - AnswerPanel.visibleRows + 1), max(0, rows.count - AnswerPanel.visibleRows))
-        return start..<min(rows.count, start + AnswerPanel.visibleRows)
+        let count = ListBox.rows(in: ListBox.windowRowSpace)
+        let start = min(max(0, cursor - count + 1), max(0, rows.count - count))
+        return start..<min(rows.count, start + count)
     }
 
     var body: some View {
@@ -195,7 +205,7 @@ private struct ListPanel: View {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(title)
                 if rows.isEmpty {
-                    GBText("Ingen her.", color: GBPalette.dark)
+                    GBText("Ingen her.", color: GBTheme.textDim)
                 } else {
                     GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
                 }
@@ -211,7 +221,7 @@ private struct BattleMenu: View {
     let onClick: (Int) -> Void
 
     var body: some View {
-        GBBox(x: 0, y: 96, width: 160, height: 48, padding: 0) {
+        GBBox(x: 0, y: 112, width: 160, height: 32, padding: 0) {
             VStack(alignment: .leading, spacing: 4 * scale) {
                 ForEach(0..<2, id: \.self) { row in
                     HStack(spacing: 0) {
@@ -230,7 +240,8 @@ private struct BattleMenu: View {
                     }
                 }
             }
-            .padding(.top, 10 * scale)
+            // Two 8 px rows and a 4 px gap in the 32 px box: 6 px above and below.
+            .padding(.top, 6 * scale)
             .padding(.leading, 8 * scale)
         }
     }

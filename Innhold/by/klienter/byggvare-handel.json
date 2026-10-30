@@ -1,0 +1,22 @@
+{
+  "id": "byggvare-handel",
+  "navn": "Byggvare Handel AS",
+  "bransje": "varehandel",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 8,
+  "lonnsdag": 25,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "byggvare", "x": 4, "y": 2 },
+  "oppgaver": ["lonn-postering-001", "lonn-postering-002", "lonn-regnut-001", "lonn-regnut-002", "lonn-frist-amelding-001", "lonn-frist-forskuddstrekk-001", "lonn-frist-aga-001", "mva-behandling-005", "mva-regnut-002"],
+  "provesak": ["lonn-quiz-002", "mva-behandling-008", "mva-regnut-001"],
+  "replikker": {
+    "hilsen": ["Velkommen! Her får du planker og spiker."],
+    "drift": ["Åtte ansatte og lønn den 25."],
+    "haug": ["Kassebilagene og fakturaene ligger her."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det var dumt."],
+    "oppdagetFeil": ["En kunde fant en feil på kvitteringen."]
+  },
+  "status": "utkast"
+}

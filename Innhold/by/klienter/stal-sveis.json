@@ -1,0 +1,22 @@
+{
+  "id": "stal-sveis",
+  "navn": "Stål & Sveis AS",
+  "bransje": "verksted",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 5,
+  "lonnsdag": 15,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "sveis", "x": 4, "y": 2 },
+  "oppgaver": ["avskrivning-postering-002", "avskrivning-regnut-001", "avskrivning-sorter-001", "lonn-postering-001", "mva-behandling-002", "mva-behandling-008", "periodisering-postering-002"],
+  "provesak": ["avskrivning-quiz-003", "avskrivning-postering-001", "mva-quiz-003"],
+  "replikker": {
+    "hilsen": ["Hei! Pass på gnistene her inne."],
+    "drift": ["Nye sveiseapparater i år."],
+    "haug": ["Regningene ligger i verktøykassen."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det svir."],
+    "oppdagetFeil": ["Vi fant en gammel feil i verkstedet."]
+  },
+  "status": "utkast"
+}

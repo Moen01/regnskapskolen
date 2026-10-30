@@ -1,6 +1,7 @@
 {
   "id": "banken",
   "navn": "Hovedbok Sparebank",
+  "bydel": "havna",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [
@@ -14,10 +15,11 @@
     "####D#####"
   ],
   "dorer": [
-    { "x": 4, "y": 7, "til": "sentrum", "tilX": 14, "tilY": 10 }
+    { "x": 4, "y": 7, "til": "havna", "tilX": 18, "tilY": 5 }
   ],
   "folk": [
-    { "id": "folk-banken", "rolle": "folk", "x": 4, "y": 2, "tekst": ["Vil du øve på en hel måned med bilag og bank?", "Åpne Sandkasse i appen. Der stemmer du av mot kontoutskriften."] },
+    { "id": "folk-banken", "rolle": "sandkasse", "x": 3, "y": 2, "sandkasse": "bank-001", "gir": "reskontro-tap-purring", "tekst": ["Vil du avstemme banken for Fjellsport?"] },
+    { "id": "fagkontor-bank", "rolle": "fagkontor", "x": 6, "y": 2, "fagkontor": {"id": "bank", "navn": "Bankkontoret", "temaer": ["reskontro-bank"]}, "tekst": ["Jeg leder Bankkontoret. Her prøves kunder, leverandører og avstemming."] },
     { "id": "folk-kunde-bank", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Renten er ikke hva den var."] }
   ]
 }

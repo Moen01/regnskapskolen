@@ -33,6 +33,8 @@ public enum GameEvent: Hashable, Sendable {
     case regionMastered
     /// A gym badge earned; `count` is how many are held afterwards.
     case gymBadges(count: Int)
+    /// The bokettersyn was passed.
+    case auditPassed
 }
 
 /// The badge catalog and the one place badges are handed out. Thresholds live here.
@@ -55,6 +57,7 @@ public enum Badges {
         Badge(id: "samler", navn: "Samler", beskrivelse: "25 skapninger i samlingen", symbol: "square.grid.3x3.fill"),
         Badge(id: "hele-regionen", navn: "Hele regionen", beskrivelse: "Alle skapningene i én region på Voksen eller høyere", symbol: "map.fill"),
         Badge(id: "tolv-merker", navn: "Tolv merker", beskrivelse: "Alle gym-merkene", symbol: "crown.fill"),
+        Badge(id: "revisorens-beste-venn", navn: "Revisorens beste venn", beskrivelse: "Et bokettersyn uten merknader", symbol: "checkmark.seal"),
     ]
 
     public static func badge(_ id: String) -> Badge? { all.first { $0.id == id } }
@@ -93,6 +96,8 @@ public enum Badges {
             earned.append("hele-regionen")
         case .gymBadges(let count):
             if count >= allGyms { earned.append("tolv-merker") }
+        case .auditPassed:
+            earned.append("revisorens-beste-venn")
         }
         return all.filter { earned.contains($0.id) && progress.game.badges[$0.id] == nil }.map { badge in
             progress.game.badges[badge.id] = day

@@ -1,0 +1,132 @@
+{
+  "id": "avgiftskontoret",
+  "navn": "Avgiftskontoret",
+  "bydel": "bryggen",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    {
+      "x": 4,
+      "y": 7,
+      "til": "bryggen",
+      "tilX": 19,
+      "tilY": 16
+    }
+  ],
+  "folk": [
+    {
+      "id": "skranke-avgift",
+      "rolle": "bokettersyn",
+      "x": 4,
+      "y": 2,
+      "tekst": [
+        "Velkommen til Avgiftskontoret. Vi går gjennom regnskapsåret som er omme."
+      ],
+      "kontrollorer": [
+        {
+          "id": "arsoppgjor",
+          "navn": "Kontrollør Aas",
+          "temaer": [
+            "arsoppgjor",
+            "resultat-balanse"
+          ]
+        },
+        {
+          "id": "mva",
+          "navn": "Kontrollør Dahl",
+          "temaer": [
+            "mva"
+          ]
+        },
+        {
+          "id": "lonn",
+          "navn": "Kontrollør Lie",
+          "temaer": [
+            "lonn"
+          ]
+        },
+        {
+          "id": "periodisering",
+          "navn": "Kontrollør Vik",
+          "temaer": [
+            "periodisering",
+            "perioder-frister"
+          ]
+        }
+      ],
+      "sensor": {
+        "id": "sensor",
+        "navn": "Sensor Holm",
+        "temaer": [
+          "grunnlag",
+          "kontoplan",
+          "resultat-balanse",
+          "bilag-bokforingsloven",
+          "perioder-frister",
+          "mva",
+          "lonn",
+          "periodisering",
+          "avskrivning",
+          "arsoppgjor",
+          "reskontro-bank",
+          "valuta-korrigeringer"
+        ]
+      }
+    },
+    {
+      "id": "folk-aas",
+      "rolle": "folk",
+      "x": 1,
+      "y": 2,
+      "tekst": [
+        "Årsoppgjøret er mitt felt."
+      ]
+    },
+    {
+      "id": "folk-dahl",
+      "rolle": "folk",
+      "x": 2,
+      "y": 1,
+      "tekst": [
+        "Jeg ser på mva-meldingene."
+      ]
+    },
+    {
+      "id": "folk-lie",
+      "rolle": "folk",
+      "x": 6,
+      "y": 1,
+      "tekst": [
+        "Lønn og trekk, takk."
+      ]
+    },
+    {
+      "id": "folk-vik",
+      "rolle": "folk",
+      "x": 7,
+      "y": 2,
+      "tekst": [
+        "Hører inntekten til riktig år?"
+      ]
+    },
+    {
+      "id": "folk-holm",
+      "rolle": "folk",
+      "x": 8,
+      "y": 1,
+      "tekst": [
+        "Jeg spør om litt av alt."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "bryggen",
+  "navn": "Bryggen",
+  "bydel": "bryggen",
+  "fullmakt": "bryggen",
+  "rekkefolge": 4,
+  "ankomst": { "x": 15, "y": 16 },
+  "bredde": 24,
+  "hoyde": 18,
+  "ruter": [
+    "########################",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,^^^^^^,^^^^^^,#",
+    "#,,,,,,,,^^^^^^,^^^^^^,#",
+    "#,,,,,,,,##D###,##D###,#",
+    "#......................#",
+    "#......................#",
+    "#.^^^^^^.^^^^^^.^^^^^^.#",
+    "#.^^^^^^.^^^^^^.^^^^^^.#",
+    "#.##D###.##D###.##D###.#",
+    "#......................#",
+    "#......................#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,^^^^^^#",
+    "#~~~~~~~~,,,,,,,,^^^^^^#",
+    "#~~~~~~~~,,,,,,,,##D####",
+    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "###############D########"
+  ],
+  "dorer": [
+    { "x": 15, "y": 17, "til": "sentrum", "tilX": 9, "tilY": 1 },
+    { "x": 18, "y": 4, "til": "arsoppgjorskontoret", "tilX": 4, "tilY": 6 },
+    { "x": 18, "y": 9, "til": "valutakontoret", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 4, "til": "importen", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 9, "til": "radgivning", "tilX": 4, "tilY": 6 },
+    { "x": 4, "y": 9, "til": "tannklinikken", "tilX": 4, "tilY": 6 },
+    { "x": 19, "y": 15, "til": "avgiftskontoret", "tilX": 4, "tilY": 6 }
+  ],
+  "folk": [
+    { "id": "skilt-arsoppgjor", "rolle": "skilt", "x": 19, "y": 5, "tekst": ["Årsoppgjørskontor"] },
+    { "id": "skilt-valuta", "rolle": "skilt", "x": 19, "y": 10, "tekst": ["Valutakontoret"] },
+    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 14, "y": 16, "tekst": ["Til Sentrum. Porten står i sør."] },
+    { "id": "skilt-avgiftskontoret", "rolle": "skilt", "x": 20, "y": 16, "tekst": ["Avgiftskontoret"] },
+    { "id": "funn-bryggen", "rolle": "funn", "x": 4, "y": 3, "gir": "bokforingsloven-dokumentasjon", "tekst": ["En perm står igjen på en kasse. Øverst ligger et regelkort om dokumentasjon av bilag."] },
+    { "id": "folk-bryggen", "rolle": "folk", "x": 12, "y": 13, "tekst": ["Skipene kommer fra hele verden."] },
+    { "id": "skilt-importen", "rolle": "skilt", "x": 12, "y": 5, "tekst": ["Bryggen Import"] },
+    { "id": "kundesak-bryggen-import", "rolle": "kundesak", "x": 10, "y": 5, "klient": "bryggen-import", "oppgave": "grunnlag-quiz-010", "tekst": ["Hei! Konto 2710 ligger blant gjeld, men har likevel debetsaldo. Hvorfor?"] },
+    { "id": "skilt-radgivning", "rolle": "skilt", "x": 12, "y": 10, "tekst": ["Kaikanten Rådgivning"] },
+    { "id": "kundesak-kaikanten-radgivning", "rolle": "kundesak", "x": 10, "y": 10, "klient": "kaikanten-radgivning", "oppgave": "arsoppgjor-quiz-002", "tekst": ["Hei! Vi sendte årsregnskapet for 2025 inn 20. august 2026. Er det et problem?"] },
+    { "id": "skilt-tannklinikken", "rolle": "skilt", "x": 5, "y": 10, "tekst": ["Smil Tannklinikk"] },
+    { "id": "kundesak-smil-tannklinikk", "rolle": "kundesak", "x": 3, "y": 10, "klient": "smil-tannklinikk", "oppgave": "lonn-quiz-002", "tekst": ["Hei! Hvor høy er feriepengesatsen for en ansatt under 60 år? Vi har fire uker og en dag."] }
+  ]
+}

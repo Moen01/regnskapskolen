@@ -1,0 +1,21 @@
+{
+  "id": "smil-tannklinikk",
+  "navn": "Smil Tannklinikk",
+  "bransje": "helse",
+  "selskapsform": "ENK",
+  "mvaRegistrert": false,
+  "ansatte": 2,
+  "lonnsdag": 25,
+  "sted": { "kart": "tannklinikken", "x": 4, "y": 2 },
+  "oppgaver": ["avskrivning-postering-001", "periodisering-postering-001", "lonn-regnut-001", "lonn-regnut-002", "korrigering-postering-002", "reskontro-regnut-001", "avskrivning-sorter-001", "arsoppgjor-frist-003"],
+  "provesak": ["mva-quiz-004", "korrigering-quiz-001", "avskrivning-quiz-003"],
+  "replikker": {
+    "hilsen": ["Åpne munnen og si aa. Velkommen!"],
+    "drift": ["Behandling er unntatt mva, sier de."],
+    "haug": ["Kvitteringene ligger i skuffen."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det kjennes vondt."],
+    "oppdagetFeil": ["En pasient fant en feil på regningen."]
+  },
+  "status": "utkast"
+}

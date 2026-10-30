@@ -3,12 +3,15 @@ import Foundation
 public enum BilagRunKind: Hashable, Sendable {
     case booking(MonthKey)
     case correction
+    /// One puzzle a person in town asks about; the verdict is told.
+    case kundesak(puzzle: String)
 }
 
 /// A session at a client's desk: the bilag of the pile in order, or the errors that came back when
 /// the month was closed. The battle is the same as in `RegionRun` (moves, verdict, damage), but a
 /// booking never says whether it was right; a correction does. No HP: a bilag cannot flee.
-/// Pure state: the app hands every `AttemptResult` to `Scheduler.record` and adds `damage` to the topic.
+/// Pure state: the app hands every `AttemptResult` to `Scheduler.record` and adds `damage` to the topic,
+/// a booking's only when its month closes (`BookedBilag.damage`), so the gym count keeps the verdict.
 public struct BilagRun: Hashable, Sendable {
     public let client: String
     public let kind: BilagRunKind
@@ -18,6 +21,9 @@ public struct BilagRun: Hashable, Sendable {
     public private(set) var currentError: OpenError?
     public private(set) var chosenMove: Move?
     public private(set) var hasChosen = false
+    /// Counts the encounters shown so far. A correction over found errors can bring the same puzzle
+    /// twice (piles start again every January), so the screen keys on this, not the puzzle id.
+    public private(set) var step = 0
     private var queue: [Pending]
 
     private struct Pending: Hashable, Sendable {
@@ -41,6 +47,11 @@ public struct BilagRun: Hashable, Sendable {
         case .booking:
             // The pile is booked before any progress is known, so every bilag shows as a fresh creature.
             queue = puzzles.map { Pending(encounter: make($0, stage: .vill, context: .bilag(client: client.id)), error: nil) }
+        case .kundesak(let id):
+            // One meeting: the puzzle by id, none when it is not given (a draft hidden again).
+            queue = puzzles.filter { $0.id == id }.prefix(1).map {
+                Pending(encounter: make($0, stage: .vill, context: .kundesak(client: client.id, name: TownFlow.shortName(client))), error: nil)
+            }
         case .correction:
             let byId = Dictionary(puzzles.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             queue = errors.compactMap { error in
@@ -72,6 +83,7 @@ public struct BilagRun: Hashable, Sendable {
         switch kind {
         case .booking: outcome = .booked
         case .correction: outcome = .corrected(ok: strike.correct)
+        case .kundesak: outcome = .answered(ok: strike.correct)
         }
         phase = .result(outcome)
         return (outcome, AttemptResult(puzzleId: puzzle.id, correctFirstTry: strike.correct), first ? strike.damage : 0)
@@ -93,6 +105,7 @@ public struct BilagRun: Hashable, Sendable {
             return
         }
         let next = queue.removeFirst()
+        step += 1
         current = next.encounter
         currentError = next.error
         phase = .encounter
