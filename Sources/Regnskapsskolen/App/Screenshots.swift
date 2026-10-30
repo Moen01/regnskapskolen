@@ -142,6 +142,59 @@ enum Screenshots {
         store.townKey(.a)
         await shot("spill-bag.png")
 
+        // The bag with three rule cards, the first one put on for the next battle, the cursor on the second.
+        let cards = Array(library.rules.prefix(3).map(\.id))
+        stage(map: "kontoret", x: 3, y: 3, facing: .left, day: DayKey(year: 2026, month: 4, day: 10)) { state in
+            state.regelkort = Set(cards)
+            state.equippedCard = cards.first
+        }
+        store.townKey(.a)
+        store.townKey(.down)
+        store.townKey(.down)
+        store.townKey(.a)
+        store.townKey(.down)
+        store.townKey(.down)
+        store.townKey(.a)
+        store.townKey(.down)
+        await shot("spill-regelkort.png")
+
+        // Each new district on its arrival square, with the permit that opens it.
+        let day = DayKey(year: 2026, month: 1, day: 5)
+        for (district, name) in [("havna", "spill-havna.png"), ("industri", "spill-industri.png"), ("bryggen", "spill-bryggen.png")] {
+            guard let arrival = TownDistricts.all(in: town).first(where: { $0.id == district })?.ankomst else { continue }
+            stage(map: district, x: arrival.x, y: arrival.y, facing: .down, day: day) { $0.fullmakter = [district] }
+            await shot(name)
+        }
+
+        // Fast travel from Fristnav with all four districts open.
+        stage(map: "kontoret", x: 3, y: 3, facing: .left, day: DayKey(year: 2026, month: 4, day: 10)) { state in
+            state.fullmakter = ["havna", "industri", "bryggen"]
+        }
+        store.townKey(.a)
+        store.townKey(.a)
+        for _ in 0..<12 { store.townKey(.down) }
+        store.townKey(.a)
+        await shot("spill-reise.png")
+
+        // The gate to Bryggen without a permit.
+        stage(map: "sentrum", x: 9, y: 1, facing: .up, day: day)
+        store.townKey(.up)
+        await shot("spill-stengt.png")
+
+        // The archive on the office PC: the cafe is active, the web shop is put away.
+        stage(map: "kontoret", x: 8, y: 2, facing: .up, day: DayKey(year: 2026, month: 4, day: 10)) { state in
+            state.clients["nettbutikken-pixel"]?.status = .parked
+        }
+        store.townKey(.a)
+        for _ in 0..<5 where store.town?.phase == .dialog { store.townKey(.a) }
+        await shot("spill-arkiv.png")
+
+        // A fagkontor whose gym is not yet full: the dialog ends with the GYM line.
+        stage(map: "lonnskontoret", x: 4, y: 3, facing: .up, day: day) { $0.fullmakter = ["industri"] }
+        store.townKey(.a)
+        for _ in 0..<5 where store.town?.hasMorePages == true { store.townKey(.a) }
+        await shot("spill-fagkontor.png")
+
         // A customer case: the doctor's office asks, JA starts the case, and the battle opens with its question.
         stage(map: "sentrum", x: 23, y: 6, facing: .up, day: DayKey(year: 2026, month: 1, day: 5)) { state in
             state.clients["legekontoret-bryggen"]?.status = .active
