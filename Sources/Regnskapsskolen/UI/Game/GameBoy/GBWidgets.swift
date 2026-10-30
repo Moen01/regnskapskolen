@@ -70,6 +70,23 @@ struct GBText: View {
             .lineLimit(1)
             .fixedSize()
             .frame(height: size.pixels * scale)
+            .overlay(alignment: .topLeading) { rings }
+    }
+
+    /// The font's uppercase Å has no visible ring, so one is drawn over each: 2 px wide, 1 px high,
+    /// one px above the letter. The font is monospaced, so the nth character sits at n cells.
+    private var rings: some View {
+        Canvas { context, _ in
+            let cell = size.pixels * scale
+            for (index, character) in text.enumerated() where character == "Å" {
+                let ring = CGRect(x: (CGFloat(index) + 0.5) * cell - scale, y: 2 * scale, width: 2 * scale, height: scale)
+                context.fill(Path(ring), with: .color(color))
+            }
+        }
+        // A canvas draws only inside its own frame, so it reaches 4 px above the text.
+        .frame(width: CGFloat(text.count) * size.pixels * scale, height: (size.pixels + 4) * scale)
+        .offset(y: -4 * scale)
+        .allowsHitTesting(false)
     }
 }
 

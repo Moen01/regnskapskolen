@@ -32,7 +32,8 @@ enum GBTheme {
     /// The handheld around the screen.
     static let bezel = hex(0x3B3B3B)
     /// Outside a map smaller than the screen.
-    static let mapVoid = hex(0x181830)
+    /// What shows around a room smaller than the screen: the brick of its walls.
+    static let mapVoid = hex(0x9A4E3C)
     /// The flash when a creature appears (drawn with `.difference`, so white inverts).
     static let flash = hex(0xFFFFFF)
 
@@ -80,14 +81,32 @@ enum GBTheme {
     /// The client's bilag on the counter.
     static let paper = SpritePalette(outline: hex(0x404058), body: hex(0xF8F8F0), detail: hex(0x88A0D0))
 
-    static func palette(for tile: Tile) -> SpritePalette {
+    /// Roofs, doors and signs in the three outer districts, so a district reads at a glance. Sentrum
+    /// and any other id keep the base colours.
+    private static let districtRoofs: [String: SpritePalette] = [
+        "havna": SpritePalette(hex(0x88C8E8), hex(0x14385C), hex(0x2E78B8), hex(0x88C8E8)),
+        "industri": SpritePalette(hex(0xB8BCC8), hex(0x2C3040), hex(0x6C7488), hex(0xB8BCC8)),
+        "bryggen": SpritePalette(hex(0x88D0A8), hex(0x144434), hex(0x2C8C68), hex(0x88D0A8)),
+    ]
+    private static let districtDoors: [String: SpritePalette] = [
+        "havna": SpritePalette(hex(0xF8F0A0), hex(0x0C2C48), hex(0x2468A0), hex(0xE8C020)),
+        "industri": SpritePalette(hex(0xF8B040), hex(0x2C2C34), hex(0x5C6068), hex(0xF8B040)),
+        "bryggen": SpritePalette(hex(0xF8E8A0), hex(0x1C3C30), hex(0x8C5C38), hex(0xD8B030)),
+    ]
+    private static let districtSigns: [String: SpritePalette] = [
+        "havna": SpritePalette(outline: hex(0x0C2C48), body: hex(0x5CA8D8), detail: hex(0xE8F4F8)),
+        "industri": SpritePalette(outline: hex(0x2C2C34), body: hex(0xE8A028), detail: hex(0xF8F0C8)),
+        "bryggen": SpritePalette(outline: hex(0x1C3C30), body: hex(0x58B890), detail: hex(0xF0F8E0)),
+    ]
+
+    static func palette(for tile: Tile, district: String? = nil) -> SpritePalette {
         switch tile {
         case .floor: floor
         case .wall: wall
         case .water: water
         case .grass: grass
-        case .door: door
-        case .roof: roof
+        case .door: district.flatMap { districtDoors[$0] } ?? door
+        case .roof: district.flatMap { districtRoofs[$0] } ?? roof
         case .counter: counter
         }
     }
@@ -100,7 +119,7 @@ enum GBTheme {
     /// A dark crimson suit with red sleeves: the one figure on the map in red.
     static let player = SpritePalette(outline: hex(0x6E1A28), body: hex(0xD83C3C), detail: skin)
 
-    static func palette(for role: PersonRole) -> SpritePalette {
+    static func palette(for role: PersonRole, district: String? = nil) -> SpritePalette {
         switch role {
         case .klient: SpritePalette(outline: hex(0x1C4428), body: hex(0x3C9A50), detail: skin)
         case .fagkontor: SpritePalette(outline: hex(0x2E1E4A), body: hex(0x7A50B0), detail: skinDark)
@@ -108,7 +127,7 @@ enum GBTheme {
         case .skranke: SpritePalette(outline: hex(0x10403E), body: hex(0x2A9A9A), detail: skin)
         case .folk: SpritePalette(outline: hex(0x5A2C10), body: hex(0xD8782C), detail: skinDark)
         case .kundesak: SpritePalette(outline: hex(0x4E1630), body: hex(0xC8487C), detail: skin)
-        case .skilt: SpritePalette(outline: hex(0x5A3418), body: hex(0xC89058), detail: hex(0xF0E0B0))
+        case .skilt: district.flatMap { districtSigns[$0] } ?? SpritePalette(outline: hex(0x5A3418), body: hex(0xC89058), detail: hex(0xF0E0B0))
         case .seng: SpritePalette(outline: hex(0x202850), body: hex(0x4058A8), detail: hex(0x88A0E0))
         case .kaffe: SpritePalette(outline: hex(0x282830), body: hex(0x8890A0), detail: hex(0xC84030))
         // The archive PC: a beige case with a green screen.

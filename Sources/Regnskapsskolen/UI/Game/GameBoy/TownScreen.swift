@@ -129,7 +129,7 @@ private struct TownMapView: View {
                 for tx in 0..<map.bredde {
                     let px = tx * Self.tile - camera.x, py = ty * Self.tile - camera.y
                     guard px > -Self.tile, px < Self.screen.width, py > -Self.tile, py < Self.screen.height, let tile = map.tile(x: tx, y: ty) else { continue }
-                    plot(TileSprite.sprite(for: tile), palette: GBTheme.palette(for: tile), x: px, y: py, into: &ground, opaque: true)
+                    plot(TileSprite.sprite(for: tile), palette: GBTheme.palette(for: tile, district: map.bydel), x: px, y: py, into: &ground, opaque: true)
                 }
             }
             ground.draw(in: context)
@@ -141,7 +141,7 @@ private struct TownMapView: View {
             }
             for person in map.folk {
                 let sprite = TileSprite.object(person.rolle) ?? TileSprite.person(person.rolle, facing: .down)
-                plot(sprite, palette: GBTheme.palette(for: person.rolle), x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y,
+                plot(sprite, palette: GBTheme.palette(for: person.rolle, district: map.bydel), x: person.x * Self.tile - camera.x, y: person.y * Self.tile - camera.y,
                      into: &figures, opaque: false)
             }
             plot(TileSprite.player(facing: walker.facing, frame: step), palette: GBTheme.player,
