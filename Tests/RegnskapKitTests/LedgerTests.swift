@@ -225,3 +225,19 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(state.status, .archived)
     }
 }
+
+final class LedgerArchiveTests: XCTestCase {
+    func testPileMonthSkipsClosedMonths() {
+        let jan = MonthKey(year: 2026, month: 1)
+        let feb = MonthKey(year: 2026, month: 2)
+        let c = makeLedgerClient()
+        let ids = Set((0..<12).map { "p\($0)" })
+        var state = ClientState.fresh(.active)
+        let today = DayKey(year: 2026, month: 3, day: 10)
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: today, state: state, pool: ids), jan)
+        state.closedMonths = [jan]
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: today, state: state, pool: ids), feb)
+        state.closedMonths = [jan, feb]
+        XCTAssertEqual(Ledger.pileMonth(for: c, start: jan, today: today, state: state, pool: ids), MonthKey(year: 2026, month: 3))
+    }
+}

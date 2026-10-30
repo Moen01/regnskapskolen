@@ -196,6 +196,49 @@ extension TownFlow {
         return say(["Du fant et regelkort!", title])
     }
 
+    // MARK: Archive
+
+    private func archiveRows() -> [PanelRow] {
+        content.klienter.compactMap { client in
+            guard let status = state.clients[client.id]?.status else { return nil }
+            let detail: String
+            switch status {
+            case .active: detail = "LEGG BORT"
+            case .parked: detail = "HENT"
+            case .archived: detail = "SA OPP"
+            case .prospect: return nil
+            }
+            return Self.clientRow(id: client.id, name: Self.shortName(client), detail: detail, nameFirst: true, full: client.navn)
+        }
+    }
+
+    /// The office PC: every client that is active, put away or quit, in content order.
+    mutating func openArchive() -> TownAction {
+        let rows = archiveRows()
+        guard !rows.isEmpty else { return say(["Arkivet er tomt."]) }
+        openList(.archive, rows: rows)
+        return .none
+    }
+
+    /// A on a row: park an active client, take a parked one back, or tell that one quit.
+    mutating func selectArchive() -> TownAction {
+        guard rows.indices.contains(cursor), let client = content.client(rows[cursor].id), let status = state.clients[client.id]?.status else { return .none }
+        let message: String
+        switch status {
+        case .active:
+            message = state.park(client.id) ? "\(client.navn) ligger nå i arkivet." : "Lukk månedene for \(client.navn) først."
+        case .parked:
+            message = state.unpark(client.id, on: today) ? "\(client.navn) er tilbake." : "Porteføljen er full."
+        case .archived:
+            message = "\(client.navn) sa opp. Vinn dem tilbake med en prøvesak."
+        case .prospect:
+            return .none
+        }
+        rows = archiveRows()
+        show([message])
+        return .none
+    }
+
     // MARK: Counter
 
     mutating func openCounter() -> TownAction {

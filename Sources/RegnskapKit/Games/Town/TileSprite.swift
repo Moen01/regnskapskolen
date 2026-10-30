@@ -21,6 +21,7 @@ public enum TileSprite {
     public static func person(_ role: PersonRole, facing: Facing) -> PixelSprite {
         if role == .kaffe { return coffeeMachine }
         if role == .funn { return paperPile }
+        if role == .arkiv { return pc }
         let base = switch facing {
         case .down: personDown
         case .up: personUp
@@ -235,12 +236,33 @@ public enum TileSprite {
         "0000000000000000",
     ])
 
+    /// The office PC that opens the archive: a screen on a stand, with a keyboard in front.
+    public static let pc = parse([
+        "0000000000000000",
+        "0001111111111000",
+        "0001222222221000",
+        "0001233333321000",
+        "0001233333321000",
+        "0001233333321000",
+        "0001222222221000",
+        "0001111111111000",
+        "0000001221000000",
+        "0000001221000000",
+        "0000111111110000",
+        "0001222222221000",
+        "0012323232322100",
+        "0011111111111100",
+        "0000000000000000",
+        "0000000000000000",
+    ])
+
     /// What stands in a sign's or the sofa's square instead of a person; nil for everyone else.
     public static func object(_ role: PersonRole) -> PixelSprite? {
         switch role {
         case .skilt: sign
         case .seng: sofa
         case .kaffe: coffeeMachine
+        case .arkiv: pc
         default: nil
         }
     }

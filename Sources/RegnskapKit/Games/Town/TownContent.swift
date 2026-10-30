@@ -92,7 +92,7 @@ public struct Door: Codable, Hashable, Sendable {
 }
 
 public enum PersonRole: String, Codable, Sendable {
-    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn
+    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv
 }
 
 public struct FagkontorRef: Codable, Hashable, Sendable {

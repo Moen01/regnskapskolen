@@ -3,7 +3,7 @@ import XCTest
 
 final class TileSpriteTests: XCTestCase {
     private let allTiles: [Tile] = [.wall, .floor, .water, .grass, .door, .roof, .counter]
-    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk, .kaffe, .funn]
+    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk, .kaffe, .funn, .arkiv]
     private let allFacings: [Facing] = [.up, .down, .left, .right]
 
     private func assertSixteen(_ sprite: PixelSprite, _ label: String, file: StaticString = #filePath, line: UInt = #line) {
@@ -28,6 +28,12 @@ final class TileSpriteTests: XCTestCase {
             XCTAssertEqual(TileSprite.person(.funn, facing: facing), TileSprite.paperPile)
             assertSixteen(TileSprite.person(.funn, facing: facing), "funn \(facing)")
         }
+    }
+
+    func testPcSpriteIsSixteenBySixteen() {
+        assertSixteen(TileSprite.pc, "pc")
+        XCTAssertEqual(TileSprite.object(.arkiv), TileSprite.pc)
+        for facing in allFacings { XCTAssertEqual(TileSprite.person(.arkiv, facing: facing), TileSprite.pc, "\(facing)") }
     }
 
     func testPlayerHasTwoFramesPerFacing() {

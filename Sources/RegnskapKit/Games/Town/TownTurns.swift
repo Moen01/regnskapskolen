@@ -24,11 +24,38 @@ extension TownState {
             .filter { d in clients[client.id].map { counts(d, client: $0) } ?? true }
     }
 
-    /// A won trial: the client becomes active from `day` and uses one contract.
+    /// Whether the portfolio has no room for one more active client.
+    public var portfolioFull: Bool {
+        clients.values.filter { $0.status == .active }.count >= TownRules.portfolioSize
+    }
+
+    /// Puts an active client with clean books in the archive.
+    @discardableResult
+    public mutating func park(_ client: String) -> Bool {
+        guard clients[client]?.status == .active, clients[client]?.canPark == true else { return false }
+        clients[client]?.status = .parked
+        return true
+    }
+
+    /// Takes a parked client back when the portfolio has room.
+    @discardableResult
+    public mutating func unpark(_ client: String, on day: DayKey) -> Bool {
+        guard clients[client]?.status == .parked, !portfolioFull else { return false }
+        clients[client]?.rejoin(on: day, start: start)
+        return true
+    }
+
+    /// A won trial: the client becomes active from `day` and uses one contract. A client that quit
+    /// or sits in the archive rejoins, with the months away closed.
     public mutating func winTrial(client: String, on day: DayKey) {
         var state = clients[client] ?? .fresh(.prospect)
-        state.status = .active
-        state.activeFrom = day
+        switch state.status {
+        case .archived, .parked:
+            state.rejoin(on: day, start: start)
+        case .prospect, .active:
+            state.status = .active
+            state.activeFrom = day
+        }
         clients[client] = state
         contracts -= 1
     }

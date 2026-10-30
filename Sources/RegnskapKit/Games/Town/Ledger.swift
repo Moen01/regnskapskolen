@@ -89,7 +89,7 @@ public enum Ledger {
         let last = MonthKey(today)
         var month = state.booksFrom(start: start)
         while month <= last {
-            if !pile(for: client, month: month, start: start, state: state, pool: pool).isEmpty { return month }
+            if !state.closedMonths.contains(month), !pile(for: client, month: month, start: start, state: state, pool: pool).isEmpty { return month }
             month = month.next
         }
         return nil

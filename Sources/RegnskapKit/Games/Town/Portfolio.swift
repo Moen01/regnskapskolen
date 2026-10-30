@@ -1,7 +1,8 @@
 import Foundation
 
 public enum ClientStatus: String, Codable, Sendable {
-    case prospect, active, archived
+    /// `parked`: put away by the player in the archive. `archived`: the client quit.
+    case prospect, active, parked, archived
 }
 
 public struct ClientState: Hashable, Codable, Sendable {
@@ -62,6 +63,26 @@ extension ClientState {
     private mutating func adjustSatisfaction(by delta: Int) {
         satisfaction = min(TownRules.maxSatisfaction, max(0, satisfaction + delta))
         if satisfaction == 0 { status = .archived }
+    }
+
+    /// Whether the client can go to the archive: no open error and every booked month closed, so
+    /// no verdict is left to reveal (Review Focus 4).
+    public var canPark: Bool {
+        openErrors.isEmpty && booked.allSatisfy { closedMonths.contains($0.month) }
+    }
+
+    /// The client is back (taken from the archive, or won back after it quit) from `day`. The months
+    /// away are closed: the player did not keep the books then. A month with bilag stays as it is.
+    public mutating func rejoin(on day: DayKey, start: MonthKey) {
+        status = .active
+        activeFrom = day
+        satisfaction = max(satisfaction, TownRules.startSatisfaction)
+        let withBilag = Set(booked.map(\.month))
+        var month = booksFrom(start: start)
+        while month < MonthKey(day) {
+            if !withBilag.contains(month) { closedMonths.insert(month) }
+            month = month.next
+        }
     }
 
     /// `client` is the client id; the state does not know its own id, so the caller passes it.

@@ -1,7 +1,7 @@
 import Foundation
 
 public enum TownPhase: Hashable, Sendable {
-    case walking, dialog, menu, fristnav, travel, portfolio, bag, cards, counter, choice
+    case walking, dialog, menu, fristnav, travel, portfolio, bag, cards, counter, choice, archive
 }
 
 /// What the app must do after a key. The flow never spends calendar actions itself: the app
@@ -106,7 +106,7 @@ public struct TownFlow: Hashable, Sendable {
             guard key == .a || key == .tab || key == .character(" ") else { return .none }
             if hasMorePages { page += 1; return .none }
             return follow(then)
-        case .menu, .fristnav, .travel, .portfolio, .bag, .cards, .counter, .choice:
+        case .menu, .fristnav, .travel, .portfolio, .bag, .cards, .counter, .choice, .archive:
             return handleList(key)
         }
     }
@@ -161,6 +161,8 @@ public struct TownFlow: Hashable, Sendable {
             return talkAboutCase(person)
         case .funn:
             return findCard(person)
+        case .arkiv:
+            return openArchive()
         }
     }
 
@@ -183,8 +185,10 @@ public struct TownFlow: Hashable, Sendable {
             // R1: the oldest month with bilag left, not only this month.
             let month = Ledger.pileMonth(for: client, start: state.start, today: state.calendar.today, state: clientState, pool: pool)
             return month == nil ? say(intro + lines.tomHaug) : say(intro + lines.haug, then: .action(.startBilag(client: id)))
+        case .parked:
+            return say(["Vi venter i arkivet ditt."])
         case .archived:
-            return say(["Vi har funnet et annet kontor."])
+            return say(lines.hilsen + ["Vi har funnet et annet kontor."], then: .choice(prompt: "Prøvesak?", yes: .trial(client: id)))
         }
     }
 
@@ -241,6 +245,7 @@ public struct TownFlow: Hashable, Sendable {
         case .fristnav: return rows.indices.contains(cursor) && rows[cursor].id == Self.travelRowId ? openTravel() : turnPageOnly()
         case .travel: return selectTravel()
         case .portfolio: return turnPageOnly()
+        case .archive: return selectArchive()
         case .walking, .dialog: return .none
         }
     }
@@ -278,6 +283,7 @@ public struct TownFlow: Hashable, Sendable {
             walk()
             return .sleep
         case .trial(let client):
+            guard !state.portfolioFull else { return say(["Porteføljen er full."]) }
             guard state.contracts > 0 else { return say(["Du har ingen oppdragsavtale."]) }
             walk()
             return .startTrial(client: client)
