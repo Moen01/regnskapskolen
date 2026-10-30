@@ -19,6 +19,7 @@
   ],
   "folk": [
     { "id": "klient-kafe-lysthuset", "rolle": "klient", "x": 4, "y": 2, "klient": "kafe-lysthuset", "tekst": [] },
+    { "id": "folk-perm", "rolle": "sandkasse", "x": 7, "y": 2, "sandkasse": "kafe-001", "klient": "kafe-lysthuset", "tekst": ["Her er permen. Vil du føre en hel måned?"] },
     { "id": "folk-gjest", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Kaffen her er god. Kakene også."] }
   ]
 }

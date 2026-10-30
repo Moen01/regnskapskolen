@@ -274,6 +274,8 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 | `~` | vann | nei |
 | `=` | disk | nei; A over disken snakker med den som står bak |
 
+Bydeler og porter: et kart med `bydel` lik sin egen id er en bydel. Den har `rekkefolge` (1, 2, 3 uten hull), `ankomst` (en gangbar rute uten person, innenfor porten) og, fra bydel 2, `fullmakt` lik sin egen id. Bydel 1 har ingen `fullmakt`, og `kontoret` ligger i bydel 1. Alle andre kart er innendørskart med `bydel` lik bydelen de ligger i, og har verken `rekkefolge`, `ankomst` eller `fullmakt`. En port er en `D` i ytterveggen mellom to bydeler; dører mellom bydeler går bare mellom bydelskart, aldri via et rom. Hvert tema i `temaer.json` hører til ett fagkontor, og hver bydel har to fagkontor.
+
 `dorer`: `x`, `y` (en `D`-rute), `til` (kart-id), `tilX`, `tilY` (en gangbar rute uten person). Legg dører i begge retninger: ut av rommet lander på ruten foran døren i bydelen. `folk`: `id`, `rolle`, `x`, `y`, `tekst`, og for noen roller et ekstra felt:
 
 | `rolle` | Gjør | Ekstra |
@@ -283,6 +285,9 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 | `seng` | Sier `tekst`, spør «Sove?». | |
 | `fagkontor` | Gym for temaene. Et tema hører til ett fagkontor. | `fagkontor`: `id`, `navn`, `temaer` |
 | `klient` | Eieren. Bruker klientens `replikker`, ikke `tekst`. | `klient`: klient-id |
+| `arkiv` | PC-en på kontoret. Her legger spilleren en klient bort, henter den tilbake eller vinner den tilbake. Sier `tekst`. | |
+| `sandkasse` | Åpner en sandkasse-case. Gir enten en måned for en klient eller et regelkort, eller begge deler. | `sandkasse`: case-id i `Innhold/sandkasse/`; `klient` og/eller `gir` |
+| `funn` | En bunke papirer som gir ett regelkort, én gang. Sier `tekst`. | `gir`: kort-id i `Innhold/regler/` |
 | `kaffe` | Kaffemaskinen på kontoret. Spilleren kjøper en kopp for å få energi. Sier `tekst`. Står på en ledig rute som ikke sperrer døren, disken, sengen eller sjefen. | |
 | `kundesak` | En klient som står utenfor bygget sitt og spør om en sak. Spilleren svarer, og dommen vises. | `klient`: klient-id; `oppgave`: id til en godkjent `sak`- eller `quiz`-oppgave |
 | `skilt`, `folk` | Sier `tekst`. | |

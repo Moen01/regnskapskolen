@@ -1,0 +1,42 @@
+{
+  "id": "industri",
+  "navn": "Industriområdet",
+  "bydel": "industri",
+  "fullmakt": "industri",
+  "rekkefolge": 3,
+  "ankomst": { "x": 1, "y": 5 },
+  "bredde": 24,
+  "hoyde": 18,
+  "ruter": [
+    "########################",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,^^^^^^,^^^^^^,^^^^^^,#",
+    "#,^^^^^^,^^^^^^,^^^^^^,#",
+    "#,##D###,######,######,#",
+    "D......................#",
+    "#......................#",
+    "#.^^^^^^.^^^^^^........#",
+    "#.^^^^^^.^^^^^^........#",
+    "#.##D###.######........#",
+    "#......................#",
+    "#......................#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "########################"
+  ],
+  "dorer": [
+    { "x": 0, "y": 5, "til": "sentrum", "tilX": 28, "tilY": 10 },
+    { "x": 4, "y": 4, "til": "lonnskontoret", "tilX": 4, "tilY": 6 },
+    { "x": 4, "y": 9, "til": "avskrivningskontoret", "tilX": 4, "tilY": 6 }
+  ],
+  "folk": [
+    { "id": "skilt-lonn", "rolle": "skilt", "x": 5, "y": 5, "tekst": ["Lønnskontoret"] },
+    { "id": "skilt-avskrivning", "rolle": "skilt", "x": 5, "y": 10, "tekst": ["Avskrivningskontor"] },
+    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 1, "y": 4, "tekst": ["Til Sentrum. Porten står i vest."] },
+    { "id": "funn-industri", "rolle": "funn", "x": 19, "y": 8, "gir": "feriepenger", "tekst": ["En bunke lønnsslipper ligger igjen her. Øverst ligger et regelkort om feriepenger."] },
+    { "id": "folk-industri", "rolle": "folk", "x": 20, "y": 12, "tekst": ["Maskinene går dag og natt."] }
+  ]
+}

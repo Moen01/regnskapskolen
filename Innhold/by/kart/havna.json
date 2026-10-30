@@ -1,0 +1,42 @@
+{
+  "id": "havna",
+  "navn": "Havna",
+  "bydel": "havna",
+  "fullmakt": "havna",
+  "rekkefolge": 2,
+  "ankomst": { "x": 22, "y": 5 },
+  "bredde": 24,
+  "hoyde": 18,
+  "ruter": [
+    "########################",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,^^^^^^,^^^^^^,^^^^^^,#",
+    "#,^^^^^^,^^^^^^,^^^^^^,#",
+    "#,######,######,##D###,#",
+    "#......................D",
+    "#......................#",
+    "#........^^^^^^.^^^^^^.#",
+    "#........^^^^^^.^^^^^^.#",
+    "#........######.##D###.#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~",
+    "~~~~~~~~~~~~~~~~~~~~~~~~"
+  ],
+  "dorer": [
+    { "x": 23, "y": 5, "til": "sentrum", "tilX": 1, "tilY": 5 },
+    { "x": 18, "y": 4, "til": "banken", "tilX": 4, "tilY": 6 },
+    { "x": 18, "y": 9, "til": "periodekontoret", "tilX": 4, "tilY": 6 }
+  ],
+  "folk": [
+    { "id": "skilt-bank", "rolle": "skilt", "x": 19, "y": 5, "tekst": ["Bankkontoret"] },
+    { "id": "skilt-periode", "rolle": "skilt", "x": 19, "y": 10, "tekst": ["Periodekontoret"] },
+    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 22, "y": 4, "tekst": ["Til Sentrum. Porten står i øst."] },
+    { "id": "funn-havna", "rolle": "funn", "x": 4, "y": 8, "gir": "periodisering-regnskapsloven", "tekst": ["Noen har lagt igjen en bunke papirer. Øverst ligger et regelkort om periodisering."] },
+    { "id": "folk-havna", "rolle": "folk", "x": 12, "y": 11, "tekst": ["Her lukter det tang og diesel."] }
+  ]
+}

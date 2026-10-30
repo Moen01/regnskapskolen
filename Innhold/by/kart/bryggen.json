@@ -1,0 +1,42 @@
+{
+  "id": "bryggen",
+  "navn": "Bryggen",
+  "bydel": "bryggen",
+  "fullmakt": "bryggen",
+  "rekkefolge": 4,
+  "ankomst": { "x": 15, "y": 16 },
+  "bredde": 24,
+  "hoyde": 18,
+  "ruter": [
+    "########################",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#,,,,,,,,^^^^^^,^^^^^^,#",
+    "#,,,,,,,,^^^^^^,^^^^^^,#",
+    "#,,,,,,,,######,##D###,#",
+    "#......................#",
+    "#......................#",
+    "#.^^^^^^.^^^^^^.^^^^^^.#",
+    "#.^^^^^^.^^^^^^.^^^^^^.#",
+    "#.######.######.##D###.#",
+    "#......................#",
+    "#......................#",
+    "#,,,,,,,,,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "###############D########"
+  ],
+  "dorer": [
+    { "x": 15, "y": 17, "til": "sentrum", "tilX": 9, "tilY": 1 },
+    { "x": 18, "y": 4, "til": "arsoppgjorskontoret", "tilX": 4, "tilY": 6 },
+    { "x": 18, "y": 9, "til": "valutakontoret", "tilX": 4, "tilY": 6 }
+  ],
+  "folk": [
+    { "id": "skilt-arsoppgjor", "rolle": "skilt", "x": 19, "y": 5, "tekst": ["Årsoppgjørskontor"] },
+    { "id": "skilt-valuta", "rolle": "skilt", "x": 19, "y": 10, "tekst": ["Valutakontoret"] },
+    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 16, "y": 16, "tekst": ["Til Sentrum. Porten står i sør."] },
+    { "id": "funn-bryggen", "rolle": "funn", "x": 4, "y": 3, "gir": "bokforingsloven-dokumentasjon", "tekst": ["En perm står igjen på en kasse. Øverst ligger et regelkort om dokumentasjon av bilag."] },
+    { "id": "folk-bryggen", "rolle": "folk", "x": 12, "y": 13, "tekst": ["Skipene kommer fra hele verden."] }
+  ]
+}
