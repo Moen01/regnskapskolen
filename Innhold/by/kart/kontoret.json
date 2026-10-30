@@ -22,6 +22,7 @@
     { "id": "skranke", "rolle": "skranke", "x": 2, "y": 1, "tekst": ["Her lukker du måneder og leverer."] },
     { "id": "seng", "rolle": "seng", "x": 10, "y": 1, "tekst": ["Sofaen på kontoret. Her kan du hvile."] },
     { "id": "fagkontor-mva", "rolle": "fagkontor", "x": 10, "y": 5, "fagkontor": {"id": "mva", "navn": "MVA-kontoret", "temaer": ["mva"]}, "tekst": ["Jeg leder MVA-kontoret. Her prøves de vanskeligste mva-sakene."] },
-    { "id": "skilt-mva", "rolle": "skilt", "x": 10, "y": 7, "tekst": ["Fagkontor MVA"] }
+    { "id": "skilt-mva", "rolle": "skilt", "x": 10, "y": 7, "tekst": ["Fagkontor MVA"] },
+    { "id": "kaffemaskin", "rolle": "kaffe", "x": 1, "y": 6, "tekst": ["Kaffemaskinen på kontoret."] }
   ]
 }

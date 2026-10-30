@@ -45,6 +45,9 @@
     { "id": "skilt-banken", "rolle": "skilt", "x": 15, "y": 10, "tekst": ["Hovedbok Sparebank"] },
     { "id": "skilt-verkstedet", "rolle": "skilt", "x": 25, "y": 10, "tekst": ["Motor & Mek. Bil og maskin."] },
     { "id": "folk-kaia", "rolle": "folk", "x": 9, "y": 18, "tekst": ["Båtene legger til ved kaia om morgenen."] },
-    { "id": "folk-torget", "rolle": "folk", "x": 20, "y": 14, "tekst": ["Kontoret ditt er huset midt i gata."] }
+    { "id": "folk-torget", "rolle": "folk", "x": 20, "y": 14, "tekst": ["Kontoret ditt er huset midt i gata."] },
+    { "id": "kundesak-legekontoret", "rolle": "kundesak", "x": 23, "y": 5, "klient": "legekontoret-bryggen", "oppgave": "korrigering-quiz-001", "tekst": ["Hei! Vi fant feil beløp i et bilag som allerede er bokført. Kan du se på det?"] },
+    { "id": "kundesak-nettbutikken", "rolle": "kundesak", "x": 3, "y": 10, "klient": "nettbutikken-pixel", "oppgave": "korrigering-sak-001", "tekst": ["Hei! Vi fant en feil i fjorårets regnskap, og det er levert. Hva nå?"] },
+    { "id": "kundesak-verkstedet", "rolle": "kundesak", "x": 23, "y": 10, "klient": "verkstedet-motor", "oppgave": "avskrivning-quiz-002", "tekst": ["Hei! Jeg kjøpte tre PC-er på én faktura. Hvordan skal de behandles?"] }
   ]
 }

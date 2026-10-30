@@ -235,6 +235,7 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
   "selskapsform": "AS",
   "mvaRegistrert": true,
   "ansatte": 4,
+  "lonnsdag": 20,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "restauranten", "x": 4, "y": 2 },
   "oppgaver": ["mva-behandling-003", "grunnlag-001"],
@@ -244,7 +245,8 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
     "drift": ["Vi har servering i salen og take-away i disken."],
     "haug": ["Her er bilagene."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut."]
+    "glippetFrist": ["Fristen gikk ut."],
+    "oppdagetFeil": ["Gjesten vår så noe rart i regnskapet!"]
   },
   "startklient": true,
   "status": "utkast"
@@ -254,6 +256,8 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 - `mvaTermin` (`tomaanedlig` eller `aarlig`) står der hvis og bare hvis `mvaRegistrert` er `true`.
 - `oppgaver` er papirhaugen; bare oppgaver som er i utvalget (godkjent, eller utkast når de vises) havner i haugen. `provesak` er nøyaktig tre oppgave-id-er.
 - En klient som ikke er mva-registrert, får ingen oppgave av typen `mva` og ingen `postering` med konto 2700–2799. Fasiten antar ellers et mva-registrert selskap. Det gjelder også kontoer som ikke er mva (2770 og 2780 for arbeidsgiveravgift).
+- `lonnsdag` (1–28) er dagen lønnen utbetales. Den står der hvis og bare hvis `ansatte` er over 0, og er casens eget tall (ikke fra `satser.json`). Klienter uten ansatte får ingen lønnsfrister.
+- `oppdagetFeil` er replikken når klienten selv har oppdaget en gammel feil (en korrigering). Feltet er valgfritt.
 - `drift` er eieren som forteller om driften med egne ord. Den peker på bransjens fallgruve, men gir ikke svaret.
 - `sted` må ha en person med `rolle: "klient"` og samme `klient` på samme rute.
 - Nøyaktig én klient har `startklient: true`; sjefen gir den ved start.
@@ -279,7 +283,11 @@ Mønstre: (1) én linje ↔ ett bilag; (2) én linje ↔ flere bilag (kortinnlø
 | `seng` | Sier `tekst`, spør «Sove?». | |
 | `fagkontor` | Gym for temaene. Et tema hører til ett fagkontor. | `fagkontor`: `id`, `navn`, `temaer` |
 | `klient` | Eieren. Bruker klientens `replikker`, ikke `tekst`. | `klient`: klient-id |
+| `kaffe` | Kaffemaskinen på kontoret. Spilleren kjøper en kopp for å få energi. Sier `tekst`. Står på en ledig rute som ikke sperrer døren, disken, sengen eller sjefen. | |
+| `kundesak` | En klient som står utenfor bygget sitt og spør om en sak. Spilleren svarer, og dommen vises. | `klient`: klient-id; `oppgave`: id til en godkjent `sak`- eller `quiz`-oppgave |
 | `skilt`, `folk` | Sier `tekst`. | |
+
+En `kundesak`-oppgave må ikke stå i klientens `oppgaver` eller `provesak`, og en klient som ikke er mva-registrert får ingen oppgave av typen `mva`. `tekst` er klienten som spør, uten svaret. Ingen kundesak står på selve døra eller sperrer den eneste veien.
 
 Alle kart må kunne nås fra `kontoret` gjennom dører. Hold klientene nær: ingen klientdør mer enn 20 steg fra kontorets dør i samme bydel.
 
