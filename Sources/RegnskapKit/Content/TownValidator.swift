@@ -81,6 +81,9 @@ extension ContentValidator {
             if p.rolle == .klient, p.klient.flatMap({ town.client($0) }) == nil {
                 out.append("personen «\(p.id)» peker på klienten «\(p.klient ?? "")» som ikke finnes")
             }
+            if p.rolle == .kundesak {
+                out += validateCase(p, in: town, library: library)
+            }
             if p.rolle == .fagkontor {
                 if let office = p.fagkontor {
                     for tema in office.temaer where library.topic(tema) == nil { out.append("fagkontoret «\(office.id)» har ukjent tema «\(tema)»") }
@@ -92,6 +95,30 @@ extension ContentValidator {
 
         // Rule 9: word width.
         out += longWords(in: [map.navn] + map.folk.flatMap(\.tekst), where: "kartet")
+        return out
+    }
+
+    /// Rule 11: a customer case names an existing client and an existing `sak` or `quiz` puzzle.
+    /// Rule 6 holds for it too: a client without VAT registration gets no VAT case.
+    private static func validateCase(_ person: TownPerson, in town: TownContent, library: ContentLibrary) -> [String] {
+        var out: [String] = []
+        let client = person.klient.flatMap { town.client($0) }
+        if client == nil { out.append("kundesaken «\(person.id)» peker på klienten «\(person.klient ?? "")» som ikke finnes") }
+        guard let id = person.oppgave else {
+            return out + ["kundesaken «\(person.id)» har ingen oppgave"]
+        }
+        guard let puzzle = library.puzzle(id: id) else {
+            return out + ["kundesaken «\(person.id)» har oppgaven «\(id)» som ikke finnes"]
+        }
+        if puzzle.kind != .sak, puzzle.kind != .quiz {
+            out.append("kundesaken «\(person.id)» har oppgaven «\(id)» av typen \(puzzle.kind.rawValue), ikke sak eller quiz")
+        }
+        if let client, !client.mvaRegistrert {
+            if puzzle.kind == .mva { out.append("kundesaken «\(person.id)» er av typen mva, men klienten er ikke mva-registrert") }
+            if case .posting(let p) = puzzle.payload, p.fasit.contains(where: { Int($0.konto).map(vatAccounts.contains) == true }) {
+                out.append("kundesaken «\(person.id)» bruker mva-konto (2700–2799), men klienten er ikke mva-registrert")
+            }
+        }
         return out
     }
 

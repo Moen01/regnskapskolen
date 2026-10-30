@@ -73,6 +73,8 @@ final class TownStoryTests: XCTestCase {
                                                 boxBefore: boxBefore, client: run.client)
             case .correction:
                 if let error = run.currentError { state.clients[run.client]?.correct(error, ok: result.correctFirstTry) }
+            case .kundesak(let id):
+                state.clients[run.client]?.answerCase(id, ok: result.correctFirstTry)
             }
             outcomes.append(outcome)
             run.proceed()

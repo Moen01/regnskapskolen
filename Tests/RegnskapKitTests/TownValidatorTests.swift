@@ -170,6 +170,38 @@ final class TownValidatorTests: XCTestCase {
         XCTAssertEqual(messages(t), [])
     }
 
+    // Rule 11
+    private func withCase(client: String, puzzle: String?) throws -> TownContent {
+        var extra: [String: Any] = ["klient": client]
+        if let puzzle { extra["oppgave"] = puzzle }
+        return try town(editing: "kart/sentrum.json") { json in
+            var folk = json["folk"] as! [[String: Any]]
+            folk.append(person("sak-1", x: 4, y: 2, rolle: "kundesak", extra: extra))
+            json["folk"] = folk
+        }
+    }
+
+    func testAllowsCaseWithQuizOrSak() throws {
+        XCTAssertEqual(messages(try withCase(client: "butikken", puzzle: "grunnlag-quiz-010")), [])
+        XCTAssertEqual(messages(try withCase(client: "kafeen", puzzle: "reskontro-sak-001")), [])
+    }
+
+    func testRejectsCaseWithBookingPuzzle() throws {
+        assertOneProblem(try withCase(client: "butikken", puzzle: "grunnlag-001"), id: "kart:sentrum", contains: "ikke sak eller quiz")
+    }
+
+    func testRejectsCaseWithUnknownClientOrPuzzle() throws {
+        assertOneProblem(try withCase(client: "ingen", puzzle: "grunnlag-quiz-010"), id: "kart:sentrum", contains: "ingen")
+        assertOneProblem(try withCase(client: "butikken", puzzle: "finnes-ikke"), id: "kart:sentrum", contains: "finnes-ikke")
+        assertOneProblem(try withCase(client: "butikken", puzzle: nil), id: "kart:sentrum", contains: "ingen oppgave")
+    }
+
+    func testRejectsVatCaseForUnregisteredClient() throws {
+        let all = messages(try withCase(client: "kafeen", puzzle: "mva-behandling-001"))
+        XCTAssertTrue(all.contains { $0.hasPrefix("kart:sentrum") && $0.contains("ikke mva-registrert") }, all.joined(separator: "\n"))
+        XCTAssertEqual(messages(try withCase(client: "butikken", puzzle: "mva-quiz-001")), [])
+    }
+
     // Rule 7
     func testRejectsUnknownRuleCard() throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)

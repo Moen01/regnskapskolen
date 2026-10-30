@@ -3,6 +3,8 @@ import Foundation
 public enum BilagRunKind: Hashable, Sendable {
     case booking(MonthKey)
     case correction
+    /// One puzzle a person in town asks about; the verdict is told.
+    case kundesak(puzzle: String)
 }
 
 /// A session at a client's desk: the bilag of the pile in order, or the errors that came back when
@@ -41,6 +43,11 @@ public struct BilagRun: Hashable, Sendable {
         case .booking:
             // The pile is booked before any progress is known, so every bilag shows as a fresh creature.
             queue = puzzles.map { Pending(encounter: make($0, stage: .vill, context: .bilag(client: client.id)), error: nil) }
+        case .kundesak(let id):
+            // One meeting: the puzzle by id, none when it is not given (a draft hidden again).
+            queue = puzzles.filter { $0.id == id }.prefix(1).map {
+                Pending(encounter: make($0, stage: .vill, context: .kundesak(client: client.id, name: TownFlow.shortName(client))), error: nil)
+            }
         case .correction:
             let byId = Dictionary(puzzles.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             queue = errors.compactMap { error in
@@ -72,6 +79,7 @@ public struct BilagRun: Hashable, Sendable {
         switch kind {
         case .booking: outcome = .booked
         case .correction: outcome = .corrected(ok: strike.correct)
+        case .kundesak: outcome = .answered(ok: strike.correct)
         }
         phase = .result(outcome)
         return (outcome, AttemptResult(puzzleId: puzzle.id, correctFirstTry: strike.correct), first ? strike.damage : 0)

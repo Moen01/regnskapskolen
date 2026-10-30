@@ -13,7 +13,7 @@ public struct TrialScore: Hashable, Sendable {
         case .caught, .repeated: wins += 1
         case .escaped: losses += 1
         // Town bilag outcomes never come from a trial run.
-        case .booked, .corrected: break
+        case .booked, .corrected, .answered: break
         }
     }
 

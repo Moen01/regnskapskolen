@@ -75,6 +75,9 @@ extension AppStore {
         case .deliver(let id, let kind):
             deliver(id, kind: kind)
             return
+        case .startCase:
+            // Wired to a BilagRun in the case task; until then nothing starts and no action is spent.
+            return
         case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor:
             break
         }
@@ -231,6 +234,8 @@ extension AppStore {
                                                          boxBefore: boxBefore, client: run.client)
         case .correction:
             if let error { progress.game.town?.clients[run.client]?.correct(error, ok: result.correctFirstTry) }
+        case .kundesak(let id):
+            progress.game.town?.clients[run.client]?.answerCase(id, ok: result.correctFirstTry)
         }
         // R7: BilagRun gives damage only for the day's first answer to the puzzle.
         if damage > 0 { progress.game.regionDamage[puzzle.tema, default: 0] += damage }

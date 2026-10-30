@@ -18,6 +18,8 @@ public enum EncounterContext: Hashable, Sendable {
     case correction(client: String, day: DayKey)
     case trial(client: String)
     case fagkontor(name: String)
+    /// A customer case from a person in town; `name` is the client's short name for the intro.
+    case kundesak(client: String, name: String)
 }
 
 public enum EncounterOutcome: Hashable, Sendable {
@@ -29,6 +31,8 @@ public enum EncounterOutcome: Hashable, Sendable {
     case booked
     /// An error from a closed month, answered again: this one tells the verdict.
     case corrected(ok: Bool)
+    /// A customer case: the verdict is told, like a correction.
+    case answered(ok: Bool)
 }
 
 public struct RunSummary: Hashable, Sendable {

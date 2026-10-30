@@ -17,6 +17,8 @@ public enum TownAction: Hashable, Sendable {
     case fixDiscovered(client: String)
     case startTrial(client: String)
     case startFagkontor(FagkontorRef)
+    /// A customer case from a person in town.
+    case startCase(client: String, puzzle: String)
     case deliver(client: String, kind: DeadlineKind)
     case sleep
     case save
@@ -64,6 +66,7 @@ public struct TownFlow: Hashable, Sendable {
         case sleep
         case trial(client: String)
         case fagkontor(FagkontorRef)
+        case kundesak(client: String, puzzle: String)
     }
 
     enum CounterTask: Hashable, Sendable {
@@ -145,6 +148,8 @@ public struct TownFlow: Hashable, Sendable {
             return openCounter()
         case .kaffe:
             return takeCoffee()
+        case .kundesak:
+            return talkAboutCase(person)
         }
     }
 
@@ -170,6 +175,14 @@ public struct TownFlow: Hashable, Sendable {
         case .archived:
             return say(["Vi har funnet et annet kontor."])
         }
+    }
+
+    /// A person with a question for an active client. Answered once; then only the talk is left.
+    private mutating func talkAboutCase(_ person: TownPerson) -> TownAction {
+        guard let id = person.klient, let puzzle = person.oppgave else { return say(person.tekst) }
+        guard let clientState = state.clients[id], clientState.status == .active else { return say(["Jeg er ikke kunde hos deg."]) }
+        guard !clientState.casesDone.contains(puzzle), pool.contains(puzzle) else { return say(person.tekst) }
+        return say(person.tekst, then: .choice(prompt: "Hjelpe nå?", yes: .kundesak(client: id, puzzle: puzzle)))
     }
 
     private mutating func talkToFagkontor(_ person: TownPerson) -> TownAction {
@@ -249,6 +262,9 @@ public struct TownFlow: Hashable, Sendable {
         case .fagkontor(let ref):
             walk()
             return .startFagkontor(ref)
+        case .kundesak(let client, let puzzle):
+            walk()
+            return .startCase(client: client, puzzle: puzzle)
         }
     }
 

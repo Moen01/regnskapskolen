@@ -8,6 +8,8 @@ public enum TownRules {
     public static let maxSatisfaction = 100
     public static let deliverBonus = 10
     public static let correctionMiss = -10
+    /// A customer case answered right pleases the client.
+    public static let caseBonus = 5
     public static let missedDeadline = -25
     public static let warnDaysBefore = 3
     /// A client finds an old error on its own: one day in `discoverOneIn`, once the error is

@@ -17,9 +17,11 @@ public struct ClientState: Hashable, Codable, Sendable {
     /// April cannot have missed the term due in March. `nil` (the start client, saves from before
     /// the field) covers every deadline. Optional, so the synthesized decoder reads old saves.
     public var activeFrom: DayKey?
+    /// The customer cases from people in town that are answered. Once only, right or wrong.
+    public var casesDone: Set<String>
 
     public init(status: ClientStatus, satisfaction: Int, met: Bool, booked: [BookedBilag] = [], openErrors: [OpenError] = [],
-                closedMonths: Set<MonthKey> = [], delivered: Set<String> = [], missed: Set<String> = [], activeFrom: DayKey? = nil) {
+                closedMonths: Set<MonthKey> = [], delivered: Set<String> = [], missed: Set<String> = [], activeFrom: DayKey? = nil, casesDone: Set<String> = []) {
         self.status = status
         self.satisfaction = satisfaction
         self.met = met
@@ -29,6 +31,26 @@ public struct ClientState: Hashable, Codable, Sendable {
         self.delivered = delivered
         self.missed = missed
         self.activeFrom = activeFrom
+        self.casesDone = casesDone
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case status, satisfaction, met, booked, openErrors, closedMonths, delivered, missed, activeFrom, casesDone
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        status = try c.decode(ClientStatus.self, forKey: .status)
+        satisfaction = try c.decode(Int.self, forKey: .satisfaction)
+        met = try c.decode(Bool.self, forKey: .met)
+        booked = try c.decode([BookedBilag].self, forKey: .booked)
+        openErrors = try c.decode([OpenError].self, forKey: .openErrors)
+        closedMonths = try c.decode(Set<MonthKey>.self, forKey: .closedMonths)
+        delivered = try c.decode(Set<String>.self, forKey: .delivered)
+        missed = try c.decode(Set<String>.self, forKey: .missed)
+        activeFrom = try c.decodeIfPresent(DayKey.self, forKey: .activeFrom)
+        // Saves from before customer cases have none done.
+        casesDone = try c.decodeIfPresent(Set<String>.self, forKey: .casesDone) ?? []
     }
 }
 
@@ -65,6 +87,12 @@ extension ClientState {
         guard let i = openErrors.firstIndex(where: { $0.id == error.id && !$0.discovered }) else { return }
         openErrors[i].discovered = true
         adjustSatisfaction(by: TownRules.discoveredPenalty)
+    }
+
+    /// Records a customer case as done; a right answer pleases the client.
+    public mutating func answerCase(_ puzzle: String, ok: Bool) {
+        casesDone.insert(puzzle)
+        if ok { adjustSatisfaction(by: TownRules.caseBonus) }
     }
 
     public mutating func correct(_ error: OpenError, ok: Bool) {

@@ -7,7 +7,7 @@ extension TownAction {
     public var spendsAction: Bool {
         switch self {
         case .none, .walked, .enteredDoor, .save, .openTraining, .openCollection, .sleep: false
-        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .deliver: true
+        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .startCase, .deliver: true
         }
     }
 }
