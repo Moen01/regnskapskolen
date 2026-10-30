@@ -3,7 +3,7 @@ import XCTest
 
 final class TileSpriteTests: XCTestCase {
     private let allTiles: [Tile] = [.wall, .floor, .water, .grass, .door, .roof, .counter]
-    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk]
+    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk, .kaffe, .funn, .arkiv, .sandkasse, .bokettersyn]
     private let allFacings: [Facing] = [.up, .down, .left, .right]
 
     private func assertSixteen(_ sprite: PixelSprite, _ label: String, file: StaticString = #filePath, line: UInt = #line) {
@@ -21,6 +21,25 @@ final class TileSpriteTests: XCTestCase {
         for facing in allFacings {
             for frame in 0..<2 { assertSixteen(TileSprite.player(facing: facing, frame: frame), "player \(facing) \(frame)") }
         }
+    }
+
+    func testPaperPileForFunnIsSixteenBySixteen() {
+        for facing in allFacings {
+            XCTAssertEqual(TileSprite.person(.funn, facing: facing), TileSprite.paperPile)
+            assertSixteen(TileSprite.person(.funn, facing: facing), "funn \(facing)")
+        }
+    }
+
+    func testPcSpriteIsSixteenBySixteen() {
+        assertSixteen(TileSprite.pc, "pc")
+        XCTAssertEqual(TileSprite.object(.arkiv), TileSprite.pc)
+        for facing in allFacings { XCTAssertEqual(TileSprite.person(.arkiv, facing: facing), TileSprite.pc, "\(facing)") }
+    }
+
+    func testFolderSpriteIsSixteenBySixteen() {
+        assertSixteen(TileSprite.folder, "folder")
+        XCTAssertEqual(TileSprite.object(.sandkasse), TileSprite.folder)
+        for facing in allFacings { XCTAssertEqual(TileSprite.person(.sandkasse, facing: facing), TileSprite.folder, "\(facing)") }
     }
 
     func testPlayerHasTwoFramesPerFacing() {
@@ -45,5 +64,13 @@ final class TileSpriteTests: XCTestCase {
         XCTAssertNotEqual(sign, sofa)
         XCTAssertNotEqual(sign, TileSprite.person(.skilt, facing: .down))
         for role in [PersonRole.klient, .fagkontor, .sjef, .skranke, .folk] { XCTAssertNil(TileSprite.object(role), "\(role)") }
+    }
+
+    func testCoffeeMachineSpriteIsSixteenBySixteen() throws {
+        let machine = try XCTUnwrap(TileSprite.object(.kaffe))
+        assertSixteen(machine, "coffee machine")
+        for facing in allFacings { XCTAssertEqual(TileSprite.person(.kaffe, facing: facing), machine, "\(facing)") }
+        XCTAssertNotEqual(machine, TileSprite.object(.seng))
+        XCTAssertNotEqual(machine, TileSprite.object(.skilt))
     }
 }

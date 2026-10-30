@@ -76,6 +76,27 @@ extension AppStore {
             earned += Badges.award(.bankReconciled, on: todayKey, progress: &progress)
         }
         if !earned.isEmpty { newBadges += earned; saveProgress() }
+        creditSandboxIfCleared()
+    }
+
+    /// A cleared case gives its town credit once (a closed month or a rule card). The lines wait in
+    /// `townNotice` until the town opens. The sandbox journal itself is left as it is.
+    func creditSandboxIfCleared() {
+        // A flow that is not walking may hold a dialog whose action still has to run (a closed
+        // month pays its damage and spends the action); a rebuild would drop it. The credit is
+        // stored only when it pays, so the next sandbox save or `openTown` tries again.
+        guard town == nil || town?.phase == .walking else { return }
+        guard let library, let activeCase, progress.game.town != nil, !sandbox.entries.isEmpty else { return }
+        let cleared = activeCase.kontoutskrift != nil
+            ? bankCheck?.done == true
+            : activeCase.compare(journal: sandbox, chart: library.chart).isEmpty
+        guard cleared, let credit = progress.game.town?.creditSandbox(activeCase.id, content: library.town) else { return }
+        let texts = TownFlow.sandboxTexts(credit, content: library.town, ruleCards: library.rules)
+        guard !texts.isEmpty else { return }
+        saveProgress()
+        townNotice += texts
+        // The flow holds its own copy of the state and would write the old one back on its next key.
+        if town != nil { refreshTown() }
     }
 
     func validateSandbox() {
@@ -95,6 +116,17 @@ extension AppStore {
         reconciliation = Reconciliation()
         sandboxPane = .journal
         saveSandbox()
+    }
+
+    /// Opens a case from an entrance (a sandbox person in town, the bank's dungeon). The journal is
+    /// never cleared here: a case with entries of another case waits until the player empties the
+    /// sandbox. Returns the lines that tell why it did not open; empty when the caller may show it.
+    func enterSandbox(_ caseId: String) -> [String] {
+        let found = sandboxCases.first { $0.id == caseId }
+        let entrance = SandboxEntrance.decide(caseId: caseId, activeCaseId: activeCase?.id,
+                                              journalEmpty: sandbox.entries.isEmpty, exists: found != nil)
+        if entrance == .start, let found { startCase(found) }
+        return entrance.texts
     }
 
     func clearSandbox() {

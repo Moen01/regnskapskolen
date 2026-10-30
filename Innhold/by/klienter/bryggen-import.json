@@ -1,0 +1,22 @@
+{
+  "id": "bryggen-import",
+  "navn": "Bryggen Import AS",
+  "bransje": "import",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 1,
+  "lonnsdag": 5,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "importen", "x": 4, "y": 2 },
+  "oppgaver": ["valuta-postering-001", "valuta-postering-002", "valuta-regnut-001", "korrigering-postering-001", "korrigering-postering-002", "mva-postering-001", "mva-behandling-001", "lonn-regnut-002"],
+  "provesak": ["korrigering-quiz-001", "mva-behandling-006", "mva-regnut-002"],
+  "replikker": {
+    "hilsen": ["Velkommen! Varene kommer med skip."],
+    "drift": ["Vi betaler leverandørene i euro."],
+    "haug": ["Tollpapirene og fakturaene ligger her."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det er surt."],
+    "oppdagetFeil": ["Leverandøren fant en feil i en gammel faktura."]
+  },
+  "status": "utkast"
+}

@@ -1,6 +1,7 @@
 {
   "id": "kontoret",
   "navn": "Kontoret",
+  "bydel": "sentrum",
   "bredde": 8,
   "hoyde": 6,
   "ruter": [

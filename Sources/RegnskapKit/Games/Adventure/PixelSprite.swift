@@ -1,7 +1,7 @@
 import Foundation
 
 /// A small bitmap for the Game Boy screen. `pixels` is rows of palette slots: 0 transparent,
-/// 1 outline, 2 body, 3 eye. Creatures are generated from the puzzle id, mirrored so they read as
+/// 1 outline, 2 body, 3 detail (a creature's eyes, a person's skin). Creatures are generated from the puzzle id, mirrored so they read as
 /// a living thing; the player is drawn by hand.
 public struct PixelSprite: Hashable, Sendable {
     public let width: Int
@@ -68,7 +68,7 @@ public struct PixelSprite: Hashable, Sendable {
         return PixelSprite(pixels: pixels)
     }
 
-    /// The accountant seen from behind: hair and shirt as outline colour, skin as body colour.
+    /// The accountant seen from behind: hair and shirt as outline colour, skin as detail colour.
     public static let player = PixelSprite(pixels: [
         "......####......",
         ".....######.....",
@@ -89,7 +89,7 @@ public struct PixelSprite: Hashable, Sendable {
     ].map { row in row.map { character -> UInt8 in
         switch character {
         case "#": 1
-        case "o": 2
+        case "o": 3
         default: 0
         }
     } })

@@ -14,7 +14,8 @@
     "drift": ["Vi kjøper annonser og programvare fra utlandet."],
     "haug": ["Fakturaene ligger i innboksen. Her er de."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Vi får brev nå."]
+    "glippetFrist": ["Fristen gikk ut. Vi får brev nå."],
+    "oppdagetFeil": ["Kunden min så en rar linje i bøkene!"]
   },
   "status": "utkast"
 }

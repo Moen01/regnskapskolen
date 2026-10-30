@@ -31,7 +31,7 @@ private struct GBFlash<Trigger: Equatable>: ViewModifier {
     func body(content: Content) -> some View {
         content
             .overlay {
-                Rectangle().fill(.white).blendMode(.difference)
+                Rectangle().fill(GBTheme.flash).blendMode(.difference)
                     .opacity(inverted ? 1 : 0)
                     .allowsHitTesting(false)
             }

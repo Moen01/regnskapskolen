@@ -23,6 +23,58 @@ final class TownStateTests: XCTestCase {
         XCTAssertTrue(content.klienter.contains { $0.startklient })
     }
 
+    func testNewGameStartsWithOneContract() {
+        XCTAssertEqual(TownState.new(content: Self.town, year: 2026).contracts, 1)
+    }
+
+    func testWinFagkontorGivesContractAndTheTopicsCards() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let ref = FagkontorRef(id: "mva", navn: "Mva-kontoret", temaer: ["mva"])
+        var state = TownState.new(content: Self.town, year: 2026)
+        let before = state.contracts
+        let given = state.winFagkontor(ref, cards: library.rules)
+        let expected = library.rules.filter { $0.tema == "mva" }
+        XCTAssertFalse(expected.isEmpty)
+        XCTAssertEqual(Set(given.map(\.id)), Set(expected.map(\.id)))
+        XCTAssertEqual(state.contracts, before + TownRules.contractsPerBadge)
+        XCTAssertEqual(state.regelkort, Set(expected.map(\.id)))
+    }
+
+    func testWinFagkontorNeverGivesACardTwice() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let ref = FagkontorRef(id: "mva", navn: "Mva-kontoret", temaer: ["mva"])
+        var state = TownState.new(content: Self.town, year: 2026)
+        _ = state.winFagkontor(ref, cards: library.rules)
+        let cards = state.regelkort
+        XCTAssertTrue(state.winFagkontor(ref, cards: library.rules).isEmpty)
+        XCTAssertEqual(state.regelkort, cards)
+    }
+
+    /// A 2b save won `fag-mva` before badges gave cards: opening the town gives them, with no contract.
+    func testBackfillCardsGivesTheCardsOfHeldBadgesOnly() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let contracts = state.contracts
+        let given = state.backfillCards(badges: ["fag-mva", "fag-finnes-ikke", "gym-mva"], content: Self.town, cards: library.rules)
+        let expected = Set(library.rules.filter { $0.tema == "mva" }.map(\.id))
+        XCTAssertFalse(expected.isEmpty)
+        XCTAssertEqual(Set(given.map(\.id)), expected)
+        XCTAssertEqual(state.regelkort, expected, "no lønn card: fag-lonn is not held")
+        XCTAssertEqual(state.contracts, contracts, "a backfill gives no contract")
+        XCTAssertTrue(state.backfillCards(badges: ["fag-mva"], content: Self.town, cards: library.rules).isEmpty, "only once")
+    }
+
+    func testRegelkortRoundTripsAndOldSavesDecodeEmpty() throws {
+        var state = TownState.new(content: Self.town, year: 2026)
+        state.regelkort = ["a", "b"]
+        let data = try JSONEncoder().encode(state)
+        XCTAssertEqual(try JSONDecoder().decode(TownState.self, from: data).regelkort, ["a", "b"])
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        json.removeValue(forKey: "regelkort")
+        let old = try JSONDecoder().decode(TownState.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertEqual(old.regelkort, [])
+    }
+
     func testRoundTripThroughJSON() throws {
         var state = TownState.new(content: Self.town, year: 2026)
         let id = try XCTUnwrap(state.clients.keys.sorted().first)
@@ -59,5 +111,193 @@ final class TownStateTests: XCTestCase {
         state.clients[ids[1]]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 5), correct: false), boxBefore: 2, client: ids[1])
         XCTAssertEqual(state.maskedBox("p1"), 2, "the oldest open error wins")
         XCTAssertNil(state.maskedBox("p2"))
+    }
+
+    func testOldSaveOpenedInAprilMissesNoPayroll() throws {
+        let content = Self.town
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: content, year: 2026)
+        XCTAssertNil(state.payrollFrom, "payroll counts from the start in a new game")
+        state.calendar = TownCalendar(start: day(4, 12))
+        state.clients["kafeen"]?.status = .active
+        state.clients["butikken"]?.delivered = ["mva-2026-1"]
+
+        // A save from phase 2a: the same JSON without the new field.
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
+        object["payrollFrom"] = nil
+        let old = try JSONDecoder().decode(TownState.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertEqual(old.payrollFrom, day(4, 12))
+
+        var loaded = old
+        var missed: [TownDeadline] = []
+        for _ in 0..<TownRules.actionsPerDay { missed += loaded.spendAction(content: content, deadlines: library.deadlines, pool: []) }
+        XCTAssertEqual(loaded.calendar.today, day(4, 13))
+        XCTAssertEqual(missed, [])
+        XCTAssertEqual(loaded.clients["kafeen"]?.missed, [])
+
+        // The same date in a new game does count the months before.
+        var fresh = state
+        XCTAssertFalse(fresh.checkMissed(content: content, deadlines: library.deadlines).isEmpty)
+    }
+
+    func testPayrollCountsOnlyFromPayrollFrom() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let client = try XCTUnwrap(state.clients["kafeen"])
+        let list = DeadlinePlanner.deadlines(for: try XCTUnwrap(Self.town.client("kafeen")), year: 2026, deadlines: library.deadlines)
+        let trekk = try XCTUnwrap(list.first { $0.kind.id == "trekk-2026-01" })
+        XCTAssertTrue(state.counts(trekk, client: client))
+        state.payrollFrom = day(1, 22)
+        XCTAssertFalse(state.counts(trekk, client: client))
+        state.payrollFrom = day(1, 21)
+        XCTAssertTrue(state.counts(trekk, client: client))
+    }
+
+    func testMaskedProgressHidesTheWrongBooking() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let pool = library.pool(includeDrafts: true)
+        let target = try XCTUnwrap(pool.first)
+        let other = try XCTUnwrap(pool.first { $0.tema == target.tema && $0.id != target.id })
+        func caught(_ progress: LearnerProgress) -> Int {
+            Regions.build(topics: library.topics, pool: pool, progress: progress).first { $0.tema == target.tema }!.caught
+        }
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+
+        // Never seen before the wrong booking: it must still look uncaught afterwards.
+        let before = LearnerProgress()
+        state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: false), boxBefore: 0, client: id)
+        var after = before
+        after.puzzles[target.id] = PuzzleProgress(box: 1, attempts: 1, correct: 0)
+        XCTAssertEqual(caught(after), caught(before) + 1, "the raw progress gives the error away")
+        XCTAssertEqual(caught(state.masked(after)), caught(before))
+
+        // Seen before in box 3: the mask puts it back in box 3.
+        var state2 = TownState.new(content: Self.town, year: 2026)
+        state2.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: false), boxBefore: 3, client: id)
+        var progress = LearnerProgress()
+        progress.puzzles[target.id] = PuzzleProgress(box: 1, attempts: 2, correct: 1)
+        progress.puzzles[other.id] = PuzzleProgress(box: 2, attempts: 1, correct: 1)
+        let masked = state2.masked(progress)
+        XCTAssertEqual(masked.puzzles[target.id]?.box, 3)
+        XCTAssertEqual(masked.puzzles[other.id], progress.puzzles[other.id])
+    }
+
+    /// Spec Mål 7: a right booking moves the box too, so every booking in an open month is masked,
+    /// right or wrong; only the close shows the real box.
+    func testMaskedProgressHidesEveryBookingUntilTheMonthCloses() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let pool = library.pool(includeDrafts: true)
+        let target = try XCTUnwrap(pool.first)
+        let jan = MonthKey(year: 2026, month: 1)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        func region(_ progress: LearnerProgress) -> Region {
+            Regions.build(topics: library.topics, pool: pool, progress: progress).first { $0.tema == target.tema }!
+        }
+        // Box 2 before: right goes to 3 (mastered), wrong goes down.
+        func booked(correct: Bool) -> (state: TownState, progress: LearnerProgress) {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles[target.id] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: target.id, correctFirstTry: correct), on: day(1, 5), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: correct), boxBefore: 2, client: id)
+            return (state, progress)
+        }
+        let right = booked(correct: true)
+        let wrong = booked(correct: false)
+        XCTAssertNotEqual(right.progress.puzzles[target.id]?.box, wrong.progress.puzzles[target.id]?.box, "the raw boxes differ")
+
+        let shownRight = right.state.masked(right.progress)
+        let shownWrong = wrong.state.masked(wrong.progress)
+        XCTAssertEqual(region(shownRight).caught, region(shownWrong).caught)
+        XCTAssertEqual(region(shownRight).mastered, region(shownWrong).mastered)
+        XCTAssertEqual(Stage.of(box: shownRight.puzzles[target.id]?.box), Stage.of(box: shownWrong.puzzles[target.id]?.box))
+        XCTAssertEqual(shownRight.puzzles[target.id]?.box, 2)
+
+        // The month closes: the right booking shows its real box.
+        var closed = right.state
+        closed.clients[id]?.closeIfClean(jan)
+        XCTAssertEqual(closed.masked(right.progress).puzzles[target.id]?.box, right.progress.puzzles[target.id]?.box)
+
+        // A booking saved before `boxBefore` existed is not masked.
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(right.state.clients[id]!.booked[0])) as? [String: Any])
+        object["boxBefore"] = nil
+        let old = try JSONDecoder().decode(BookedBilag.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertNil(old.boxBefore)
+        var oldState = right.state
+        oldState.clients[id]?.booked = [old]
+        XCTAssertEqual(oldState.masked(right.progress), right.progress)
+    }
+
+    /// Paragrafjakten picks and judges creatures from the progress it gets; from the masked one, a
+    /// bilag in an open month looks the same whether it was booked right or wrong.
+    func testARegionRunOnTheMaskedProgressKeepsTheVerdict() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let target = try XCTUnwrap(library.pool(includeDrafts: true).first)
+        let region = Region(tema: target.tema, navn: target.tema, rekkefolge: 1, theme: RegionTheme(symbol: "x", farge: "skole", setning: ""),
+                            puzzles: [target], gymLeader: nil, caught: 0, mastered: 0, unlocked: true, gymBadge: nil)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        func firstStage(correct: Bool, masked: Bool) -> Stage? {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles[target.id] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: target.id, correctFirstTry: correct), on: day(1, 5), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: MonthKey(year: 2026, month: 1), day: day(1, 5), correct: correct),
+                                    boxBefore: 2, client: id)
+            let shown = masked ? state.masked(progress) : progress
+            var run = RegionRun(region: region, progress: shown, today: day(2, 1), regionCards: [], otherCards: [], seed: 1)
+            run.nextEncounter(progress: shown, today: day(2, 1))
+            return run.current?.stageBefore
+        }
+        XCTAssertNotEqual(firstStage(correct: true, masked: false), firstStage(correct: false, masked: false), "the real boxes tell the verdict")
+        XCTAssertEqual(firstStage(correct: true, masked: true), firstStage(correct: false, masked: true))
+        XCTAssertEqual(firstStage(correct: true, masked: true), Stage.of(box: 2))
+    }
+
+    func testMaskedProgressIsUnchangedWithoutOpenErrors() throws {
+        let state = TownState.new(content: Self.town, year: 2026)
+        var progress = LearnerProgress()
+        progress.puzzles["a"] = PuzzleProgress(box: 2, attempts: 3, correct: 2)
+        XCTAssertEqual(state.masked(progress), progress)
+    }
+
+    func testMaskedClearsDueOfHeldBackPuzzles() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        for correct in [false, true] {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles["p1"] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: "p1", correctFirstTry: correct), on: day(1, 1), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: correct), boxBefore: 2, client: id)
+            XCTAssertNotNil(progress.puzzles["p1"]?.due, "the raw due gives the verdict away")
+            XCTAssertNil(state.masked(progress).puzzles["p1"]?.due)
+        }
+    }
+
+    func testMaskedKeepsDueOfOtherPuzzles() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+        state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: false), boxBefore: 2, client: id)
+        var progress = LearnerProgress()
+        progress.puzzles["p1"] = PuzzleProgress(box: 1, attempts: 1, correct: 0, lastSeen: day(1, 1), due: day(1, 2))
+        progress.puzzles["p2"] = PuzzleProgress(box: 2, attempts: 1, correct: 1, lastSeen: day(1, 1), due: day(1, 4))
+        XCTAssertEqual(state.masked(progress).puzzles["p2"], progress.puzzles["p2"])
+    }
+
+    func testQuitClientIsNotHeldBack() throws {
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+        state.clients[id]?.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 1), correct: false), boxBefore: 4, client: id)
+        XCTAssertEqual(state.maskedBox("p1"), 4)
+        state.clients[id]?.satisfaction = 0
+        state.clients[id]?.status = .archived
+        XCTAssertNil(state.maskedBox("p1"))
+        var progress = LearnerProgress()
+        progress.puzzles["p1"] = PuzzleProgress(box: 1, attempts: 1, correct: 0, lastSeen: day(1, 1), due: day(1, 2))
+        XCTAssertEqual(state.masked(progress), progress)
     }
 }

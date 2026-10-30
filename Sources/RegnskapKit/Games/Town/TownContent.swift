@@ -19,13 +19,15 @@ public struct TownPlace: Codable, Hashable, Sendable {
     public let y: Int
 }
 
-/// What a client says in each situation. Every line goes through `TextWrap` at 18 columns.
+/// What a client says in each situation. Every line goes through `TextWrap` at `DialogBox.columns`.
 public struct ClientLines: Codable, Hashable, Sendable {
     public let hilsen: [String]
     public let drift: [String]
     public let haug: [String]
     public let tomHaug: [String]
     public let glippetFrist: [String]
+    /// Said when the client finds an old error. It must not give the answer away.
+    public let oppdagetFeil: [String]
 }
 
 public struct TownClient: Codable, Hashable, Sendable, Identifiable {
@@ -35,6 +37,8 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
     public let selskapsform: String
     public let mvaRegistrert: Bool
     public let ansatte: Int
+    /// The day of the month staff are paid (1...28); set exactly when `ansatte > 0`.
+    public let lonnsdag: Int?
     public let mvaTermin: MvaTerminType?
     public let sted: TownPlace
     public let oppgaver: [String]
@@ -44,7 +48,7 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
     public let status: PuzzleStatus
 
     private enum CodingKeys: String, CodingKey {
-        case id, navn, bransje, selskapsform, mvaRegistrert, ansatte, mvaTermin, sted, oppgaver, provesak, replikker, startklient, status
+        case id, navn, bransje, selskapsform, mvaRegistrert, ansatte, lonnsdag, mvaTermin, sted, oppgaver, provesak, replikker, startklient, status
     }
 
     public init(from decoder: Decoder) throws {
@@ -55,6 +59,7 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
         selskapsform = try c.decode(String.self, forKey: .selskapsform)
         mvaRegistrert = try c.decode(Bool.self, forKey: .mvaRegistrert)
         ansatte = try c.decode(Int.self, forKey: .ansatte)
+        lonnsdag = try c.decodeIfPresent(Int.self, forKey: .lonnsdag)
         mvaTermin = try c.decodeIfPresent(MvaTerminType.self, forKey: .mvaTermin)
         sted = try c.decode(TownPlace.self, forKey: .sted)
         oppgaver = try c.decode([String].self, forKey: .oppgaver)
@@ -87,7 +92,7 @@ public struct Door: Codable, Hashable, Sendable {
 }
 
 public enum PersonRole: String, Codable, Sendable {
-    case klient, fagkontor, skilt, sjef, skranke, seng, folk
+    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv, sandkasse, bokettersyn
 }
 
 public struct FagkontorRef: Codable, Hashable, Sendable {
@@ -104,6 +109,42 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
     public let klient: String?
     public let fagkontor: FagkontorRef?
     public let tekst: [String]
+    /// The puzzle a `kundesak` person asks about.
+    public let oppgave: String?
+    /// The rule card id a `funn` person gives, once.
+    public let gir: String?
+    /// The sandbox case id a `sandkasse` person opens.
+    public let sandkasse: String?
+    /// The four controllers of the `bokettersyn` desk.
+    public let kontrollorer: [FagkontorRef]?
+    /// The sensor of the `bokettersyn` desk.
+    public let sensor: FagkontorRef?
+
+    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil, sandkasse: String? = nil, kontrollorer: [FagkontorRef]? = nil, sensor: FagkontorRef? = nil) {
+        self.id = id
+        self.rolle = rolle
+        self.x = x
+        self.y = y
+        self.klient = klient
+        self.fagkontor = fagkontor
+        self.tekst = tekst
+        self.oppgave = oppgave
+        self.gir = gir
+        self.sandkasse = sandkasse
+        self.kontrollorer = kontrollorer
+        self.sensor = sensor
+    }
+}
+
+/// A square on a map, with no map named.
+public struct TownSpot: Codable, Hashable, Sendable {
+    public let x: Int
+    public let y: Int
+
+    public init(x: Int, y: Int) {
+        self.x = x
+        self.y = y
+    }
 }
 
 public struct TownMap: Codable, Hashable, Sendable, Identifiable {
@@ -114,7 +155,30 @@ public struct TownMap: Codable, Hashable, Sendable, Identifiable {
     public let ruter: [String]
     public let dorer: [Door]
     public let folk: [TownPerson]
+    /// The permit (fullmakt) the player needs to enter this district; `nil` for the first district.
     public let fullmakt: String?
+    /// The district the map belongs to. A district map has its own id here; an interior names the district it stands in.
+    /// Optional so a map from phase 2b still reads.
+    public let bydel: String?
+    /// Only on a district map: its place in the order of districts, from 1.
+    public let rekkefolge: Int?
+    /// Only on a district map: the free square where the player is placed when entering by the gate.
+    public let ankomst: TownSpot?
+
+    public init(id: String, navn: String, bredde: Int, hoyde: Int, ruter: [String], dorer: [Door], folk: [TownPerson], fullmakt: String? = nil,
+                bydel: String? = nil, rekkefolge: Int? = nil, ankomst: TownSpot? = nil) {
+        self.id = id
+        self.navn = navn
+        self.bredde = bredde
+        self.hoyde = hoyde
+        self.ruter = ruter
+        self.dorer = dorer
+        self.folk = folk
+        self.fullmakt = fullmakt
+        self.bydel = bydel
+        self.rekkefolge = rekkefolge
+        self.ankomst = ankomst
+    }
 
     /// The square at a position; `nil` outside the map or for a character that is no tile.
     public func tile(x: Int, y: Int) -> Tile? {
@@ -134,6 +198,10 @@ public struct TownContent: Hashable, Sendable {
 
     public func map(_ id: String) -> TownMap? { kart.first { $0.id == id } }
     public func client(_ id: String) -> TownClient? { klienter.first { $0.id == id } }
+    /// The folder in town that opens this sandbox case.
+    public func sandboxPerson(_ caseId: String) -> TownPerson? {
+        kart.lazy.flatMap(\.folk).first { $0.rolle == .sandkasse && $0.sandkasse == caseId }
+    }
     public func bransje(_ id: String) -> Bransje? { bransjer.first { $0.id == id } }
 
     /// Reads `bransjer.json`, `klienter/*.json` and `kart/*.json`, sorted by id. Throws the first

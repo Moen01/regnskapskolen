@@ -16,11 +16,11 @@ final class AnswerPanelTests: XCTestCase {
     }
 
     func testQuizRowsAreTruncatedAndEnterAttacks() {
-        let p = puzzle(.quiz) { $0.payloadQuiz!.alternativer.contains { $0.count > 17 } }
+        let p = puzzle(.quiz) { $0.payloadQuiz!.alternativer.contains { $0.count > AnswerPanel.columns } }
         var attempt = PuzzleAttempt.empty(for: .quiz)
         var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
         XCTAssertEqual(panel.title, "VELG SVAR")
-        XCTAssertTrue(panel.rows.allSatisfy { $0.text.count <= 17 })
+        XCTAssertTrue(panel.rows.allSatisfy { $0.text.count <= AnswerPanel.columns })
         XCTAssertNotNil(panel.rows.first { $0.full != nil })
         XCTAssertEqual(panel.handle(.down, attempt: &attempt), .none)
         XCTAssertEqual(panel.cursor, 1)
@@ -29,7 +29,7 @@ final class AnswerPanelTests: XCTestCase {
     }
 
     func testCursorStopsAtTheEndsAndTheWindowFollows() {
-        let p = puzzle(.klassifiser) { $0.payloadClassify!.elementer.count >= 8 }
+        let p = puzzle(.klassifiser) { $0.payloadClassify!.elementer.count > AnswerPanel.visibleRows }
         var attempt = PuzzleAttempt.empty(for: .klassifiser)
         var panel = AnswerPanel(puzzle: p, rates: [], attempt: attempt)
         _ = panel.handle(.up, attempt: &attempt)
@@ -106,12 +106,16 @@ final class AnswerPanelTests: XCTestCase {
         XCTAssertEqual(attempt, .quiz(1))
     }
 
-    func testPostingLineFormatFitsSeventeenColumns() {
-        let accounts = [AccountOption(nr: "1920", navn: "Bankinnskudd"), AccountOption(nr: "3000", navn: "Salgsinntekt, avgiftspliktig")]
-        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: 2500), accounts: accounts), "1920 Bank  D 2500")
-        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "3000", kredit: 1250000), accounts: accounts), "3000 Sa K 1250000")
+    func testPostingLineFormatFitsTheListRow() {
+        let accounts = [AccountOption(nr: "1920", navn: "Bankinnskudd"), AccountOption(nr: "3000", navn: "Salgsinntekt, avgiftspliktig fra kunder i Norge")]
+        // The name is padded so the side and amount line up at the row's end.
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: 2500), accounts: accounts), "1920 Bankinnskudd           D 2500")
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "3000", kredit: 1250000), accounts: accounts), "3000 Salgsinntekt, avgi  K 1250000")
         XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(), accounts: accounts), "---- (tom)")
-        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: Decimal(string: "2500.5")!), accounts: accounts), "1920 Ba  D 2500,5")
+        XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "1920", debet: Decimal(string: "2500.5")!), accounts: accounts), "1920 Bankinnskudd         D 2500,5")
+        for amount in [Decimal(2500), Decimal(1250000), Decimal(string: "2500.5")!] {
+            XCTAssertEqual(AnswerPanel.format(line: PostingAttemptLine(konto: "3000", kredit: amount), accounts: accounts).count, AnswerPanel.columns)
+        }
         XCTAssertEqual(AnswerPanel.amountText(Decimal(string: "1250.25")!), "1250,25")
     }
 

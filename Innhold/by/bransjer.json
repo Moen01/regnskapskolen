@@ -26,5 +26,47 @@
     "temaer": ["avskrivning", "mva"],
     "regelkort": ["avskrivning-saldogrupper", "mva-fradrag-begrensninger"],
     "setning": "Verkstedet bruker maskiner og biler i driften."
+  },
+  {
+    "id": "engros",
+    "navn": "Engros",
+    "temaer": ["reskontro-bank", "mva"],
+    "regelkort": ["reskontro-tap-purring"],
+    "setning": "Grossisten selger varer til mange butikker."
+  },
+  {
+    "id": "eiendom",
+    "navn": "Eiendom",
+    "temaer": ["mva", "periodisering"],
+    "regelkort": ["mva-fritatt-unntatt"],
+    "setning": "Utleie av lokaler er unntatt fra mva."
+  },
+  {
+    "id": "transport",
+    "navn": "Transport",
+    "temaer": ["avskrivning", "mva"],
+    "regelkort": ["avskrivning-saldogrupper", "mva-fradrag-begrensninger"],
+    "setning": "Transport trenger båter og biler."
+  },
+  {
+    "id": "varehandel",
+    "navn": "Varehandel",
+    "temaer": ["lonn", "mva"],
+    "regelkort": ["lonn-forskuddstrekk-aga", "feriepenger"],
+    "setning": "Butikken har mange ansatte og lønn hver måned."
+  },
+  {
+    "id": "import",
+    "navn": "Import",
+    "temaer": ["valuta-korrigeringer", "mva"],
+    "regelkort": ["valuta-korrigeringer", "mva-omvendt-avgiftsplikt"],
+    "setning": "Importøren kjøper varer fra utlandet."
+  },
+  {
+    "id": "konsulent",
+    "navn": "Konsulent",
+    "temaer": ["periodisering", "arsoppgjor"],
+    "regelkort": ["periodisering-regnskapsloven", "arsregnskap-frister"],
+    "setning": "Konsulenten selger prosjekter som går over årsskiftet."
   }
 ]

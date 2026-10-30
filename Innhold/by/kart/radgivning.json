@@ -1,0 +1,24 @@
+{
+  "id": "radgivning",
+  "navn": "Rådgivningen",
+  "bydel": "bryggen",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "bryggen", "tilX": 11, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-kaikanten-radgivning", "rolle": "klient", "x": 4, "y": 2, "klient": "kaikanten-radgivning", "tekst": [] },
+    { "id": "folk-konsulent", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Møtet starter om fem minutter."] }
+  ]
+}

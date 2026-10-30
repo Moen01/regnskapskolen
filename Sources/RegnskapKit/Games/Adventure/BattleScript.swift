@@ -14,6 +14,10 @@ public enum BattleScript {
             return ["Avstemmingen går ikke opp: \(name) \(String(format: "%02d.%02d", day.day, day.month))."]
         case .trial: return ["Prøvesak!", title]
         case .fagkontor(let office): return ["\(office) vil teste deg!", title]
+        case .kundesak(_, let name): return ["\(name) lurer på noe!", title]
+        // One page like a correction; the title is behind LES.
+        case .auditError(_, let client, let day): return ["Åpen feil hos \(client): \(name) \(String(format: "%02d.%02d", day.day, day.month))."]
+        case .examiner(let examiner, let first): return [first ? "\(examiner) tar over!" : "\(examiner) spør videre.", title]
         }
         let first: String
         if encounter.isGymLeader {
@@ -44,6 +48,13 @@ public enum BattleScript {
             return ["Bilaget er bokført."]
         case .corrected(let ok):
             return [ok ? "Feilen er rettet." : "Fortsatt feil. Kunden er mindre fornøyd."]
+        case .answered(let ok):
+            return [ok ? "Kunden er fornøyd." : "Det stemte ikke."]
+        case .audited(let ok, let hpLost):
+            var examiner = false
+            if case .examiner = encounter.context { examiner = true }
+            if ok { return [examiner ? "Ingen merknad." : "Feilen er rettet."] }
+            return [examiner ? "Merknad!" : "Feilen står.", "Tilliten falt med \(kroner(hpLost)) kr."]
         }
     }
 

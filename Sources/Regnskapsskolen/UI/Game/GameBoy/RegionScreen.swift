@@ -7,8 +7,11 @@ struct RegionScreen: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
     let region: Region
-    @State private var cursor = GBCursor(visible: 3)
+    /// Rows under the name, two meters and their labels in the 90 px box with 4 px padding.
+    @State private var cursor = GBCursor(visible: ListBox.rows(in: 90 - 2 * 4 - 3 * (8 + 2) - 2 * (6 + 2)))
     @State private var page = 0
+    /// Why the dungeon did not open, shown until the cursor moves.
+    @State private var notice: String?
 
     private var hp: Int { store.run?.hp ?? RegionRun.hp }
     private var damage: Int { store.run?.damage ?? store.progress.game.regionDamage[region.tema] ?? 0 }
@@ -22,6 +25,7 @@ struct RegionScreen: View {
     }
 
     private var pages: [[String]] {
+        if let notice { return gbPages(notice) }
         if region.gymBadge != nil { return gbPages("Gym-merket er ditt. " + region.theme.setning) }
         if gymReady, let leader = region.gymLeader { return gbPages("Gym-lederen venter: \(leader.tittel)") }
         if rows[cursor.index].id == "dungeon" { return gbPages("Dungeonen: avstem banken i sandkassen (bank-001).") }
@@ -30,14 +34,17 @@ struct RegionScreen: View {
 
     var body: some View {
         GBScreen(onKey: handle) {
-            RegionPanel(name: TextWrap.truncate(region.navn.uppercased(), to: AnswerPanel.columns),
+            RegionPanel(name: TextWrap.truncate(region.navn.uppercased(), to: ListBox.titleColumns),
                         hpText: "KUNDEN \(hp) kr", hp: Double(hp) / Double(RegionRun.hp),
                         gymText: "GYM \(damage)/\(region.damageTarget)", gym: region.damageTarget == 0 ? 1 : Double(damage) / Double(region.damageTarget),
                         rows: rows, cursor: cursor.index, visible: cursor.range(count: rows.count),
                         onClick: { index in cursor.set(index, count: rows.count); select() })
             GBDialog(pages: pages, page: page, typing: !AppStore.isScreenshotRun, onTurn: { page = page < pages.count - 1 ? page + 1 : 0 })
         }
-        .onChange(of: cursor.index) { page = 0 }
+        .onChange(of: cursor.index) {
+            page = 0
+            notice = nil
+        }
     }
 
     private func handle(_ key: GameKey) {
@@ -56,8 +63,13 @@ struct RegionScreen: View {
         case "run":
             if store.run == nil, !region.isEmpty { store.startRun() }
         case "dungeon":
-            if let bank = store.sandboxCases.first(where: { $0.id == "bank-001" }) { store.startCase(bank) }
-            navigation.section = .sandbox
+            let texts = store.enterSandbox("bank-001")
+            if texts.isEmpty {
+                navigation.section = .sandbox
+            } else {
+                notice = texts.joined(separator: " ")
+                page = 0
+            }
         default:
             store.closeRegion()
         }
@@ -80,10 +92,10 @@ private struct RegionPanel: View {
         GBBox(x: 4, y: 4, width: 152, height: 90, padding: 4) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 GBText(name)
-                GBText(hpText, color: GBPalette.dark)
+                GBText(hpText, color: GBTheme.textDim)
                 GBBar(value: hp, width: 136)
-                GBText(gymText, color: GBPalette.dark)
-                GBBar(value: gym, width: 136)
+                GBText(gymText, color: GBTheme.textDim)
+                GBBar(value: gym, width: 136, tint: GBTheme.gymBar)
                 GBList(rows: rows, cursor: cursor, visible: visible, onClick: onClick)
             }
         }
