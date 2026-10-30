@@ -86,6 +86,7 @@ extension ContentValidator {
             }
             if p.rolle == .fagkontor {
                 if let office = p.fagkontor {
+                    out += longWords(in: [office.navn], where: "kartet")
                     for tema in office.temaer where library.topic(tema) == nil { out.append("fagkontoret «\(office.id)» har ukjent tema «\(tema)»") }
                 } else {
                     out.append("personen «\(p.id)» har rollen fagkontor uten fagkontor")

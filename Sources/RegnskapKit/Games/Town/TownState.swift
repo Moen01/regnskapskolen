@@ -20,11 +20,13 @@ public struct TownState: Hashable, Codable, Sendable {
     /// Cups in the bag, taken from the office machine, one per day.
     public var coffee: Int = 0
     public var coffeeTakenOn: DayKey?
+    /// Ids of the rule cards the player won from fagkontor. They belong to the player, not to a client.
+    public var regelkort: Set<String> = []
     /// Errors found since `takeDiscoveries` was last called. Not part of the save.
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil) {
+                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = []) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -35,9 +37,10 @@ public struct TownState: Hashable, Codable, Sendable {
         self.energy = energy
         self.coffee = coffee
         self.coffeeTakenOn = coffeeTakenOn
+        self.regelkort = regelkort
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -52,6 +55,7 @@ public struct TownState: Hashable, Codable, Sendable {
         energy = try c.decodeIfPresent(Int.self, forKey: .energy) ?? TownRules.maxEnergy
         coffee = try c.decodeIfPresent(Int.self, forKey: .coffee) ?? 0
         coffeeTakenOn = try c.decodeIfPresent(DayKey.self, forKey: .coffeeTakenOn)
+        regelkort = try c.decodeIfPresent(Set<String>.self, forKey: .regelkort) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -66,6 +70,7 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encode(energy, forKey: .energy)
         try c.encode(coffee, forKey: .coffee)
         try c.encodeIfPresent(coffeeTakenOn, forKey: .coffeeTakenOn)
+        try c.encode(regelkort, forKey: .regelkort)
     }
 
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.
@@ -80,6 +85,16 @@ public struct TownState: Hashable, Codable, Sendable {
         }
         return TownState(mapId: mapId, walker: walker, calendar: TownCalendar(start: first),
                          start: MonthKey(first), clients: clients, contracts: TownRules.startContracts)
+    }
+
+    /// A fagkontor badge was won: one more contract and the rule cards of its topics the player does
+    /// not have yet. Returns the new cards so the app can tell about them. The badge itself is set by the app.
+    @discardableResult
+    public mutating func winFagkontor(_ ref: FagkontorRef, cards: [RuleCard]) -> [RuleCard] {
+        contracts += TownRules.contractsPerBadge
+        let fresh = cards.filter { ref.temaer.contains($0.tema) && !regelkort.contains($0.id) }
+        regelkort.formUnion(fresh.map(\.id))
+        return fresh
     }
 
     /// The office and the square in front of the boss: where a new game starts and where a collapse ends.

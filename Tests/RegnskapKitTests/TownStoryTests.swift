@@ -378,7 +378,7 @@ final class TownStoryTests: XCTestCase {
 
     func testAllThreeTrialsCanBeWonInPhase2a() throws {
         var state = TownState.new(content: town, year: 2026)
-        XCTAssertEqual(state.contracts, 3)
+        state.contracts = 3
         for id in [pixel, motor, doctor] { try winTrial(id, state: &state) }
         XCTAssertEqual(state.clients.values.filter { $0.status == .active }.count, 4)
         XCTAssertEqual(state.contracts, 0)

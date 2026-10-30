@@ -190,11 +190,14 @@ public struct TownFlow: Hashable, Sendable {
     private mutating func talkToFagkontor(_ person: TownPerson) -> TownAction {
         guard let ref = person.fagkontor else { return say(person.tekst) }
         if badges.contains(TownTrials.badgeKey(ref)) { return say(["Du har alt merket."]) }
+        if !TownTrials.fagkontorReady(ref, regions: regions) { return say(person.tekst + ["Kontoret er under bygging."]) }
         if TownTrials.fagkontorOpen(ref, regions: regions, damage: damage) {
             return say(person.tekst, then: .choice(prompt: "Vil du prøve?", yes: .fagkontor(ref)))
         }
-        let progress = ref.temaer.map { tema in
-            "GYM \(damage[tema] ?? 0)/\(regions.first { $0.tema == tema }?.damageTarget ?? 0)"
+        // A topic with no visible puzzles has no gym to show.
+        let progress = ref.temaer.compactMap { tema -> String? in
+            guard let region = regions.first(where: { $0.tema == tema }), !region.isEmpty else { return nil }
+            return "GYM \(damage[tema] ?? 0)/\(region.damageTarget)"
         }
         return say(person.tekst + [progress.joined(separator: "\n")])
     }

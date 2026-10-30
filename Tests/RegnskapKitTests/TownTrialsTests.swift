@@ -89,6 +89,21 @@ final class TownTrialsTests: XCTestCase {
         XCTAssertEqual(TownTrials.badgeKey(ref), "fag-mva")
     }
 
+    func testReadyAgreesWithFagkontorRegion() throws {
+        let approved = Self.library.approved
+        let regions = Regions.build(topics: Self.library.topics, pool: approved, progress: LearnerProgress())
+        var refs = Self.library.town.kart.flatMap(\.folk).compactMap(\.fagkontor)
+        refs.append(FagkontorRef(id: "tom", navn: "Tomt", temaer: ["finnes-ikke"]))
+        refs.append(FagkontorRef(id: "fixture", navn: "Fixture", temaer: ["mva"]))
+        for ref in refs {
+            XCTAssertEqual(TownTrials.fagkontorReady(ref, regions: regions),
+                           TownTrials.fagkontorRegion(ref, pool: approved, progress: LearnerProgress()) != nil, ref.id)
+        }
+        XCTAssertFalse(TownTrials.fagkontorReady(refs.last!, regions: regions.map { r in
+            Region(tema: r.tema, navn: r.navn, rekkefolge: r.rekkefolge, theme: r.theme, puzzles: Array(r.puzzles.prefix(2)), gymLeader: nil, caught: 0, mastered: 0, unlocked: true, gymBadge: nil)
+        }))
+    }
+
     func testFagkontorOpensWhenEveryThemeReachedItsTarget() {
         let regions = Regions.build(topics: Self.library.topics, pool: pool, progress: LearnerProgress())
         let ref = FagkontorRef(id: "mva", navn: "Fagkontor MVA", temaer: ["mva", "lonn"])

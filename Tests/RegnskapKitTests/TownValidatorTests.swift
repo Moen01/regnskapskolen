@@ -276,6 +276,12 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(t, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")
     }
 
+    func testRejectsLongFagkontorName() throws {
+        let office: [String: Any] = ["id": "fk", "navn": "Avskrivningskontoret", "temaer": ["mva"]]
+        let t = try town(editing: "kart/kontoret.json") { $0["folk"] = [self.person("f", x: 3, y: 2, rolle: "fagkontor", extra: ["fagkontor": office])] }
+        assertOneProblem(t, id: "kart:kontoret", contains: "Avskrivningskontoret")
+    }
+
     func testRejectsLongWordInMapName() throws {
         let t = try town(editing: "kart/kontoret.json") { $0["navn"] = "Skatteforvaltningsforskriften" }
         assertOneProblem(t, id: "kart:kontoret", contains: "Skatteforvaltningsforskriften")

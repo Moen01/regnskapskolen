@@ -23,6 +23,44 @@ final class TownStateTests: XCTestCase {
         XCTAssertTrue(content.klienter.contains { $0.startklient })
     }
 
+    func testNewGameStartsWithOneContract() {
+        XCTAssertEqual(TownState.new(content: Self.town, year: 2026).contracts, 1)
+    }
+
+    func testWinFagkontorGivesContractAndTheTopicsCards() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let ref = FagkontorRef(id: "mva", navn: "Mva-kontoret", temaer: ["mva"])
+        var state = TownState.new(content: Self.town, year: 2026)
+        let before = state.contracts
+        let given = state.winFagkontor(ref, cards: library.rules)
+        let expected = library.rules.filter { $0.tema == "mva" }
+        XCTAssertFalse(expected.isEmpty)
+        XCTAssertEqual(Set(given.map(\.id)), Set(expected.map(\.id)))
+        XCTAssertEqual(state.contracts, before + TownRules.contractsPerBadge)
+        XCTAssertEqual(state.regelkort, Set(expected.map(\.id)))
+    }
+
+    func testWinFagkontorNeverGivesACardTwice() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let ref = FagkontorRef(id: "mva", navn: "Mva-kontoret", temaer: ["mva"])
+        var state = TownState.new(content: Self.town, year: 2026)
+        _ = state.winFagkontor(ref, cards: library.rules)
+        let cards = state.regelkort
+        XCTAssertTrue(state.winFagkontor(ref, cards: library.rules).isEmpty)
+        XCTAssertEqual(state.regelkort, cards)
+    }
+
+    func testRegelkortRoundTripsAndOldSavesDecodeEmpty() throws {
+        var state = TownState.new(content: Self.town, year: 2026)
+        state.regelkort = ["a", "b"]
+        let data = try JSONEncoder().encode(state)
+        XCTAssertEqual(try JSONDecoder().decode(TownState.self, from: data).regelkort, ["a", "b"])
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        json.removeValue(forKey: "regelkort")
+        let old = try JSONDecoder().decode(TownState.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertEqual(old.regelkort, [])
+    }
+
     func testRoundTripThroughJSON() throws {
         var state = TownState.new(content: Self.town, year: 2026)
         let id = try XCTUnwrap(state.clients.keys.sorted().first)

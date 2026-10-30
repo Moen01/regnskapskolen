@@ -367,6 +367,35 @@ final class TownFlowTests: XCTestCase {
         XCTAssertEqual(readDialog(&done), .none)
     }
 
+    func testOfficeWithTooFewVisiblePuzzlesIsUnderConstruction() throws {
+        let pool = Self.library.pool(includeDrafts: false).filter { $0.tema != "mva" } + Array(Self.library.pool(includeDrafts: false).filter { $0.tema == "mva" }.prefix(2))
+        let thin = Regions.build(topics: Self.library.topics, pool: pool, progress: LearnerProgress())
+        var f = TownFlow(content: Self.town, state: state(x: 5, y: 2), deadlines: Self.library.deadlines, pool: Self.pool, regions: thin,
+                         damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.key(.a)
+        XCTAssertTrue(text(f).contains("Kontoret er under bygging."), text(f))
+        XCTAssertFalse(text(f).contains("GYM"))
+        XCTAssertEqual(readDialog(&f), .none)
+        XCTAssertEqual(f.phase, .walking, "no choice follows")
+    }
+
+    func testGymLinesSkipEmptyTopics() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.copyItem(at: TownContentTests.fixtureTown, to: folder)
+        let url = folder.appendingPathComponent("kart/kontoret.json")
+        var json = try String(contentsOf: url, encoding: .utf8)
+        json = json.replacingOccurrences(of: "\"temaer\": [\"mva\"]", with: "\"temaer\": [\"mva\", \"lonn\", \"kontoplan\"]")
+        try json.write(to: url, atomically: true, encoding: .utf8)
+        let town = try TownContent.load(folder: folder)
+        let pool = Self.library.pool(includeDrafts: false).filter { $0.tema != "kontoplan" }
+        let regions = Regions.build(topics: Self.library.topics, pool: pool, progress: LearnerProgress())
+        XCTAssertTrue(try XCTUnwrap(regions.first { $0.tema == "kontoplan" }).isEmpty)
+        var f = TownFlow(content: town, state: state(x: 5, y: 2), deadlines: Self.library.deadlines, pool: Self.pool, regions: regions,
+                         damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.key(.a)
+        XCTAssertEqual(text(f).components(separatedBy: "GYM").count - 1, 2, text(f))
+    }
+
     // MARK: Width
 
     func testClientRowCutsTheNameNotTheDeadline() {

@@ -44,6 +44,12 @@ public enum TownTrials {
         return region(tema: fagkontorPrefix + ref.id, navn: ref.navn, puzzles: Array(ranked.prefix(fagkontorSize)), progress: progress)
     }
 
+    /// Whether the fagkontor's topics hold enough puzzles for a run. The regions come from the same
+    /// selection as `fagkontorRegion`, so the two always agree. A thin office is still being built.
+    public static func fagkontorReady(_ ref: FagkontorRef, regions: [Region]) -> Bool {
+        regions.filter { ref.temaer.contains($0.tema) }.map(\.puzzles.count).reduce(0, +) >= fagkontorSize
+    }
+
     /// Open when every topic's saved damage has reached its region's target, like a gym. A topic
     /// with no region stays closed.
     public static func fagkontorOpen(_ ref: FagkontorRef, regions: [Region], damage: [String: Int]) -> Bool {

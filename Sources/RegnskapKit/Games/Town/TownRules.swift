@@ -25,8 +25,7 @@ public enum TownRules {
     public static let portfolioSize = 6
     public static let trialWinsNeeded = 2
     public static let fagkontorWinsNeeded = 3
-    /// 2a has one fagkontor and no other way to earn a contract, so the player starts with one per
-    /// client to win by trial (R12). 2c brings more fagkontor badges and lowers this.
-    public static let startContracts = 3
+    /// One at the start and one per fagkontor badge (spec Mål 11).
+    public static let startContracts = 1
     public static let contractsPerBadge = 1
 }
