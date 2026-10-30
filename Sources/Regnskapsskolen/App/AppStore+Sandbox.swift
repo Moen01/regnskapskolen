@@ -118,6 +118,17 @@ extension AppStore {
         saveSandbox()
     }
 
+    /// Opens a case from an entrance (a sandbox person in town, the bank's dungeon). The journal is
+    /// never cleared here: a case with entries of another case waits until the player empties the
+    /// sandbox. Returns the lines that tell why it did not open; empty when the caller may show it.
+    func enterSandbox(_ caseId: String) -> [String] {
+        let found = sandboxCases.first { $0.id == caseId }
+        let entrance = SandboxEntrance.decide(caseId: caseId, activeCaseId: activeCase?.id,
+                                              journalEmpty: sandbox.entries.isEmpty, exists: found != nil)
+        if entrance == .start, let found { startCase(found) }
+        return entrance.texts
+    }
+
     func clearSandbox() {
         sandbox = Journal()
         reconciliation = Reconciliation()

@@ -133,22 +133,13 @@ extension AppStore {
         }
     }
 
-    /// A sandbox entrance in town. The journal is never cleared from here: a case with entries
-    /// of another case waits until the player empties the sandbox.
+    /// A sandbox entrance in town; `enterSandbox` never clears a half-done case.
     private func openSandbox(_ caseId: String) {
-        if activeCase?.id == caseId {
-            pendingSection = .sandbox
+        let texts = enterSandbox(caseId)
+        guard texts.isEmpty else {
+            showTown(texts)
             return
         }
-        guard sandbox.entries.isEmpty else {
-            showTown(["Sandkassen har en annen sak.", "Tøm den først."])
-            return
-        }
-        guard let found = sandboxCases.first(where: { $0.id == caseId }) else {
-            showTown(["Saken finnes ikke ennå."])
-            return
-        }
-        startCase(found)
         pendingSection = .sandbox
     }
 
