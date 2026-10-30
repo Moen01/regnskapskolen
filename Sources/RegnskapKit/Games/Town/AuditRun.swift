@@ -16,6 +16,9 @@ public struct AuditRun: Hashable, Sendable {
     public private(set) var currentExaminer: AuditExaminer?
     public private(set) var chosenMove: Move?
     public private(set) var hasChosen = false
+    /// Counts the encounters shown so far. Two encounters can share a puzzle (an error and an
+    /// examiner, or two clients with the same wrong bilag), so the screen keys on this, not the id.
+    public private(set) var step = 0
     public private(set) var fixed: [OpenError] = []
     public private(set) var standing: [OpenError] = []
     /// Wrong answers to examiners.
@@ -121,6 +124,7 @@ public struct AuditRun: Hashable, Sendable {
             return
         }
         let next = queue.removeFirst()
+        step += 1
         current = next.encounter
         currentError = next.error
         currentExaminer = next.examiner

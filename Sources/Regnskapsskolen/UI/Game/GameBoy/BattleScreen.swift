@@ -6,7 +6,7 @@ import SwiftUI
 /// owns the phases; this view draws them and maps its actions onto the host.
 struct BattleScreen: View {
     let host: BattleHost
-    /// The flow for one creature; a creature with another id gets a fresh one.
+    /// The flow for one encounter; another `host.encounterKey` gets a fresh one.
     @State private var battle: Battle?
     /// Counts the misses, so each one shakes the screen once.
     @State private var misses = 0
@@ -26,7 +26,7 @@ struct BattleScreen: View {
     private var flow: BattleFlow? {
         guard let encounter = host.encounter() else { return nil }
         let library = host.library()
-        if let battle, battle.id == encounter.puzzle.id { return battle.flow }
+        if let battle, battle.id == host.encounterKey { return battle.flow }
         return BattleFlow(encounter: encounter,
                           laws: library?.laws ?? .empty,
                           cards: library?.rules(tema: encounter.puzzle.tema) ?? [],
@@ -38,7 +38,7 @@ struct BattleScreen: View {
         GBScreen(onKey: handle) {
             if let encounter = host.encounter(), let flow {
                 BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(),
-                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught)
+                            species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught, key: host.encounterKey ?? encounter.puzzle.id)
                 switch flow.phase {
                 case .moves:
                     ListPanel(title: "HVILKEN REGEL?", rows: flow.moveRows, cursor: flow.moveCursor, onClick: { index in click(row: index) })
@@ -58,7 +58,7 @@ struct BattleScreen: View {
                 }
             }
         }
-        .gbFlash(trigger: host.encounter()?.puzzle.id)
+        .gbFlash(trigger: host.encounterKey)
         .gbShake(trigger: misses)
     }
 
@@ -96,7 +96,7 @@ struct BattleScreen: View {
         var attempt = host.session()?.attempt ?? .empty(for: encounter.puzzle.kind)
         let action = step(&current, &attempt)
         host.setAttempt(attempt)
-        battle = Battle(id: encounter.puzzle.id, flow: current)
+        battle = Battle(id: host.encounterKey ?? encounter.puzzle.id, flow: current)
         act(action)
     }
 
@@ -143,6 +143,8 @@ private struct BattleField: View {
     let hp: Int?
     let species: String
     let caught: Bool
+    /// The host's encounter key, so the creature slides in again for a repeated puzzle.
+    let key: String
 
     private var creature: SpritePalette { GBTheme.creature(topic: encounter.puzzle.tema) }
 
@@ -161,10 +163,10 @@ private struct BattleField: View {
         GBAt(x: 100, y: 46) { Ellipse().fill(GBTheme.platform).frame(width: 56 * scale, height: 6 * scale) }
         if encounter.isGymLeader {
             GBAt(x: 102, y: 6) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id, large: true), palette: creature, pixel: 3) }
-                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
+                .gbSlideIn(trigger: key).gbShrink(when: caught)
         } else {
             GBAt(x: 108, y: 10) { GBSprite(PixelSprite.creature(seed: encounter.puzzle.id), palette: creature, pixel: 3) }
-                .gbSlideIn(trigger: encounter.puzzle.id).gbShrink(when: caught)
+                .gbSlideIn(trigger: key).gbShrink(when: caught)
         }
         GBAt(x: 12, y: 46) { GBSprite(PixelSprite.player, palette: GBTheme.player, pixel: 3) }
         if let hp {

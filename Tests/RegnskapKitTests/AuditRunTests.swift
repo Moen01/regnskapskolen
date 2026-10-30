@@ -54,6 +54,21 @@ final class AuditRunTests: XCTestCase {
         XCTAssertEqual(r.current?.context, .examiner(name: "Sensor Berg", first: true))
     }
 
+    func testStepChangesOnEveryEncounterEvenWithTheSamePuzzle() {
+        let shared = puzzle("e1")
+        var r = run(errors: [shared, shared], panel: [examiner("Kontrollør Aas", [shared])])
+        XCTAssertEqual(r.step, 1)
+        play(&r, right)
+        XCTAssertEqual(r.current?.puzzle.id, "e1")
+        XCTAssertEqual(r.step, 2)
+        play(&r, right)
+        XCTAssertEqual(r.current?.puzzle.id, "e1")
+        XCTAssertEqual(r.step, 3)
+        play(&r, right)
+        XCTAssertNil(r.current)
+        XCTAssertEqual(r.step, 3)
+    }
+
     func testSecondPuzzleOfAnExaminerContinues() {
         var r = run(errors: [], panel: [examiner("Kontrollør Aas", [puzzle("x1"), puzzle("x2")])])
         XCTAssertEqual(r.current?.context, .examiner(name: "Kontrollør Aas", first: true))
