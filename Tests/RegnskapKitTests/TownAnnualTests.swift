@@ -101,4 +101,84 @@ final class TownAnnualTests: XCTestCase {
         let back = try? JSONDecoder().decode(TownState.self, from: JSONEncoder().encode(s))
         XCTAssertNil(back?.annualFrom)
     }
+
+    // MARK: Counter, Fristnav, sleep and missed
+
+    private let cafe = "butikken"
+    private let allMonths2026 = (1...12).map { MonthKey(year: 2026, month: $0) }
+
+    private func counterRows(on day: DayKey, closed: [MonthKey], client: String = "butikken") -> [PanelRow] {
+        var s = TownState.new(content: Self.town, year: 2026)
+        s.calendar = TownCalendar(start: day)
+        s.clients[client]!.status = .active
+        s.clients[client]!.closedMonths = Set(closed)
+        var f = TownFlow(content: Self.town, state: s, deadlines: deadlines, pool: [], regions: [], damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.openCounter()
+        return f.phase == .counter ? f.rows : []
+    }
+
+    func testCounterOffersSkattemeldingFromJanuaryWithTheYearClosed() {
+        XCTAssertFalse(counterRows(on: DayKey(year: 2026, month: 12, day: 31), closed: allMonths2026).contains { $0.text.hasSuffix("LEVER SKATT") })
+        let jan = counterRows(on: DayKey(year: 2027, month: 1, day: 4), closed: allMonths2026)
+        XCTAssertTrue(jan.contains { $0.text.hasSuffix("LEVER SKATT") }, jan.map(\.text).joined(separator: ", "))
+        let open = counterRows(on: DayKey(year: 2027, month: 1, day: 4), closed: allMonths2026.filter { $0.month != 11 })
+        XCTAssertFalse(open.contains { $0.text.hasSuffix("LEVER SKATT") })
+    }
+
+    func testCounterOffersAarsregnskapOnlyForAs() {
+        let day = DayKey(year: 2027, month: 1, day: 4)
+        XCTAssertTrue(counterRows(on: day, closed: allMonths2026).contains { $0.text.hasSuffix("LEVER ÅRSREGN") })
+        let enk = counterRows(on: day, closed: allMonths2026, client: "konsulenten")
+        XCTAssertFalse(enk.contains { $0.text.hasSuffix("ÅRSREGN") }, enk.map(\.text).joined(separator: ", "))
+    }
+
+    private func activeState(on day: DayKey) -> TownState {
+        var s = TownState.new(content: Self.town, year: 2026)
+        s.calendar = TownCalendar(start: day)
+        s.clients[cafe]!.status = .active
+        return s
+    }
+
+    func testMissedSkattemeldingCostsTwentyFiveOnce() {
+        var s = activeState(on: DayKey(year: 2027, month: 6, day: 1))
+        s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        let before = s.clients[cafe]!.satisfaction
+        let missed = s.checkMissed(content: Self.town, deadlines: deadlines)
+        XCTAssertTrue(missed.contains { $0.kind.id == "skatt-2026" })
+        XCTAssertTrue(s.clients[cafe]!.missed.contains("skatt-2026"))
+        XCTAssertEqual(TownRules.missedDeadline, -25)
+        XCTAssertEqual(s.clients[cafe]!.satisfaction, max(0, before + TownRules.missedDeadline * missed.count))
+        XCTAssertEqual(s.checkMissed(content: Self.town, deadlines: deadlines), [])
+    }
+
+    func testDeliverSkattemeldingOnTheDay() {
+        var s = activeState(on: DayKey(year: 2027, month: 5, day: 31))
+        s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        let kind = DeadlineKind.skattemelding(year: 2026)
+        let missedNow = s.deliver(client: cafe, kind: kind, content: Self.town, deadlines: deadlines, pool: [])
+        XCTAssertFalse(missedNow.contains { $0.kind == kind })
+        XCTAssertTrue(s.clients[cafe]!.delivered.contains("skatt-2026"))
+        s.calendar = TownCalendar(start: DayKey(year: 2027, month: 6, day: 1))
+        XCTAssertFalse(s.checkMissed(content: Self.town, deadlines: deadlines).contains { $0.kind == kind })
+    }
+
+    func testSleepStopsThreeDaysBeforeSkattemelding() {
+        var s = activeState(on: DayKey(year: 2027, month: 5, day: 26))
+        s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        _ = s.sleep(content: Self.town, deadlines: deadlines, pool: [])
+        // 31.05.2027 is a Monday; three days before is Friday 28.05.2027.
+        XCTAssertEqual(s.calendar.today, DayKey(year: 2027, month: 5, day: 28))
+    }
+
+    func testCounterRowsFitTheListBox() {
+        let rows = counterRows(on: DayKey(year: 2027, month: 1, day: 4), closed: allMonths2026)
+        XCTAssertTrue(rows.contains { $0.text.hasSuffix("LEVER SKATT") })
+        for r in rows { XCTAssertLessThanOrEqual(r.text.count, TownFlow.rowColumns, r.text) }
+        var s = activeState(on: DayKey(year: 2027, month: 5, day: 28))
+        s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        var f = TownFlow(content: Self.town, state: s, deadlines: deadlines, pool: [], regions: [], damage: [:], badges: [], ruleCards: Self.library.rules)
+        _ = f.openFristnav()
+        XCTAssertTrue(f.rows.contains { $0.text.contains("SKATT") }, f.rows.map(\.text).joined(separator: ", "))
+        for r in f.rows { XCTAssertLessThanOrEqual(r.text.count, TownFlow.rowColumns, r.text) }
+    }
 }

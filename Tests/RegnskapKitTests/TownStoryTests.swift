@@ -525,4 +525,27 @@ final class TownStoryTests: XCTestCase {
             XCTAssertEqual(Set(client.provesak).intersection(client.oppgaver), [], client.id)
         }
     }
+
+    func testAYearOfDeliveriesEndsWithSkattemelding() {
+        var state = TownState.new(content: town, year: 2026)
+        state.calendar = TownCalendar(start: DayKey(year: 2027, month: 1, day: 4))
+        state.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        state.clients[cafe]?.closedMonths = Set((1...12).map { MonthKey(year: 2026, month: $0) })
+        // Everything else of 2026 is delivered, so only the annual deadlines are under test.
+        let client = town.client(cafe)!
+        for year in 2026...2027 {
+            for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) where !d.kind.isAnnual {
+                state.clients[cafe]?.delivered.insert(d.kind.id)
+            }
+        }
+        var f = flow(state)
+        _ = f.openCounter()
+        XCTAssertTrue(f.rows.contains { $0.text.hasSuffix("LEVER SKATT") }, f.rows.map(\.text).joined(separator: ", "))
+        XCTAssertEqual(state.deliver(client: cafe, kind: .skattemelding(year: 2026), content: town, deadlines: deadlines, pool: []), [])
+        state.calendar = TownCalendar(start: DayKey(year: 2027, month: 1, day: 5))
+        XCTAssertEqual(state.deliver(client: cafe, kind: .aarsregnskap(year: 2026), content: town, deadlines: deadlines, pool: []), [])
+        state.calendar = TownCalendar(start: DayKey(year: 2027, month: 8, day: 3))
+        XCTAssertEqual(state.checkMissed(content: town, deadlines: deadlines).filter { $0.kind.isAnnual }, [])
+        XCTAssertFalse(state.clients[cafe]!.missed.contains { $0.hasPrefix("skatt") || $0.hasPrefix("arsregnskap") })
+    }
 }
