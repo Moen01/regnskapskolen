@@ -111,6 +111,14 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(g.phase, .explanation)
     }
 
+    func testAuditedOutcomeShowsTheExplanation() {
+        var (f, a) = flow()
+        f.showOutcome(.audited(ok: false, hpLost: 1_000))
+        while f.hasMorePages { _ = f.handle(.a, attempt: &a) }
+        XCTAssertEqual(f.handle(.a, attempt: &a), .none)
+        XCTAssertEqual(f.phase, .explanation)
+    }
+
     func testClickOnTheDialogAdvancesLikeAInThePagePhases() {
         var (f, a) = flow()
         XCTAssertTrue(f.awaitsContinue)

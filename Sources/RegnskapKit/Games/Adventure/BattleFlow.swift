@@ -129,7 +129,7 @@ public struct BattleFlow: Hashable, Sendable {
             guard key == .a else { return .none }
             if hasMorePages { page += 1; return .none }
             // A booked bilag keeps its verdict quiet: the explanation would give it away.
-            // `.answered` shows the verdict like `.corrected`, so it leads to the explanation too.
+            // Everything else tells the verdict (`.answered`, `.audited`), so it leads to the explanation too.
             if outcome == .booked { return .next }
             enterExplanation()
             return .none

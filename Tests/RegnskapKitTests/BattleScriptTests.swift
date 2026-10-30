@@ -79,6 +79,45 @@ final class BattleScriptTests: XCTestCase {
         }
     }
 
+    func testAuditErrorIntro() {
+        let day = DayKey(year: 2026, month: 3, day: 14)
+        let species = SpeciesName.name(for: "mva-quiz-01")
+        XCTAssertEqual(BattleScript.intro(encounter(context: .auditError(client: "k", name: "KAFÉ", day: day))), ["Åpen feil hos KAFÉ: \(species) 14.03."])
+    }
+
+    func testExaminerIntro() {
+        let title = "Kontantsalg av en tjeneste"
+        XCTAssertEqual(BattleScript.intro(encounter(context: .examiner(name: "Kontrollør Aas", first: true))), ["Kontrollør Aas tar over!", title])
+        XCTAssertEqual(BattleScript.intro(encounter(context: .examiner(name: "Kontrollør Aas", first: false))), ["Kontrollør Aas spør videre.", title])
+    }
+
+    func testAuditResults() {
+        let day = DayKey(year: 2026, month: 3, day: 14)
+        let error = encounter(context: .auditError(client: "k", name: "KAFÉ", day: day))
+        let examiner = encounter(context: .examiner(name: "Aas", first: true))
+        XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: error), ["Feilen er rettet."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_000), encounter: error), ["Feilen står.", "Tilliten falt med 1 000."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: examiner), ["Ingen merknad."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_500), encounter: examiner), ["Merknad!", "Tilliten falt med 1 500."])
+    }
+
+    func testAuditLinesFitTheBox() throws {
+        let longest = try XCTUnwrap((0..<2000).map { "mva-quiz-\($0)" }.first { SpeciesName.name(for: $0).count == SpeciesName.maxLength })
+        let day = DayKey(year: 2026, month: 12, day: 31)
+        var pages: [String] = []
+        for context: EncounterContext in [.auditError(client: "k", name: "SPAREBANKEN", day: day), .examiner(name: "Kontrollør Johannessen", first: true), .examiner(name: "Sensor Johannessen", first: false)] {
+            let e = encounter(id: longest, context: context)
+            pages += BattleScript.intro(e)
+            for outcome: EncounterOutcome in [.audited(ok: true, hpLost: 0), .audited(ok: false, hpLost: 10_000)] { pages += BattleScript.result(outcome, encounter: e) }
+        }
+        pages += TownFlow.auditResultTexts(won: true, year: 2026, today: day, standing: 0, newBadge: true)
+        pages += TownFlow.auditResultTexts(won: false, year: 2026, today: day, standing: 10, newBadge: false)
+        for page in pages {
+            let lines = TextWrap.lines(page, columns: DialogBox.columns)
+            XCTAssertTrue(lines.allSatisfy { $0.count <= DialogBox.columns } && lines.count <= DialogBox.rows, "\(lines)")
+        }
+    }
+
     func testExplanationIsPlainTextPlusLawLines() {
         XCTAssertEqual(BattleScript.explanation(encounter(), laws: laws), ["Fordi bfl. sier det.", "bfl. § 4: Grunnleggende prinsipper."])
     }

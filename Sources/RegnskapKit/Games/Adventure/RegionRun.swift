@@ -20,6 +20,10 @@ public enum EncounterContext: Hashable, Sendable {
     case fagkontor(name: String)
     /// A customer case from a person in town; `name` is the client's short name for the intro.
     case kundesak(client: String, name: String)
+    /// An open error from the audited year, shown again in the bokettersyn.
+    case auditError(client: String, name: String, day: DayKey)
+    /// A controller or the sensor of the bokettersyn; `first` is the examiner's first puzzle.
+    case examiner(name: String, first: Bool)
 }
 
 public enum EncounterOutcome: Hashable, Sendable {
@@ -33,6 +37,8 @@ public enum EncounterOutcome: Hashable, Sendable {
     case corrected(ok: Bool)
     /// A customer case: the verdict is told, like a correction.
     case answered(ok: Bool)
+    /// The bokettersyn: the verdict is told, and `hpLost` comes off the single trust meter.
+    case audited(ok: Bool, hpLost: Int)
 }
 
 public struct RunSummary: Hashable, Sendable {

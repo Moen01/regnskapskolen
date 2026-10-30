@@ -109,7 +109,10 @@ struct BattleScreen: View {
         case .attack:
             host.attack()
             guard let outcome = host.outcome() else { return }
-            if case .escaped = outcome { misses += 1 }
+            switch outcome {
+            case .escaped, .audited(ok: false, _): misses += 1
+            default: break
+            }
             // A correct voucher lands one hit per line before the dialog tells the result.
             if case .caught = outcome, case .posting(let lines) = host.session()?.attempt ?? .quiz(nil), !AppStore.isScreenshotRun {
                 Task { @MainActor in

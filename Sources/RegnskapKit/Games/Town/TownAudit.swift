@@ -93,3 +93,17 @@ extension TownState {
         auditTriedOn = calendar.today
     }
 }
+
+extension TownFlow {
+    /// The dialog after the bokettersyn. A fail keeps the badges; the errors still open are told.
+    public static func auditResultTexts(won: Bool, year: Int, today: DayKey, standing: Int, newBadge: Bool) -> [String] {
+        if won {
+            var texts = ["Bokettersynet er avsluttet uten merknader.", "Regnskapsåret \(today.year) er i gang."]
+            if newBadge { texts.append("Du fikk merket «Revisorens beste venn»!") }
+            return texts
+        }
+        var texts = ["Bokettersynet er avbrutt.", "Du er tilbake på kontoret. Merkene dine er i behold."]
+        if standing > 0 { texts.append("\(standing) feil står fortsatt åpne.") }
+        return texts
+    }
+}
