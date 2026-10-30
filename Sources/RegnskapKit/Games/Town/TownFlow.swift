@@ -1,7 +1,7 @@
 import Foundation
 
 public enum TownPhase: Hashable, Sendable {
-    case walking, dialog, menu, fristnav, portfolio, counter, choice
+    case walking, dialog, menu, fristnav, portfolio, bag, counter, choice
 }
 
 /// What the app must do after a key. The flow never spends calendar actions itself: the app
@@ -28,7 +28,7 @@ public enum TownAction: Hashable, Sendable {
 /// the main menu, Fristnav, the portfolio and the counter. Pure state, like `BattleFlow`; the app
 /// draws `phase`, `pages` and `rows` and performs the returned `TownAction`.
 public struct TownFlow: Hashable, Sendable {
-    public static let mainMenu = ["FRISTNAV", "PORTEFØLJE", "SAMLING", "TRENING", "LAGRE"]
+    public static let mainMenu = ["FRISTNAV", "PORTEFØLJE", "BAG", "SAMLING", "TRENING", "LAGRE"]
     public static let columns = 18
     public static let rows = 3
     /// List rows leave one column for the cursor.
@@ -47,7 +47,7 @@ public struct TownFlow: Hashable, Sendable {
     public private(set) var phase: TownPhase = .walking
     public private(set) var pages: [[String]] = [[]]
     public private(set) var page = 0
-    public private(set) var rows: [PanelRow] = []
+    public internal(set) var rows: [PanelRow] = []
     public private(set) var cursor = 0
     /// What the last dialog page leads to; in `.choice`, what JA does.
     var then: Followup = .walk
@@ -101,7 +101,7 @@ public struct TownFlow: Hashable, Sendable {
             guard key == .a || key == .tab || key == .character(" ") else { return .none }
             if hasMorePages { page += 1; return .none }
             return follow(then)
-        case .menu, .fristnav, .portfolio, .counter, .choice:
+        case .menu, .fristnav, .portfolio, .bag, .counter, .choice:
             return handleList(key)
         }
     }
@@ -143,6 +143,8 @@ public struct TownFlow: Hashable, Sendable {
             return talkToClient(person)
         case .skranke:
             return openCounter()
+        case .kaffe:
+            return takeCoffee()
         }
     }
 
@@ -207,6 +209,7 @@ public struct TownFlow: Hashable, Sendable {
         case .counter: return selectCounter()
         case .choice: return choose()
         // The dialog already shows the row in full; A reads on through it.
+        case .bag: return selectBag()
         case .fristnav, .portfolio: turnPage(); return .none
         case .walking, .dialog: return .none
         }
@@ -223,8 +226,9 @@ public struct TownFlow: Hashable, Sendable {
         switch cursor {
         case 0: return openFristnav()
         case 1: return openPortfolio()
-        case 2: walk(); return .openCollection
-        case 3: walk(); return .openTraining
+        case 2: openBag(); return .none
+        case 3: walk(); return .openCollection
+        case 4: walk(); return .openTraining
         default: walk(); return .save
         }
     }
@@ -310,7 +314,7 @@ public struct TownFlow: Hashable, Sendable {
     }
 
     /// Tab in a list: the next page, round to the first.
-    private mutating func turnPage() {
+    mutating func turnPage() {
         page = hasMorePages ? page + 1 : 0
     }
 

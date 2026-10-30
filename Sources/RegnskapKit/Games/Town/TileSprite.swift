@@ -18,6 +18,7 @@ public enum TileSprite {
     }
 
     public static func person(_ role: PersonRole, facing: Facing) -> PixelSprite {
+        if role == .kaffe { return coffeeMachine }
         let base = switch facing {
         case .down: personDown
         case .up: personUp
@@ -237,6 +238,7 @@ public enum TileSprite {
         switch role {
         case .skilt: sign
         case .seng: sofa
+        case .kaffe: coffeeMachine
         default: nil
         }
     }
@@ -256,6 +258,25 @@ public enum TileSprite {
         "0000000110000000",
         "0000000110000000",
         "0000001111000000",
+        "0000000000000000",
+        "0000000000000000",
+    ])
+
+    private static let coffeeMachine = parse([
+        "0000000000000000",
+        "0001111111111000",
+        "0012222222222100",
+        "0012333333332100",
+        "0012322222232100",
+        "0012333333332100",
+        "0012222222222100",
+        "0012211221122100",
+        "0012211221122100",
+        "0012233333322100",
+        "0012233333322100",
+        "0012233113322100",
+        "0012233333322100",
+        "0011111111111100",
         "0000000000000000",
         "0000000000000000",
     ])

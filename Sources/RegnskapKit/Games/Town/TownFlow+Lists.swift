@@ -72,6 +72,39 @@ extension TownFlow {
         return [facts, frister, titles].filter { !$0.isEmpty }.map { $0.joined(separator: "\n") }
     }
 
+    // MARK: Bag and coffee
+
+    /// The machine gives one cup per day; the cup goes in the bag.
+    mutating func takeCoffee() -> TownAction {
+        guard state.coffeeTakenOn != today else { return say(["Kannen er tom til i morgen."]) }
+        state.coffee += TownRules.coffeePerDay
+        state.coffeeTakenOn = today
+        return say(["Du tar en kaffe med deg."])
+    }
+
+    private var bagRows: [PanelRow] {
+        [PanelRow(id: "kaffe", text: "KAFFE x\(state.coffee)", full: "Kaffe gir deg \(TownRules.coffeeEnergy) energi"),
+         PanelRow(id: "avtaler", text: "AVTALER x\(state.contracts)", full: "Oppdragsavtaler du kan bruke på en prøvesak")]
+    }
+
+    mutating func openBag() {
+        openList(.bag, rows: bagRows)
+    }
+
+    /// A on the coffee drinks one cup; the list stays open so the player sees the numbers change.
+    mutating func selectBag() -> TownAction {
+        guard cursor == 0 else { turnPage(); return .none }
+        guard state.coffee > 0 else {
+            show(["Du har ingen kaffe."])
+            return .none
+        }
+        state.coffee -= 1
+        state.energy = min(TownRules.maxEnergy, state.energy + TownRules.coffeeEnergy)
+        rows = bagRows
+        show(["Du føler deg våken."])
+        return .none
+    }
+
     // MARK: Counter
 
     mutating func openCounter() -> TownAction {

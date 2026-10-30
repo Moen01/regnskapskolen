@@ -15,6 +15,11 @@ public enum TownRules {
     public static let discoverOneIn: UInt64 = 4
     public static let discoverAfterDays = 7
     public static let discoveredPenalty = -15
+    /// Energy is spent per encounter, right or wrong alike, so it never gives the verdict away.
+    public static let maxEnergy = 100
+    public static let energyPerEncounter = 5
+    public static let coffeeEnergy = 30
+    public static let coffeePerDay = 1
     public static let portfolioSize = 6
     public static let trialWinsNeeded = 2
     public static let fagkontorWinsNeeded = 3

@@ -15,11 +15,16 @@ public struct TownState: Hashable, Codable, Sendable {
     /// the start. A save from phase 2a has no such field and gets the day it is opened, so the
     /// payroll deadlines of the months before do not all go missed in that moment.
     public var payrollFrom: DayKey?
+    /// Spent by every encounter; at 0 the player collapses (`collapse`). The bed fills it.
+    public var energy: Int = TownRules.maxEnergy
+    /// Cups in the bag, taken from the office machine, one per day.
+    public var coffee: Int = 0
+    public var coffeeTakenOn: DayKey?
     /// Errors found since `takeDiscoveries` was last called. Not part of the save.
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil) {
+                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -27,9 +32,12 @@ public struct TownState: Hashable, Codable, Sendable {
         self.clients = clients
         self.contracts = contracts
         self.payrollFrom = payrollFrom
+        self.energy = energy
+        self.coffee = coffee
+        self.coffeeTakenOn = coffeeTakenOn
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -41,6 +49,9 @@ public struct TownState: Hashable, Codable, Sendable {
         contracts = try c.decode(Int.self, forKey: .contracts)
         // `nil` is written as an explicit null, so only a missing key (a 2a save) means "from today".
         payrollFrom = c.contains(.payrollFrom) ? try c.decodeIfPresent(DayKey.self, forKey: .payrollFrom) : calendar.today
+        energy = try c.decodeIfPresent(Int.self, forKey: .energy) ?? TownRules.maxEnergy
+        coffee = try c.decodeIfPresent(Int.self, forKey: .coffee) ?? 0
+        coffeeTakenOn = try c.decodeIfPresent(DayKey.self, forKey: .coffeeTakenOn)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -52,22 +63,30 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encode(clients, forKey: .clients)
         try c.encode(contracts, forKey: .contracts)
         try c.encode(payrollFrom, forKey: .payrollFrom)
+        try c.encode(energy, forKey: .energy)
+        try c.encode(coffee, forKey: .coffee)
+        try c.encodeIfPresent(coffeeTakenOn, forKey: .coffeeTakenOn)
     }
 
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.
     /// Validated content always has that map and a boss; if it does not, fall back to (0, 0) on the
     /// first map instead of crashing, so a broken content folder cannot take the app down.
     public static func new(content: TownContent, year: Int) -> TownState {
-        let office = content.map("kontoret") ?? content.kart.first
-        let boss = office?.folk.first { $0.rolle == .sjef }
-        let walker = TownWalker(x: boss?.x ?? 0, y: boss.map { $0.y + 1 } ?? 0, facing: .up)
+        let (mapId, walker) = officeSpot(content)
         let first = DayKey(year: year, month: 1, day: 1)
         var clients: [String: ClientState] = [:]
         for client in content.klienter {
             clients[client.id] = .fresh(client.startklient ? .active : .prospect)
         }
-        return TownState(mapId: office?.id ?? "kontoret", walker: walker, calendar: TownCalendar(start: first),
+        return TownState(mapId: mapId, walker: walker, calendar: TownCalendar(start: first),
                          start: MonthKey(first), clients: clients, contracts: TownRules.startContracts)
+    }
+
+    /// The office and the square in front of the boss: where a new game starts and where a collapse ends.
+    static func officeSpot(_ content: TownContent) -> (mapId: String, walker: TownWalker) {
+        let office = content.map("kontoret") ?? content.kart.first
+        let boss = office?.folk.first { $0.rolle == .sjef }
+        return (office?.id ?? "kontoret", TownWalker(x: boss?.x ?? 0, y: boss.map { $0.y + 1 } ?? 0, facing: .up))
     }
 
     /// The box the puzzle had before its oldest open error, so the collection does not give the error away.

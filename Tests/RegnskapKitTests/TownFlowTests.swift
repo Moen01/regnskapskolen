@@ -63,14 +63,19 @@ final class TownFlowTests: XCTestCase {
         _ = f.key(.down)
         _ = f.key(.down)
         XCTAssertEqual(f.cursor, 2)
+        XCTAssertEqual(f.key(.a), .none)
+        XCTAssertEqual(f.phase, .bag)
+        _ = f.key(.b)
+        _ = f.key(.a)
+        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
         XCTAssertEqual(f.key(.a), .openCollection)
         XCTAssertEqual(f.phase, .walking)
         _ = f.key(.a)
-        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
+        _ = f.key(.down); _ = f.key(.down); _ = f.key(.down); _ = f.key(.down)
         XCTAssertEqual(f.key(.a), .openTraining)
         _ = f.key(.a)
         for _ in 0..<10 { _ = f.key(.down) }
-        XCTAssertEqual(f.cursor, 4)
+        XCTAssertEqual(f.cursor, 5)
         XCTAssertEqual(f.key(.a), .save)
     }
 

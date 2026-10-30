@@ -76,11 +76,33 @@ extension TownState {
         return events
     }
 
+    /// One encounter's energy. Right and wrong cost the same, so the bar never tells the verdict.
+    /// Returns true when the energy is now 0 and the player collapses.
+    public mutating func spendEncounter() -> Bool {
+        energy = max(0, energy - TownRules.energyPerEncounter)
+        return energy == 0
+    }
+
+    /// The player runs out of energy: wakes at the office the next morning with full energy, and the
+    /// new day is checked like any other. Returns the deadlines missed on the way.
+    public mutating func collapse(content: TownContent, deadlines: Deadlines, pool: Set<String>) -> [TownDeadline] {
+        let spot = Self.officeSpot(content)
+        mapId = spot.mapId
+        walker = spot.walker
+        let tomorrow = calendar.today.adding(days: 1)
+        calendar.sleep(events: [tomorrow])
+        energy = TownRules.maxEnergy
+        let missed = checkMissed(content: content, deadlines: deadlines)
+        _ = discover(day: calendar.today, content: content, pool: pool)
+        return missed
+    }
+
     /// Sleeps to the next event and returns the deadlines that were missed on the way.
     /// Every day passed on the way gets its own roll for discovered errors.
     public mutating func sleep(content: TownContent, deadlines: Deadlines, pool: Set<String>) -> [TownDeadline] {
         let from = calendar.today
         calendar.sleep(events: sleepEvents(content: content, deadlines: deadlines))
+        energy = TownRules.maxEnergy
         let missed = checkMissed(content: content, deadlines: deadlines)
         var day = from.adding(days: 1)
         while day <= calendar.today {
