@@ -76,6 +76,25 @@ extension AppStore {
             earned += Badges.award(.bankReconciled, on: todayKey, progress: &progress)
         }
         if !earned.isEmpty { newBadges += earned; saveProgress() }
+        creditSandboxIfCleared()
+    }
+
+    /// A cleared case gives its town credit once (a closed month or a rule card). The lines wait in
+    /// `townNotice` until the town opens. The sandbox journal itself is left as it is.
+    func creditSandboxIfCleared() {
+        guard let library, let activeCase, progress.game.town != nil, !sandbox.entries.isEmpty else { return }
+        let cleared = activeCase.kontoutskrift != nil
+            ? bankCheck?.done == true
+            : activeCase.compare(journal: sandbox, chart: library.chart).isEmpty
+        guard cleared, let (credit, damage) = progress.game.town?.creditSandbox(
+            activeCase.id, content: library.town, pool: Set(pool.map(\.id)), tema: { library.puzzle(id: $0)?.tema }) else { return }
+        let texts = TownFlow.sandboxTexts(credit, content: library.town, ruleCards: library.rules)
+        guard !texts.isEmpty else { return }
+        addDamage(damage)
+        saveProgress()
+        townNotice += texts
+        // The flow holds its own copy of the state and would write the old one back on its next key.
+        if town != nil { refreshTown() }
     }
 
     func validateSandbox() {

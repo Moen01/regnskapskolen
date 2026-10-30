@@ -6,6 +6,7 @@ import SwiftUI
 /// phases; this view draws them and sends every key to the store.
 struct TownScreen: View {
     @Environment(AppStore.self) private var store
+    @Environment(Navigation.self) private var navigation
     /// Whether the dialog has typed out its page; Enter and space first reveal, then advance.
     @State private var dialogComplete = true
     @State private var reveal = 0
@@ -20,6 +21,12 @@ struct TownScreen: View {
             }
         }
         .onAppear { store.openTown() }
+        // A sandbox entrance asks for the sandbox; the store cannot move the window's section itself.
+        .onChange(of: store.pendingSection) {
+            guard let section = store.pendingSection else { return }
+            store.pendingSection = nil
+            navigation.section = section
+        }
     }
 
     @ViewBuilder

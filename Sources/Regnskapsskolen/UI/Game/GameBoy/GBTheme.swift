@@ -111,10 +111,12 @@ enum GBTheme {
         case .skilt: SpritePalette(outline: hex(0x5A3418), body: hex(0xC89058), detail: hex(0xF0E0B0))
         case .seng: SpritePalette(outline: hex(0x202850), body: hex(0x4058A8), detail: hex(0x88A0E0))
         case .kaffe: SpritePalette(outline: hex(0x282830), body: hex(0x8890A0), detail: hex(0xC84030))
-        // Temporary until the final palettes of phase 2c.
-        case .arkiv: SpritePalette(outline: hex(0x282830), body: hex(0xA8B0B8), detail: hex(0x58C0D8))
-        case .sandkasse: SpritePalette(outline: hex(0x5A3418), body: hex(0xD8B060), detail: hex(0xF0E0B0))
-        case .funn: SpritePalette(outline: hex(0x5A3418), body: hex(0xE8D8A8), detail: hex(0xC84030))
+        // The archive PC: a beige case with a green screen.
+        case .arkiv: SpritePalette(outline: hex(0x1E2630), body: hex(0xC8C4B0), detail: hex(0x3CA878))
+        // A sandbox binder: mustard with a pale label, apart from the brown sign.
+        case .sandkasse: SpritePalette(outline: hex(0x4A3008), body: hex(0xE0A020), detail: hex(0xF8F0D0))
+        // A paper find: white sheets with a red stamp, darker outline than the floor.
+        case .funn: SpritePalette(outline: hex(0x3C3850), body: hex(0xF8F4E8), detail: hex(0xD03838))
         }
     }
 

@@ -73,6 +73,7 @@ final class TownBagTests: XCTestCase {
         _ = f.key(.a)
         XCTAssertNil(f.state.equippedCard)
         XCTAssertTrue(f.rows.filter(\.marked).isEmpty)
+        XCTAssertEqual(text(f), "Kortet er lagt tilbake.")
     }
 
     func testTakeEquippedCardIsOneBattle() {
@@ -81,6 +82,16 @@ final class TownBagTests: XCTestCase {
         XCTAssertEqual(s.takeEquippedCard(), card.id)
         XCTAssertNil(s.takeEquippedCard())
         XCTAssertNil(s.equippedCard)
+    }
+
+    func testEquippedCardJoinsTheOwnCardsOnce() {
+        var s = TownState.new(content: Self.town, year: 2026)
+        XCTAssertEqual(s.ownCards([card], all: Self.library.rules).map(\.id), [card.id])
+        s.equippedCard = other.id
+        XCTAssertEqual(s.ownCards([card], all: Self.library.rules).map(\.id), [card.id, other.id])
+        XCTAssertEqual(s.ownCards([card, other], all: Self.library.rules).map(\.id), [card.id, other.id])
+        s.equippedCard = "finnes-ikke"
+        XCTAssertEqual(s.ownCards([card], all: Self.library.rules).map(\.id), [card.id])
     }
 
     func testOldSaveHasNoCardsOrFinds() throws {

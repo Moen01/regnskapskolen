@@ -15,13 +15,36 @@ extension AppStore {
 
     /// Shows the town; the first visit starts a game on 1 January of the year `satser.json` was checked.
     /// A flow showing a dialog is kept, so a message told after a run is not lost on appear.
+    /// Before the flow is built: a player in a district without permit wakes at the office, badges
+    /// won outside town give their permits, and a cleared sandbox case gives its credit.
     func openTown() {
         guard let library else { return }
         if progress.game.town == nil {
             progress.game.town = TownState.new(content: library.town, year: library.rates.verifisert.year)
             saveProgress()
         }
-        if town == nil || town?.phase == .walking { refreshTown() }
+        // A kept flow writes its own copy of the state back on the next key, so the state is only
+        // changed here when the flow is built again right after.
+        guard town == nil || town?.phase == .walking else { return }
+        let moved = progress.game.town?.relocateIfLocked(content: library.town) == true
+        townNotice += grantFullmakter()
+        if moved { saveProgress() }
+        creditSandboxIfCleared()
+        refreshTown()
+        if !townNotice.isEmpty {
+            town?.tell(townNotice)
+            townNotice = []
+        }
+    }
+
+    /// Gives the permits the badges earn and saves them; returns the lines that tell the new ones.
+    private func grantFullmakter() -> [String] {
+        guard let library else { return [] }
+        // Read before the mutation: reading `progress` inside a call that mutates it is an access conflict.
+        let badges = Set(progress.game.badges.keys), regions = regions
+        let fresh = progress.game.town?.grantFullmakter(content: library.town, badges: badges, regions: regions) ?? []
+        if !fresh.isEmpty { saveProgress() }
+        return fresh.map { "Du har fullmakt til \($0.navn)!" }
     }
 
     /// Builds the flow again from the saved state: a run may have changed the state, badges, damage or pool.
@@ -41,8 +64,12 @@ extension AppStore {
         // Copying out is always safe; only writing *into* the flow must wait until it walks again.
         // A talk, a clean close, a cup from the machine or one drunk from the bag change the state
         // without an action: save it now. Steps are saved at doors and LAGRE, not on every square.
+        // The bag and the archive change cards, finds and clients without an action too.
         let old = progress.game.town
-        let changed = flow.state.clients != old?.clients || flow.state.coffee != old?.coffee || flow.state.energy != old?.energy
+        let new = flow.state
+        let changed = new.clients != old?.clients || new.coffee != old?.coffee || new.energy != old?.energy
+            || new.contracts != old?.contracts || new.regelkort != old?.regelkort || new.equippedCard != old?.equippedCard
+            || new.found != old?.found || new.fullmakter != old?.fullmakter || new.sandboxCleared != old?.sandboxCleared
         progress.game.town = flow.state
         if changed { saveProgress() }
         perform(action)
@@ -65,9 +92,8 @@ extension AppStore {
             showTraining = true
         case .openCollection:
             showCollection = true
-        case .openSandbox:
-            // Opened from the sandbox entrances in a later task.
-            break
+        case .openSandbox(let caseId):
+            openSandbox(caseId)
         case .sleep:
             sleepInTown()
         case .startTrial where activeClientCount >= TownRules.portfolioSize:
@@ -93,6 +119,25 @@ extension AppStore {
         case .startCase(let id, let puzzle):
             startCustomerCase(id, puzzle: puzzle)
         }
+    }
+
+    /// A sandbox entrance in town. The journal is never cleared from here: a case with entries
+    /// of another case waits until the player empties the sandbox.
+    private func openSandbox(_ caseId: String) {
+        if activeCase?.id == caseId {
+            pendingSection = .sandbox
+            return
+        }
+        guard sandbox.entries.isEmpty else {
+            showTown(["Sandkassen har en annen sak.", "Tøm den først."])
+            return
+        }
+        guard let found = sandboxCases.first(where: { $0.id == caseId }) else {
+            showTown(["Saken finnes ikke ennå."])
+            return
+        }
+        startCase(found)
+        pendingSection = .sandbox
     }
 
     private var activeClientCount: Int {
@@ -214,18 +259,27 @@ extension AppStore {
     }
 
     /// The industry's own cards (and its topics' cards) give the moves; the rest are the decoys.
+    /// The equipped card counts as one of the industry's own for this battle.
     private func ruleCards(for client: TownClient) -> (own: [RuleCard], other: [RuleCard]) {
         let all = library?.rules ?? []
         let bransje = library?.town.bransje(client.bransje)
-        let own = all.filter { bransje?.regelkort.contains($0.id) == true || bransje?.temaer.contains($0.tema) == true }
+        let own = withEquippedCard(all.filter { bransje?.regelkort.contains($0.id) == true || bransje?.temaer.contains($0.tema) == true })
         let ownIds = Set(own.map(\.id))
         return (own, all.filter { !ownIds.contains($0.id) })
     }
 
+    private func withEquippedCard(_ own: [RuleCard]) -> [RuleCard] {
+        progress.game.town?.ownCards(own, all: library?.rules ?? []) ?? own
+    }
+
     /// A run with an encounter costs its action when the player is back in town (`showTown`), so a
-    /// bilag booked with the day's last action still gets that day's date. An empty run costs nothing.
+    /// bilag booked with the day's last action still gets that day's date. An empty run costs nothing,
+    /// and keeps the equipped card too.
     private func begin(_ run: BilagRun) {
-        if run.current != nil { townActionPending = true }
+        if run.current != nil {
+            townActionPending = true
+            _ = progress.game.town?.takeEquippedCard()
+        }
         bilagRun = run
         showBilagEncounter()
         if run.phase == .finished { finishBilag() }
@@ -273,7 +327,7 @@ extension AppStore {
         saveProgress()
     }
 
-    private func addDamage(_ damage: [String: Int]) {
+    func addDamage(_ damage: [String: Int]) {
         for (tema, value) in damage where value > 0 { progress.game.regionDamage[tema, default: 0] += value }
     }
 
@@ -336,14 +390,18 @@ extension AppStore {
         startTownRun(region, goal: .fagkontor(ref), context: .fagkontor(name: ref.navn), cards: library.rules.filter { ref.temaer.contains($0.tema) })
     }
 
-    private func startTownRun(_ region: Region, goal: TownRunGoal, context: EncounterContext, cards: [RuleCard]) {
+    private func startTownRun(_ region: Region, goal: TownRunGoal, context: EncounterContext, cards own: [RuleCard]) {
+        let cards = withEquippedCard(own)
         let ownIds = Set(cards.map(\.id))
         // The masked progress picks and shows the creatures, so a stage never tells a booking's verdict.
         let shown = maskedProgress
         var run = RegionRun(region: region, progress: shown, today: todayKey, regionCards: cards,
                             otherCards: (library?.rules ?? []).filter { !ownIds.contains($0.id) }, seed: townSeed, context: context)
         run.nextEncounter(progress: shown, today: todayKey)
-        if run.current != nil { townActionPending = true }
+        if run.current != nil {
+            townActionPending = true
+            _ = progress.game.town?.takeEquippedCard()
+        }
         townRun = run
         townRunGoal = goal
         trialScore = TrialScore()
@@ -373,7 +431,8 @@ extension AppStore {
     }
 
     /// Scores the run: a won trial makes the client active for one contract; a won fagkontor gives
-    /// its badge and a new contract. Never `regionDamage`: this damage is not the topic's.
+    /// its badge, a new contract, its topics' rule cards and the permits the badge opens.
+    /// Never `regionDamage`: this damage is not the topic's.
     func finishTownRun() {
         guard var run = townRun, let goal = townRunGoal else { return }
         run.finish()
@@ -390,9 +449,7 @@ extension AppStore {
             }
         case .fagkontor(let ref):
             if trialScore.won(needed: TownRules.fagkontorWinsNeeded) {
-                progress.game.badges[TownTrials.badgeKey(ref)] = todayKey
-                progress.game.town?.contracts += TownRules.contractsPerBadge
-                lines = ["Du fikk merket fra \(ref.navn)!", "Du har en ny oppdragsavtale."]
+                lines = winFagkontor(ref)
             } else {
                 lines = ["\(ref.navn): ikke bestått denne gangen."]
             }
@@ -403,5 +460,16 @@ extension AppStore {
         trialScore = TrialScore()
         saveProgress()
         showTown(lines)
+    }
+
+    /// The badge, its contract and its cards are given once: a badge already won gives nothing new.
+    private func winFagkontor(_ ref: FagkontorRef) -> [String] {
+        let key = TownTrials.badgeKey(ref)
+        guard progress.game.badges[key] == nil else { return ["Du har allerede merket fra \(ref.navn)."] }
+        progress.game.badges[key] = todayKey
+        let cards = progress.game.town?.winFagkontor(ref, cards: library?.rules ?? []) ?? []
+        return ["Du fikk merket fra \(ref.navn)!", "Du har en ny oppdragsavtale."]
+            + cards.map { "Du fikk regelkortet «\($0.tittel)»." }
+            + grantFullmakter()
     }
 }

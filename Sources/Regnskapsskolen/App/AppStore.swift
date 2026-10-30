@@ -76,6 +76,8 @@ final class AppStore {
     var townActionPending = false
     /// An encounter used the last energy: the run ends after its outcome and the player wakes at the office.
     var townCollapsed = false
+    /// A section the town asks for, such as the sandbox from a sandbox entrance; the screen moves there and clears it.
+    var pendingSection: AppSection?
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
     /// The last summary came from the weekly challenge, so it shows the shareable code.

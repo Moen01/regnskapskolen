@@ -99,6 +99,12 @@ public struct TownState: Hashable, Codable, Sendable {
         return equippedCard
     }
 
+    /// A battle's own cards with the equipped card added once, so its moves count in this battle.
+    public func ownCards(_ own: [RuleCard], all: [RuleCard]) -> [RuleCard] {
+        guard let id = equippedCard, !own.contains(where: { $0.id == id }), let card = all.first(where: { $0.id == id }) else { return own }
+        return own + [card]
+    }
+
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.
     /// Validated content always has that map and a boss; if it does not, fall back to (0, 0) on the
     /// first map instead of crashing, so a broken content folder cannot take the app down.

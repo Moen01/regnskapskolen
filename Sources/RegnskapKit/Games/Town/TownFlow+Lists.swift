@@ -181,9 +181,10 @@ extension TownFlow {
     mutating func selectCard() -> TownAction {
         guard rows.indices.contains(cursor) else { return .none }
         let id = rows[cursor].id
-        state.equippedCard = state.equippedCard == id ? nil : id
+        let unequip = state.equippedCard == id
+        state.equippedCard = unequip ? nil : id
         rows = cardRows()
-        show([rows[cursor].full ?? rows[cursor].text])
+        show(unequip ? ["Kortet er lagt tilbake."] : [rows[cursor].full ?? rows[cursor].text])
         return .none
     }
 
