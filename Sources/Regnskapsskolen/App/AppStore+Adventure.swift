@@ -31,10 +31,13 @@ extension AppStore {
         guard let library, let region = currentRegion, !region.isEmpty else { return }
         lastRunSummary = nil
         newBadges = []
-        var fresh = RegionRun(region: region, progress: progress, today: todayKey,
+        // The masked boxes pick and show the creatures, like the town's runs: the real box of a
+        // bilag in an open month would tell its verdict. `record` still writes the real progress.
+        let shown = maskedProgress
+        var fresh = RegionRun(region: region, progress: shown, today: todayKey,
                               regionCards: library.rules(tema: region.tema), otherCards: library.rules.filter { $0.tema != region.tema },
                               seed: UInt64(Date().timeIntervalSince1970))
-        fresh.nextEncounter(progress: progress, today: todayKey)
+        fresh.nextEncounter(progress: shown, today: todayKey)
         run = fresh
         encounterSession = fresh.current.map { PuzzleSession(puzzle: $0.puzzle) }
         if fresh.phase == .finished { endRun() }
@@ -47,7 +50,7 @@ extension AppStore {
     /// The learner pressed «Sjekk»: the run judges the attempt, the scheduler hears the result, XP and badges follow.
     func answerEncounter() {
         guard var current = run, let session = encounterSession, session.attempt.isAnswered,
-              let (outcome, result) = current.answer(session.attempt, progress: progress, today: todayKey) else { return }
+              let (outcome, result) = current.answer(session.attempt, progress: maskedProgress, today: todayKey) else { return }
         run = current
         record(result, countXP: false)
         if case .caught = outcome {
@@ -64,7 +67,7 @@ extension AppStore {
     func proceedEncounter() {
         guard var current = run else { return }
         current.proceed()
-        current.nextEncounter(progress: progress, today: todayKey)
+        current.nextEncounter(progress: maskedProgress, today: todayKey)
         run = current
         encounterSession = current.current.map { PuzzleSession(puzzle: $0.puzzle) }
         if current.phase == .finished { endRun() }

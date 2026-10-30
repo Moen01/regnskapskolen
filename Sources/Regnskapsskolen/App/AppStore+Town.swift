@@ -251,7 +251,8 @@ extension AppStore {
         guard let (_, result, damage) = run.answer(session.attempt, progress: progress, today: todayKey) else { return }
         let error = run.currentError
         bilagRun = run
-        record(result, countXP: false)
+        let isBooking = if case .booking = run.kind { true } else { false }
+        record(result, countXP: false, awardBadges: !isBooking)
         switch run.kind {
         case .booking(let month):
             let day = progress.game.town?.calendar.today ?? month.first

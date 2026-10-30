@@ -178,6 +178,31 @@ final class TownStateTests: XCTestCase {
         XCTAssertEqual(oldState.masked(right.progress), right.progress)
     }
 
+    /// Paragrafjakten picks and judges creatures from the progress it gets; from the masked one, a
+    /// bilag in an open month looks the same whether it was booked right or wrong.
+    func testARegionRunOnTheMaskedProgressKeepsTheVerdict() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let target = try XCTUnwrap(library.pool(includeDrafts: true).first)
+        let region = Region(tema: target.tema, navn: target.tema, rekkefolge: 1, theme: RegionTheme(symbol: "x", farge: "skole", setning: ""),
+                            puzzles: [target], gymLeader: nil, caught: 0, mastered: 0, unlocked: true, gymBadge: nil)
+        let id = try XCTUnwrap(TownState.new(content: Self.town, year: 2026).clients.keys.sorted().first)
+        func firstStage(correct: Bool, masked: Bool) -> Stage? {
+            var state = TownState.new(content: Self.town, year: 2026)
+            var progress = LearnerProgress()
+            progress.puzzles[target.id] = PuzzleProgress(box: 2, attempts: 2, correct: 2)
+            Scheduler.record(AttemptResult(puzzleId: target.id, correctFirstTry: correct), on: day(1, 5), progress: &progress)
+            state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: MonthKey(year: 2026, month: 1), day: day(1, 5), correct: correct),
+                                    boxBefore: 2, client: id)
+            let shown = masked ? state.masked(progress) : progress
+            var run = RegionRun(region: region, progress: shown, today: day(2, 1), regionCards: [], otherCards: [], seed: 1)
+            run.nextEncounter(progress: shown, today: day(2, 1))
+            return run.current?.stageBefore
+        }
+        XCTAssertNotEqual(firstStage(correct: true, masked: false), firstStage(correct: false, masked: false), "the real boxes tell the verdict")
+        XCTAssertEqual(firstStage(correct: true, masked: true), firstStage(correct: false, masked: true))
+        XCTAssertEqual(firstStage(correct: true, masked: true), Stage.of(box: 2))
+    }
+
     func testMaskedProgressIsUnchangedWithoutOpenErrors() throws {
         let state = TownState.new(content: Self.town, year: 2026)
         var progress = LearnerProgress()
