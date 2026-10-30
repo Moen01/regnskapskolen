@@ -439,6 +439,17 @@ final class TownStoryTests: XCTestCase {
         _ = f.talk(to: counter)
         XCTAssertTrue(f.rows.contains { $0.text.hasPrefix("PIXEL LUKK APR") }, "\(f.rows.map(\.text))")
         XCTAssertFalse(f.rows.contains { $0.text.hasPrefix("PIXEL LUKK JAN") }, "\(f.rows.map(\.text))")
+
+        let row = try XCTUnwrap(f.rows.firstIndex { $0.text.hasPrefix("PIXEL LUKK APR") })
+        for _ in 0..<row { _ = f.key(.down) }
+        XCTAssertEqual(f.key(.a), .none)
+        XCTAssertEqual(f.state.clients[pixel]?.closedMonths, [apr])
+
+        _ = readDialog(&f)
+        f = flow(f.state)
+        _ = f.talk(to: counter)
+        let months = ["JAN", "FEB", "MAR", "APR"]
+        XCTAssertFalse(f.rows.contains { r in months.contains { r.text.hasPrefix("PIXEL LUKK \($0)") } }, "\(f.rows.map(\.text))")
     }
 
     func testFristnavRowsKeepTheClientName() throws {
