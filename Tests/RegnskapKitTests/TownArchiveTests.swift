@@ -225,7 +225,7 @@ final class TownArchiveTests: XCTestCase {
         XCTAssertEqual(text(f), "Arkivet er tomt.")
     }
 
-    func testArchiveRowsFitSeventeen() {
+    func testArchiveRowsFitTheRow() {
         for town in [Self.town, Self.library.town] {
             var s = TownState.new(content: town, year: 2026)
             let statuses: [ClientStatus] = [.active, .parked, .archived]
