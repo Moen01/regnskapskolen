@@ -7,20 +7,7 @@ import XCTest
 /// The steps call Kit the way `AppStore+Town` does.
 final class TownStoryTests: XCTestCase {
     static let library = try! ContentLibrary(root: ContentLocator.repoContent)
-    /// The repo town without staff: this is the phase 2a play-through, which has no payroll. Payroll
-    /// deadlines are covered by `TownPayrollTests` until the later phase 2b steps join them to the story.
-    static let town: TownContent = {
-        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
-        try! FileManager.default.copyItem(at: ContentLocator.repoContent.appendingPathComponent("by"), to: folder)
-        let clients = folder.appendingPathComponent("klienter")
-        for file in try! FileManager.default.contentsOfDirectory(at: clients, includingPropertiesForKeys: nil) where file.pathExtension == "json" {
-            var json = try! JSONSerialization.jsonObject(with: Data(contentsOf: file)) as! [String: Any]
-            json["ansatte"] = 0
-            json["lonnsdag"] = nil
-            try! JSONSerialization.data(withJSONObject: json).write(to: file)
-        }
-        return try! TownContent.load(folder: folder)
-    }()
+    static var town: TownContent { library.town }
     var town: TownContent { Self.town }
     var deadlines: Deadlines { Self.library.deadlines }
     var puzzles: [Puzzle] { Self.library.pool(includeDrafts: false) }
@@ -138,7 +125,14 @@ final class TownStoryTests: XCTestCase {
         let error = try XCTUnwrap(state.clients[cafe]?.openErrors.first)
         XCTAssertNotNil(state.maskedBox(error.puzzleId), "the collection masks the wrong booking")
 
-        // Sleep: the first stop is 1 February.
+        // Sleep: the café's January withholding is due 21 January, so the sleep stops three days
+        // before and on the day. The player delivers it, then the next stop is 1 February.
+        let trekk = DeadlineKind.forskuddstrekk(month: jan)
+        for stop in [18, 21] {
+            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+            XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 1, day: stop))
+        }
+        state.clients[cafe]?.deliver(trekk)
         XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
         XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 2, day: 1))
 
@@ -167,14 +161,15 @@ final class TownStoryTests: XCTestCase {
         state.clients[cafe]?.closeIfClean(jan)
         XCTAssertEqual(state.clients[cafe]?.closedMonths, [jan])
 
-        // The doctor is not VAT registered: Fristnav lists the café's term and nothing for the doctor.
+        // The doctor is not VAT registered: Fristnav lists the café's term and no VAT for the doctor.
         state.clients[doctor] = ClientState(status: .active, satisfaction: TownRules.startSatisfaction, met: true)
         var april = state
         april.calendar = TownCalendar(start: DayKey(year: 2026, month: 4, day: 7))
         f = flow(april)
         _ = f.openFristnav()
         XCTAssertFalse(f.rows.isEmpty)
-        XCTAssertTrue(f.rows.allSatisfy { $0.id.hasPrefix(cafe) }, "\(f.rows.map(\.id))")
+        XCTAssertTrue(f.rows.contains { $0.id == "\(cafe):mva-2026-1" }, "\(f.rows.map(\.id))")
+        XCTAssertFalse(f.rows.contains { $0.id.hasPrefix(doctor) && $0.id.contains(":mva") }, "\(f.rows.map(\.id))")
 
         // February: book the pile (all right) in March, close the month, and the term can be delivered.
         state.calendar = TownCalendar(start: DayKey(year: 2026, month: 3, day: 2))
@@ -183,17 +178,26 @@ final class TownStoryTests: XCTestCase {
         _ = play(&run, state: &state, progress: &progress)
         f = flow(state)
         _ = f.talk(to: counter)
-        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LUKK FEB"])
+        XCTAssertEqual(f.rows.map(\.text).filter { $0.hasPrefix("KAFÉ") }, ["KAFÉ LUKK FEB", "KAFÉ LEVER AMELD1", "KAFÉ LEVER TREKK2"])
         XCTAssertEqual(f.key(.a), .none, "a clean month closes on the spot")
         state = f.state
         XCTAssertEqual(state.clients[cafe]?.closedMonths, [jan, feb])
 
+        // With both months closed the payroll that is due can be delivered: the a-meldinger and the
+        // first AGA term, and February's withholding.
+        var delivered: [DeadlineKind] = []
+        while let kind = try deliverNextCafeRow(&state, counter: counter) { delivered.append(kind) }
+        XCTAssertEqual(Set(delivered), [.amelding(month: jan), .amelding(month: feb), .forskuddstrekk(month: feb), .aga(termin: 1, year: 2026)])
+
         // Sleep to the deadline, stopping at each event on the way, and deliver on the day.
         var stops: [DayKey] = []
+        var missed: [TownDeadline] = []
         while state.calendar.today < deadlines.mvaFrist(termin: 1, year: 2026) {
-            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+            missed += state.sleep(content: town, deadlines: deadlines)
             stops.append(state.calendar.today)
         }
+        // March is never booked in this story, so March payroll goes by; the VAT term does not.
+        XCTAssertEqual(Set(missed.filter { $0.client == cafe }.map(\.kind.id)), ["trekk-2026-03", "amelding-2026-03"])
         XCTAssertEqual(stops.last, deadlines.mvaFrist(termin: 1, year: 2026))
         XCTAssertTrue(stops.contains(deadlines.mvaFrist(termin: 1, year: 2026).adding(days: -TownRules.warnDaysBefore)))
         f = flow(state)
@@ -207,7 +211,74 @@ final class TownStoryTests: XCTestCase {
 
         // The day after the deadline: nothing missed for the café.
         XCTAssertEqual(state.sleep(content: town, deadlines: deadlines).filter { $0.client == cafe }, [])
-        XCTAssertEqual(state.clients[cafe]?.delivered, [kind.id])
+        XCTAssertTrue(state.clients[cafe]?.delivered.contains(kind.id) == true)
+        XCTAssertEqual(state.clients[cafe]?.missed, ["trekk-2026-03", "amelding-2026-03"])
+    }
+
+    /// Delivers the first payroll "LEVER" row the counter offers the café, the way the store does. Returns
+    /// nil when there is none.
+    func deliverNextCafeRow(_ state: inout TownState, counter: TownPerson) throws -> DeadlineKind? {
+        var f = flow(state)
+        _ = f.talk(to: counter)
+        guard f.phase == .counter, let row = f.rows.firstIndex(where: { $0.text.hasPrefix("KAFÉ LEVER") && !$0.text.contains("MVA") }) else { return nil }
+        for _ in 0..<row { _ = f.key(.down) }
+        guard case let .deliver(client, kind) = f.key(.a) else {
+            XCTFail("the counter row did not deliver")
+            return nil
+        }
+        state = f.state
+        state.clients[client]?.deliver(kind)
+        return kind
+    }
+
+    func testAPayrollMonthFromPayDayToAmelding() throws {
+        var state = TownState.new(content: town, year: 2026)
+        let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
+        let trekk = DeadlineKind.forskuddstrekk(month: jan)
+        let amelding = DeadlineKind.amelding(month: jan)
+
+        // The café pays on the 20th: nothing the day before, withholding on the day.
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 1, day: 19))
+        var f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.phase, .dialog, "nothing to deliver yet")
+        state.calendar = TownCalendar(start: DayKey(year: 2026, month: 1, day: 20))
+        f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LEVER TREKK1"])
+        XCTAssertEqual(f.key(.a), .deliver(client: cafe, kind: trekk))
+        state = f.state
+        XCTAssertEqual(state.deliver(client: cafe, kind: trekk, content: town, deadlines: deadlines), [])
+
+        // The month is booked and sleeping reaches 1 February without anything missed.
+        let client = try XCTUnwrap(town.client(cafe))
+        for id in Ledger.pile(for: client, month: jan, start: state.start, state: state.clients[cafe]!, pool: pool) {
+            state.clients[cafe]?.book(BookedBilag(puzzleId: id, month: jan, day: jan.first, correct: true), boxBefore: 0, client: cafe)
+        }
+        while state.calendar.today < DayKey(year: 2026, month: 2, day: 1) {
+            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+        }
+        XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 2, day: 1))
+
+        // January closes, which opens the a-melding; it is delivered on the deadline day.
+        f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LUKK JAN"])
+        XCTAssertEqual(f.key(.a), .none)
+        state = f.state
+        f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LEVER AMELD1"])
+        let due = deadlines.ameldingFrist(forMonth: 1, year: 2026)
+        while state.calendar.today < due { XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), []) }
+        XCTAssertEqual(state.calendar.today, due)
+        f = flow(state)
+        _ = f.talk(to: counter)
+        XCTAssertEqual(f.key(.a), .deliver(client: cafe, kind: amelding))
+        state = f.state
+        XCTAssertEqual(state.deliver(client: cafe, kind: amelding, content: town, deadlines: deadlines), [])
+        XCTAssertEqual(state.clients[cafe]?.delivered, [trekk.id, amelding.id])
+        XCTAssertEqual(state.clients[cafe]?.missed, [])
     }
 
     func testMissedDeadlineIsFoundOnTheNewDayAndOnlyForActiveClients() {
@@ -218,8 +289,10 @@ final class TownStoryTests: XCTestCase {
         var missed: [TownDeadline] = []
         for _ in 0..<TownRules.actionsPerDay { missed += state.spendAction(content: town, deadlines: deadlines) }
         XCTAssertEqual(state.calendar.today, due.adding(days: 1))
-        XCTAssertEqual(missed.map(\.client), [cafe], "only the active café; prospects have no deadlines")
-        XCTAssertEqual(missed.map(\.kind), [.mva(termin: 1, year: 2026)])
+        XCTAssertEqual(Set(missed.map(\.client)), [cafe], "only the active café; prospects have no deadlines")
+        // The term, and the payroll of January to March that went by without delivery.
+        let payroll = (1...3).flatMap { [DeadlineKind.amelding(month: MonthKey(year: 2026, month: $0)), .forskuddstrekk(month: MonthKey(year: 2026, month: $0))] }
+        XCTAssertEqual(Set(missed.map(\.kind)), Set(payroll + [.mva(termin: 1, year: 2026), .aga(termin: 1, year: 2026)]))
         XCTAssertEqual(state.checkMissed(content: town, deadlines: deadlines), [], "a miss is counted once")
     }
 
@@ -227,7 +300,9 @@ final class TownStoryTests: XCTestCase {
         // The sixth term of the year before falls due in February; the game did not run then.
         var state = TownState.new(content: town, year: 2026)
         state.calendar = TownCalendar(start: DayKey(year: 2026, month: 3, day: 15))
-        XCTAssertEqual(state.checkMissed(content: town, deadlines: deadlines), [])
+        // Only this year's payroll of January and February is behind; nothing from the year before.
+        let missed = state.checkMissed(content: town, deadlines: deadlines)
+        XCTAssertEqual(Set(missed.map(\.kind.id)), ["amelding-2026-01", "amelding-2026-02", "trekk-2026-01", "trekk-2026-02"])
     }
 
     func testFreeActionsDoNotSpendTime() {
@@ -242,6 +317,7 @@ final class TownStoryTests: XCTestCase {
         let due = deadlines.mvaFrist(termin: 1, year: 2026)
         let kind = DeadlineKind.mva(termin: 1, year: 2026)
         state.calendar = TownCalendar(start: due)
+        state.payrollFrom = due // the café's payroll before the term is not under test here
         for _ in 0..<(TownRules.actionsPerDay - 1) { _ = state.spendAction(content: town, deadlines: deadlines) }
         XCTAssertEqual(state.calendar.today, due, "eleven actions keep the day")
         let before = state.clients[cafe]!.satisfaction
@@ -272,7 +348,7 @@ final class TownStoryTests: XCTestCase {
         var f = TownFlow(content: town, state: state, deadlines: deadlines, pool: hidden, regions: [], damage: [:], ruleCards: [])
         let counter = try XCTUnwrap(town.map("kontoret")?.folk.first { $0.rolle == .skranke })
         _ = f.talk(to: counter)
-        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LUKK JAN"])
+        XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LUKK JAN", "KAFÉ LEVER TREKK1"])
         XCTAssertEqual(f.key(.a), .none, "no correction offered for a puzzle that cannot be shown")
         XCTAssertEqual(f.state.clients[cafe]?.closedMonths, [jan])
         XCTAssertEqual(f.state.clients[cafe]?.openErrors, [], "the hidden error goes with the closed month")
@@ -318,7 +394,7 @@ final class TownStoryTests: XCTestCase {
 
         var missed: [TownDeadline] = []
         while state.calendar.today < DayKey(year: 2026, month: 5, day: 2) { missed += state.sleep(content: town, deadlines: deadlines) }
-        XCTAssertEqual(missed, [], "term 1 fell due on 10 April, before Pixel was won")
+        XCTAssertEqual(missed.filter { $0.client == pixel }, [], "term 1 fell due on 10 April, before Pixel was won")
         XCTAssertEqual(state.clients[pixel]?.missed, [])
         XCTAssertEqual(state.clients[pixel]?.satisfaction, TownRules.startSatisfaction)
 
@@ -344,9 +420,10 @@ final class TownStoryTests: XCTestCase {
         state.calendar = TownCalendar(start: DayKey(year: 2026, month: 4, day: 7))
         var f = flow(state)
         _ = f.openFristnav()
-        XCTAssertEqual(f.rows.map(\.text), ["10.04 MVA1 KAFÉ", "10.04 MVA1 PIXEL", "10.04 MVA1 MOTOR"])
-        XCTAssertEqual(f.rows.first?.full, "10.04 MVA 1. TERMIN Kafé Lysthuset AS")
-        XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns && !$0.text.contains("…") })
+        // The a-melding for March is due 7 April; "MOTOR" is cut to fit, the deadline is not.
+        XCTAssertEqual(f.rows.map(\.text), ["07.04 AMELD3 KAFÉ", "07.04 AMELD3 MOT…", "10.04 MVA1 KAFÉ", "10.04 MVA1 PIXEL", "10.04 MVA1 MOTOR"])
+        XCTAssertEqual(f.rows.first?.full, "07.04 A-MELDING MAR Kafé Lysthuset AS")
+        XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns })
     }
 
     func testATrialDoesNotSpoilTheClientsPile() {

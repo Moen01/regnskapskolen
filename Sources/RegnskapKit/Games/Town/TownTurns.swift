@@ -21,7 +21,7 @@ extension TownState {
     public func deadlines(for client: TownClient, deadlines: Deadlines) -> [TownDeadline] {
         (start.year...max(start.year, calendar.today.year))
             .flatMap { DeadlinePlanner.deadlines(for: client, year: $0, deadlines: deadlines) }
-            .filter { clients[client.id]?.covers($0) != false }
+            .filter { d in clients[client.id].map { counts(d, client: $0) } ?? true }
     }
 
     /// A won trial: the client becomes active from `day` and uses one contract.
@@ -66,7 +66,7 @@ extension TownState {
         for client in content.klienter where clients[client.id]?.status == .active {
             // Next year too, so a sleep in December still stops at the term due in February.
             for year in start.year...(today.year + 1) {
-                for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) where clients[client.id]?.covers(d) != false {
+                for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) where clients[client.id].map({ counts(d, client: $0) }) ?? true {
                     events += [d.day, d.day.adding(days: -TownRules.warnDaysBefore)]
                 }
             }

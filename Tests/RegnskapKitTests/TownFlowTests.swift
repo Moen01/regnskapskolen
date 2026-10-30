@@ -243,6 +243,72 @@ final class TownFlowTests: XCTestCase {
         XCTAssertEqual(h.phase, .dialog)
     }
 
+    // MARK: Counter, payroll
+
+    /// The fixture café has three staff and pay day on the 20th; the shop stays out of the way.
+    func counterRows(_ s: TownState) -> [String] {
+        var f = flow(s)
+        _ = f.key(.a)
+        return f.phase == .counter ? f.rows.map(\.text).filter { $0.hasPrefix("KAFÉ") } : []
+    }
+
+    func cafeState(today: DayKey) -> TownState {
+        var s = state(x: 1, y: 3, today: today)
+        s.clients["kafeen"]!.status = .active
+        return s
+    }
+
+    func testCounterOffersTrekkFromPayDay() {
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 19))), [])
+        // No month has to be closed for withholding.
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 20))), ["KAFÉ LEVER TREKK1"])
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 21))), ["KAFÉ LEVER TREKK1"])
+    }
+
+    func testAmeldingNeedsTheMonthClosed() {
+        var s = cafeState(today: day(2, 1))
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01"]
+        bookAll(&s, client: "kafeen", month: jan)
+        XCTAssertEqual(counterRows(s), ["KAFÉ LUKK JAN"], "January is still open: no a-melding row")
+        s.clients["kafeen"]!.closedMonths = [jan]
+        XCTAssertEqual(counterRows(s), ["KAFÉ LEVER AMELD1"])
+        XCTAssertEqual(counterRows(cafeState(today: day(1, 31))).filter { $0.contains("AMELD") }, [])
+    }
+
+    func testAgaNeedsBothMonthsClosed() {
+        var s = cafeState(today: day(3, 2))
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01", "trekk-2026-02"]
+        s.clients["kafeen"]!.closedMonths = [jan]
+        XCTAssertFalse(counterRows(s).contains("KAFÉ LEVER AGA1"), "February is open")
+        s.clients["kafeen"]!.closedMonths = [jan, feb]
+        XCTAssertTrue(counterRows(s).contains("KAFÉ LEVER AGA1"), "\(counterRows(s))")
+    }
+
+    func testMissedTrekkCostsTwentyFive() {
+        var s = cafeState(today: day(1, 19))
+        let before = s.clients["kafeen"]!.satisfaction
+        var missed: [TownDeadline] = []
+        while s.calendar.today <= day(1, 21) { missed += s.sleep(content: Self.town, deadlines: Self.library.deadlines) }
+        XCTAssertEqual(missed.filter { $0.client == "kafeen" }.map(\.kind.id), ["trekk-2026-01"])
+        XCTAssertEqual(s.clients["kafeen"]!.missed, ["trekk-2026-01"])
+        XCTAssertEqual(s.clients["kafeen"]!.satisfaction, before + TownRules.missedDeadline)
+        XCTAssertEqual(s.checkMissed(content: Self.town, deadlines: Self.library.deadlines), [], "counted once")
+    }
+
+    func testFristnavListsPayrollAndLeavesOutDeliveredOnes() {
+        var s = cafeState(today: day(1, 18))
+        s.walker = TownWalker(x: 3, y: 3, facing: .left)
+        var f = flow(s)
+        _ = f.key(.a)
+        _ = f.key(.a)
+        XCTAssertEqual(f.rows.map(\.text), ["21.01 TREKK1 KAFÉ"])
+        s.clients["kafeen"]!.delivered = ["trekk-2026-01"]
+        var g = flow(s)
+        _ = g.key(.a)
+        XCTAssertEqual(g.key(.a), .none)
+        XCTAssertEqual(g.rows, [])
+    }
+
     // MARK: Fristnav
 
     func testFristnavMarksThreeDaysLeft() {

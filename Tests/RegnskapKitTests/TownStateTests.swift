@@ -60,4 +60,44 @@ final class TownStateTests: XCTestCase {
         XCTAssertEqual(state.maskedBox("p1"), 2, "the oldest open error wins")
         XCTAssertNil(state.maskedBox("p2"))
     }
+
+    func testOldSaveOpenedInAprilMissesNoPayroll() throws {
+        let content = Self.town
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: content, year: 2026)
+        XCTAssertNil(state.payrollFrom, "payroll counts from the start in a new game")
+        state.calendar = TownCalendar(start: day(4, 12))
+        state.clients["kafeen"]?.status = .active
+        state.clients["butikken"]?.delivered = ["mva-2026-1"]
+
+        // A save from phase 2a: the same JSON without the new field.
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
+        object["payrollFrom"] = nil
+        let old = try JSONDecoder().decode(TownState.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertEqual(old.payrollFrom, day(4, 12))
+
+        var loaded = old
+        var missed: [TownDeadline] = []
+        for _ in 0..<TownRules.actionsPerDay { missed += loaded.spendAction(content: content, deadlines: library.deadlines) }
+        XCTAssertEqual(loaded.calendar.today, day(4, 13))
+        XCTAssertEqual(missed, [])
+        XCTAssertEqual(loaded.clients["kafeen"]?.missed, [])
+
+        // The same date in a new game does count the months before.
+        var fresh = state
+        XCTAssertFalse(fresh.checkMissed(content: content, deadlines: library.deadlines).isEmpty)
+    }
+
+    func testPayrollCountsOnlyFromPayrollFrom() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let client = try XCTUnwrap(state.clients["kafeen"])
+        let list = DeadlinePlanner.deadlines(for: try XCTUnwrap(Self.town.client("kafeen")), year: 2026, deadlines: library.deadlines)
+        let trekk = try XCTUnwrap(list.first { $0.kind.id == "trekk-2026-01" })
+        XCTAssertTrue(state.counts(trekk, client: client))
+        state.payrollFrom = day(1, 22)
+        XCTAssertFalse(state.counts(trekk, client: client))
+        state.payrollFrom = day(1, 21)
+        XCTAssertTrue(state.counts(trekk, client: client))
+    }
 }

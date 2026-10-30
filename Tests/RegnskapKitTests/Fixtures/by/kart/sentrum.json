@@ -15,6 +15,7 @@
   "folk": [
     { "id": "klient-butikken", "rolle": "klient", "x": 2, "y": 2, "klient": "butikken", "tekst": [] },
     { "id": "klient-konsulenten", "rolle": "klient", "x": 6, "y": 2, "klient": "konsulenten", "tekst": [] },
+    { "id": "klient-kafeen", "rolle": "klient", "x": 8, "y": 3, "klient": "kafeen", "tekst": [] },
     { "id": "folk-sentrum", "rolle": "folk", "x": 8, "y": 1, "tekst": ["Fint vær i dag."] }
   ]
 }

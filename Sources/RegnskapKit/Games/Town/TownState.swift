@@ -11,14 +11,45 @@ public struct TownState: Hashable, Codable, Sendable {
     /// Client id → state.
     public var clients: [String: ClientState]
     public var contracts: Int
+    /// Payroll deadlines due before this day do not count. `nil` in a new game: payroll counts from
+    /// the start. A save from phase 2a has no such field and gets the day it is opened, so the
+    /// payroll deadlines of the months before do not all go missed in that moment.
+    public var payrollFrom: DayKey?
 
-    public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int) {
+    public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
+                payrollFrom: DayKey? = nil) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
         self.start = start
         self.clients = clients
         self.contracts = contracts
+        self.payrollFrom = payrollFrom
+    }
+
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        mapId = try c.decode(String.self, forKey: .mapId)
+        walker = try c.decode(TownWalker.self, forKey: .walker)
+        calendar = try c.decode(TownCalendar.self, forKey: .calendar)
+        start = try c.decode(MonthKey.self, forKey: .start)
+        clients = try c.decode([String: ClientState].self, forKey: .clients)
+        contracts = try c.decode(Int.self, forKey: .contracts)
+        // `nil` is written as an explicit null, so only a missing key (a 2a save) means "from today".
+        payrollFrom = c.contains(.payrollFrom) ? try c.decodeIfPresent(DayKey.self, forKey: .payrollFrom) : calendar.today
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(mapId, forKey: .mapId)
+        try c.encode(walker, forKey: .walker)
+        try c.encode(calendar, forKey: .calendar)
+        try c.encode(start, forKey: .start)
+        try c.encode(clients, forKey: .clients)
+        try c.encode(contracts, forKey: .contracts)
+        try c.encode(payrollFrom, forKey: .payrollFrom)
     }
 
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.
@@ -44,5 +75,23 @@ public struct TownState: Hashable, Codable, Sendable {
             .filter { $0.puzzleId == puzzleId }
             .min { $0.day < $1.day }?
             .boxBefore
+    }
+
+    /// Whether the deadline counts for the client: it falls on or after the day the client was won
+    /// and, for payroll, on or after `payrollFrom`. The counter, Fristnav, missed deadlines and the
+    /// sleep stops all ask this one question.
+    public func counts(_ deadline: TownDeadline, client: ClientState) -> Bool {
+        guard client.covers(deadline) else { return false }
+        guard deadline.kind.isPayroll, let from = payrollFrom else { return true }
+        return deadline.day >= from
+    }
+}
+
+extension DeadlineKind {
+    var isPayroll: Bool {
+        switch self {
+        case .amelding, .forskuddstrekk, .aga: true
+        case .mva, .mvaAarlig: false
+        }
     }
 }

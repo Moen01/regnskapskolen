@@ -29,7 +29,10 @@ extension TownFlow {
     /// A delivered deadline is left out: there is nothing more to do for it.
     mutating func openFristnav() -> TownAction {
         let rows = DeadlinePlanner.upcoming(clients: activeClients, from: today, days: 7, deadlines: deadlines)
-            .filter { state.clients[$0.client]?.delivered.contains($0.kind.id) != true && state.clients[$0.client]?.covers($0) != false }
+            .filter { d in
+                guard let client = state.clients[d.client] else { return true }
+                return !client.delivered.contains(d.kind.id) && state.counts(d, client: client)
+            }
             .map { d in
                 let client = content.client(d.client)
                 return Self.clientRow(id: "\(d.client):\(d.kind.id)", name: client.map(Self.shortName) ?? d.client.uppercased(),
@@ -79,8 +82,8 @@ extension TownFlow {
         return .none
     }
 
-    /// R2: the earliest open month when it can be closed, then every deadline whose months are
-    /// all closed and that is neither delivered nor missed.
+    /// R2: the earliest open month when it can be closed, then every deadline that has opened, whose
+    /// months (withholding has none) are all closed and that is neither delivered nor missed.
     private func counterTasks(for client: TownClient) -> [(task: CounterTask, row: PanelRow)] {
         guard let clientState = state.clients[client.id] else { return [] }
         let name = Self.shortName(client)
@@ -96,7 +99,7 @@ extension TownFlow {
         for year in state.start.year...max(state.start.year, today.year) {
             for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) {
                 let months = d.kind.months(rates: deadlines.rates)
-                guard clientState.covers(d), !months.isEmpty, months.allSatisfy(clientState.closedMonths.contains),
+                guard state.counts(d, client: clientState), today >= d.opens, months.allSatisfy(clientState.closedMonths.contains),
                       !clientState.delivered.contains(d.kind.id), !clientState.missed.contains(d.kind.id) else { continue }
                 add(.deliver(client: client.id, kind: d.kind), "LEVER \(d.kind.shortName)", full: "Lever \(d.label) for \(client.navn)")
             }
