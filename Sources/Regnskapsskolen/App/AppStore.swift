@@ -59,6 +59,8 @@ final class AppStore {
     var town: TownFlow?
     var bilagRun: BilagRun?
     var townRun: RegionRun?
+    /// The bokettersyn at Avgiftskontoret: the audited year's open errors, then the examiners.
+    var auditRun: AuditRun?
     var trialScore = TrialScore()
     var showTraining = false
     /// The input for the town's current encounter, and what the town run is for.

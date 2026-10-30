@@ -87,4 +87,24 @@ struct BattleHost {
             library: { store.library },
             setAttempt: { store.townSession?.attempt = $0 })
     }
+
+    /// The bokettersyn: one trust meter over the open errors and the examiners. FLYKT ends the
+    /// audit as a fail; the stage is the encounter's own (an error carries its box from before).
+    @MainActor
+    static func audit(_ store: AppStore) -> BattleHost {
+        BattleHost(
+            encounter: { store.auditRun?.current },
+            session: { store.townSession },
+            outcome: {
+                guard case .result(let outcome) = store.auditRun?.phase else { return nil }
+                return outcome
+            },
+            hp: { store.auditRun?.hp },
+            choose: { store.auditRun?.choose($0) },
+            attack: { store.answerAudit() },
+            flee: { store.finishAudit() },
+            next: { store.proceedAudit() },
+            library: { store.library },
+            setAttempt: { store.townSession?.attempt = $0 })
+    }
 }

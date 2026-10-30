@@ -130,9 +130,8 @@ extension AppStore {
             startFagkontor(ref)
         case .startCase(let id, let puzzle):
             startCustomerCase(id, puzzle: puzzle)
-        case .startAudit:
-            // Filled in with the audit run in the app.
-            break
+        case .startAudit(let year):
+            startAudit(year: year)
         }
     }
 
@@ -468,6 +467,74 @@ extension AppStore {
         trialScore = TrialScore()
         saveProgress()
         showTown(lines)
+    }
+
+    // MARK: The bokettersyn
+
+    /// Starts the audit of `year` after JA at the desk, while the flow walks. The try is spent at the
+    /// start, so quitting mid-audit gives no fresh one. No energy and no damage in the audit; the run
+    /// shows the masked progress, so an error keeps its stage from before the wrong booking.
+    func startAudit(year: Int) {
+        guard let library, let state = progress.game.town, state.auditYear == year,
+              let person = library.town.kart.lazy.flatMap(\.folk).first(where: { $0.rolle == .bokettersyn }) else {
+            showTown()
+            return
+        }
+        let errors = TownAudit.reviewed(state, year: year, pool: poolIds)
+        let panel = TownAudit.panel(person, content: library.town, pool: pool)
+        progress.game.town?.beginAudit()
+        let run = AuditRun(year: year, errors: errors, panel: panel, puzzles: pool, content: library.town,
+                           progress: maskedProgress, cards: library.rules, equipped: state.equippedCard, seed: townSeed)
+        if run.current != nil {
+            townActionPending = true
+            _ = progress.game.town?.takeEquippedCard()
+        }
+        auditRun = run
+        townSession = run.current.map { PuzzleSession(puzzle: $0.puzzle) }
+        saveProgress()
+        if run.phase == .finished { finishAudit() }
+    }
+
+    /// Judges an audit answer. The scheduler hears it with the real progress; a right correction
+    /// fixes the client's error, a wrong one leaves the client as it was.
+    func answerAudit() {
+        guard var run = auditRun, let session = townSession, session.attempt.isAnswered,
+              let (outcome, result) = run.answer(session.attempt, progress: maskedProgress, today: todayKey) else { return }
+        let error = run.currentError
+        auditRun = run
+        record(result, countXP: false)
+        if case .audited(ok: true, _) = outcome, let error {
+            progress.game.town?.clients[error.client]?.correct(error, ok: true)
+        }
+        saveProgress()
+    }
+
+    func proceedAudit() {
+        guard var run = auditRun else { return }
+        run.proceed()
+        auditRun = run
+        townSession = run.current.map { PuzzleSession(puzzle: $0.puzzle) }
+        if run.phase == .finished { finishAudit() }
+    }
+
+    /// Ends the audit (also on FLYKT): a pass starts the new year and gives the badge once; a fail
+    /// sends the player to the office with the errors still open. The flow is rebuilt in `showTown`.
+    func finishAudit() {
+        guard let run = auditRun, let library else { return }
+        let newBadge: Bool
+        if run.won {
+            progress.game.town?.passAudit(year: run.year)
+            newBadge = !Badges.award(.auditPassed, on: todayKey, progress: &progress).isEmpty
+        } else {
+            progress.game.town?.failAudit(content: library.town)
+            newBadge = false
+        }
+        let standing = progress.game.town.map { TownAudit.reviewed($0, year: run.year, pool: poolIds).count } ?? 0
+        let today = progress.game.town?.calendar.today ?? todayKey
+        auditRun = nil
+        townSession = nil
+        saveProgress()
+        showTown(TownFlow.auditResultTexts(won: run.won, year: run.year, today: today, standing: standing, newBadge: newBadge))
     }
 
     /// The badge, its contract and its cards are given once: a badge already won gives nothing new.
