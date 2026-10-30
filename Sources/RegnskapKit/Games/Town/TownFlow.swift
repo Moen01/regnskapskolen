@@ -118,12 +118,19 @@ public struct TownFlow: Hashable, Sendable {
             if key == .a { openMenu() }
             return .none
         }
+        let before = state.walker
         switch state.walker.step(key, on: map) {
         case .moved:
             return .walked
         case .turned, .blocked:
             return .none
         case .door(let door):
+            guard TownDistricts.isOpen(door.til, content: content, fullmakter: state.fullmakter) else {
+                // The step already moved the walker onto the gate square; the gate does not open.
+                state.walker = before
+                let name = TownDistricts.district(of: door.til, in: content)?.navn ?? door.til
+                return say(["Veien er stengt.", "Du trenger fullmakt til \(name)."])
+            }
             state.mapId = door.til
             state.walker = TownWalker(x: door.tilX, y: door.tilY, facing: state.walker.facing)
             return .enteredDoor

@@ -22,11 +22,13 @@ public struct TownState: Hashable, Codable, Sendable {
     public var coffeeTakenOn: DayKey?
     /// Ids of the rule cards the player won from fagkontor. They belong to the player, not to a client.
     public var regelkort: Set<String> = []
+    /// Ids of the districts whose gate is open (`TownMap.fullmakt`). They belong to the player, and nothing takes them back.
+    public var fullmakter: Set<String> = []
     /// Errors found since `takeDiscoveries` was last called. Not part of the save.
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = []) {
+                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = []) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -38,9 +40,10 @@ public struct TownState: Hashable, Codable, Sendable {
         self.coffee = coffee
         self.coffeeTakenOn = coffeeTakenOn
         self.regelkort = regelkort
+        self.fullmakter = fullmakter
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -56,6 +59,7 @@ public struct TownState: Hashable, Codable, Sendable {
         coffee = try c.decodeIfPresent(Int.self, forKey: .coffee) ?? 0
         coffeeTakenOn = try c.decodeIfPresent(DayKey.self, forKey: .coffeeTakenOn)
         regelkort = try c.decodeIfPresent(Set<String>.self, forKey: .regelkort) ?? []
+        fullmakter = try c.decodeIfPresent(Set<String>.self, forKey: .fullmakter) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -71,6 +75,7 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encode(coffee, forKey: .coffee)
         try c.encodeIfPresent(coffeeTakenOn, forKey: .coffeeTakenOn)
         try c.encode(regelkort, forKey: .regelkort)
+        try c.encode(fullmakter, forKey: .fullmakter)
     }
 
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.
@@ -95,6 +100,27 @@ public struct TownState: Hashable, Codable, Sendable {
         let fresh = cards.filter { ref.temaer.contains($0.tema) && !regelkort.contains($0.id) }
         regelkort.formUnion(fresh.map(\.id))
         return fresh
+    }
+
+    /// Adds the permits the badges earn (`TownDistricts.earned`) and returns the districts that are new.
+    /// Never removes one: a permit stays even when a later call has fewer badges.
+    @discardableResult
+    public mutating func grantFullmakter(content: TownContent, badges: Set<String>, regions: [Region]) -> [TownDistrict] {
+        let earned = TownDistricts.earned(content: content, badges: badges, regions: regions)
+        let fresh = TownDistricts.all(in: content).filter { district in
+            district.fullmakt.map { earned.contains($0) && !fullmakter.contains($0) } ?? false
+        }
+        fullmakter.formUnion(earned)
+        return fresh
+    }
+
+    /// Moves the player to the office when the map is a district the player has no permit for, for
+    /// instance in a save whose content changed. Returns whether the player was moved.
+    @discardableResult
+    public mutating func relocateIfLocked(content: TownContent) -> Bool {
+        guard !TownDistricts.isOpen(mapId, content: content, fullmakter: fullmakter) else { return false }
+        (mapId, walker) = Self.officeSpot(content)
+        return true
     }
 
     /// The office and the square in front of the boss: where a new game starts and where a collapse ends.

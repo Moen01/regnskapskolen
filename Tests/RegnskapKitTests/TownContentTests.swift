@@ -8,7 +8,7 @@ final class TownContentTests: XCTestCase {
         let town = try TownContent.load(folder: Self.fixtureTown)
         XCTAssertEqual(town.bransjer.count, 2)
         XCTAssertEqual(town.klienter.count, 3)
-        XCTAssertEqual(town.kart.count, 2)
+        XCTAssertEqual(town.kart.count, 3)
         XCTAssertEqual(town.map("sentrum")?.tile(x: 0, y: 0), .wall)
         XCTAssertNil(town.map("sentrum")?.tile(x: -1, y: 0))
         XCTAssertNil(town.map("sentrum")?.tile(x: 0, y: 99))

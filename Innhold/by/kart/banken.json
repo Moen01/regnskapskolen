@@ -1,6 +1,7 @@
 {
   "id": "banken",
   "navn": "Hovedbok Sparebank",
+  "bydel": "sentrum",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [

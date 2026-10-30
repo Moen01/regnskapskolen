@@ -124,6 +124,17 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
     }
 }
 
+/// A square on a map, with no map named.
+public struct TownSpot: Codable, Hashable, Sendable {
+    public let x: Int
+    public let y: Int
+
+    public init(x: Int, y: Int) {
+        self.x = x
+        self.y = y
+    }
+}
+
 public struct TownMap: Codable, Hashable, Sendable, Identifiable {
     public let id: String
     public let navn: String
@@ -132,7 +143,30 @@ public struct TownMap: Codable, Hashable, Sendable, Identifiable {
     public let ruter: [String]
     public let dorer: [Door]
     public let folk: [TownPerson]
+    /// The permit (fullmakt) the player needs to enter this district; `nil` for the first district.
     public let fullmakt: String?
+    /// The district the map belongs to. A district map has its own id here; an interior names the district it stands in.
+    /// Optional so a map from phase 2b still reads.
+    public let bydel: String?
+    /// Only on a district map: its place in the order of districts, from 1.
+    public let rekkefolge: Int?
+    /// Only on a district map: the free square where the player is placed when entering by the gate.
+    public let ankomst: TownSpot?
+
+    public init(id: String, navn: String, bredde: Int, hoyde: Int, ruter: [String], dorer: [Door], folk: [TownPerson], fullmakt: String? = nil,
+                bydel: String? = nil, rekkefolge: Int? = nil, ankomst: TownSpot? = nil) {
+        self.id = id
+        self.navn = navn
+        self.bredde = bredde
+        self.hoyde = hoyde
+        self.ruter = ruter
+        self.dorer = dorer
+        self.folk = folk
+        self.fullmakt = fullmakt
+        self.bydel = bydel
+        self.rekkefolge = rekkefolge
+        self.ankomst = ankomst
+    }
 
     /// The square at a position; `nil` outside the map or for a character that is no tile.
     public func tile(x: Int, y: Int) -> Tile? {

@@ -1,6 +1,7 @@
 {
   "id": "nettbutikken",
   "navn": "Pixel Nettbutikk",
+  "bydel": "sentrum",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [

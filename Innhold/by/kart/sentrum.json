@@ -1,6 +1,9 @@
 {
   "id": "sentrum",
   "navn": "Sentrum",
+  "bydel": "sentrum",
+  "rekkefolge": 1,
+  "ankomst": { "x": 14, "y": 5 },
   "bredde": 30,
   "hoyde": 24,
   "ruter": [

@@ -7,6 +7,8 @@ extension ContentValidator {
     /// The map every other map must be reachable from through doors.
     static let townStartMap = "kontoret"
     static let townTrialSize = 3
+    /// The fagkontor in each district (spec Mål 2).
+    static let districtOffices = 2
     /// Accounts for VAT balances (2700–2799); a posting key that uses them assumes a VAT-registered company.
     static let vatAccounts = 2700...2799
 
@@ -18,10 +20,12 @@ extension ContentValidator {
 
         let unreachable = unreachableMaps(town)
         let officeProblems = duplicateOfficeThemes(town)
+        let districtProblems = validateDistricts(town)
         for map in town.kart {
             var messages = validateMap(map, in: town, library: library)
             if unreachable.contains(map.id) { messages.append("kartet nås ikke fra «\(townStartMap)» via dører") }
             messages += officeProblems[map.id] ?? []
+            messages += districtProblems[map.id] ?? []
             report("kart:\(map.id)", "kart/\(map.id).json", messages)
         }
         if town.map(townStartMap) == nil, !town.kart.isEmpty {
@@ -153,6 +157,77 @@ extension ContentValidator {
             }
         }
         return out
+    }
+
+    /// Rule 12: districts. Every map names a district; a district map has an order, an arrival square
+    /// and (from the second district) the permit named like itself; no door leads past a gate.
+    /// Returns the messages per map id.
+    private static func validateDistricts(_ town: TownContent) -> [String: [String]] {
+        var out: [String: [String]] = [:]
+        func report(_ map: TownMap, _ message: String) { out[map.id, default: []].append(message) }
+        let districtMaps = town.kart.filter { $0.bydel == $0.id }
+        let districtIds = Set(districtMaps.map(\.id))
+
+        for map in town.kart {
+            guard let bydel = map.bydel else {
+                report(map, "kartet har ingen bydel")
+                continue
+            }
+            if !districtIds.contains(bydel) { report(map, "bydelen «\(bydel)» finnes ikke som et kart med bydel lik sin egen id") }
+            guard bydel == map.id else {
+                if map.rekkefolge != nil || map.ankomst != nil || map.fullmakt != nil {
+                    report(map, "et innendørskart har verken rekkefolge, ankomst eller fullmakt")
+                }
+                continue
+            }
+            if map.rekkefolge == nil { report(map, "bydelskartet mangler rekkefolge") }
+            if let spot = map.ankomst {
+                let free = map.tile(x: spot.x, y: spot.y)?.walkable == true && !map.folk.contains { $0.x == spot.x && $0.y == spot.y }
+                if !free { report(map, "ankomst (\(spot.x), \(spot.y)) er ikke en gangbar rute uten person") }
+            } else {
+                report(map, "bydelskartet mangler ankomst")
+            }
+            if let order = map.rekkefolge {
+                if order == 1, map.fullmakt != nil { report(map, "bydel 1 skal ikke ha fullmakt") }
+                if order != 1, map.fullmakt != map.id { report(map, "bydel \(order) skal ha fullmakt «\(map.id)»") }
+            }
+        }
+
+        let ordered = districtMaps.filter { $0.rekkefolge != nil }.sorted { ($0.rekkefolge ?? 0, $0.id) < ($1.rekkefolge ?? 0, $1.id) }
+        for (index, map) in ordered.enumerated() where map.rekkefolge != index + 1 {
+            report(map, "rekkefolge er \(map.rekkefolge ?? 0), men skal være \(index + 1) (1…\(ordered.count) uten hull eller dubletter)")
+        }
+
+        if let office = town.map(townStartMap), let bydel = office.bydel,
+           let first = districtMaps.first(where: { $0.id == bydel }), first.rekkefolge != 1 {
+            report(office, "«\(townStartMap)» skal ligge i bydel 1, ikke i «\(bydel)»")
+        }
+
+        // A door between two districts must join two district maps, so no interior is a way round a gate.
+        for map in town.kart {
+            for door in map.dorer {
+                guard let from = map.bydel, let target = town.map(door.til), let to = target.bydel, from != to,
+                      districtIds.contains(from), districtIds.contains(to) else { continue }
+                if from != map.id || to != target.id {
+                    report(map, "dør (\(door.x), \(door.y)) til «\(target.id)» er en bakdør mellom bydelene «\(from)» og «\(to)»")
+                }
+            }
+        }
+        return out
+    }
+
+    /// Rule 13: every topic has an office, and every district has exactly `districtOffices` offices.
+    /// Not part of `validateTown`: a town under construction, or the small one in the tests, does not meet it.
+    public static func validateTownCoverage(_ town: TownContent, library: ContentLibrary) -> [ContentProblem] {
+        guard !town.kart.isEmpty else { return [] }
+        var messages: [String] = []
+        let covered = Set(town.kart.flatMap(\.folk).compactMap(\.fagkontor).flatMap(\.temaer))
+        let missing = library.topics.map(\.id).filter { !covered.contains($0) }
+        if !missing.isEmpty { messages.append("temaer uten fagkontor: \(missing.joined(separator: ", "))") }
+        for district in TownDistricts.all(in: town) where district.offices.count != districtOffices {
+            messages.append("bydelen «\(district.id)» har \(district.offices.count) fagkontor, skal ha \(districtOffices)")
+        }
+        return messages.isEmpty ? [] : [ContentProblem(id: "by:fagkontor", file: "kart/", messages: messages)]
     }
 
     // MARK: Clients

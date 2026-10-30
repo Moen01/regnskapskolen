@@ -1,6 +1,7 @@
 {
   "id": "restauranten",
   "navn": "Kafé Lysthuset",
+  "bydel": "sentrum",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [
