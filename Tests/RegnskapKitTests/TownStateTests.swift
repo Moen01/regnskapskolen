@@ -50,6 +50,20 @@ final class TownStateTests: XCTestCase {
         XCTAssertEqual(state.regelkort, cards)
     }
 
+    /// A 2b save won `fag-mva` before badges gave cards: opening the town gives them, with no contract.
+    func testBackfillCardsGivesTheCardsOfHeldBadgesOnly() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let contracts = state.contracts
+        let given = state.backfillCards(badges: ["fag-mva", "fag-finnes-ikke", "gym-mva"], content: Self.town, cards: library.rules)
+        let expected = Set(library.rules.filter { $0.tema == "mva" }.map(\.id))
+        XCTAssertFalse(expected.isEmpty)
+        XCTAssertEqual(Set(given.map(\.id)), expected)
+        XCTAssertEqual(state.regelkort, expected, "no lønn card: fag-lonn is not held")
+        XCTAssertEqual(state.contracts, contracts, "a backfill gives no contract")
+        XCTAssertTrue(state.backfillCards(badges: ["fag-mva"], content: Self.town, cards: library.rules).isEmpty, "only once")
+    }
+
     func testRegelkortRoundTripsAndOldSavesDecodeEmpty() throws {
         var state = TownState.new(content: Self.town, year: 2026)
         state.regelkort = ["a", "b"]

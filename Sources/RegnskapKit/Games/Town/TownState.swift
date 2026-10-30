@@ -129,6 +129,18 @@ public struct TownState: Hashable, Codable, Sendable {
         return fresh
     }
 
+    /// Gives the topic cards of every fagkontor badge the player holds, for a save whose badges were
+    /// won before badges gave cards. No contract: the badge paid that when it was won. Returns the new cards.
+    @discardableResult
+    public mutating func backfillCards(badges: Set<String>, content: TownContent, cards: [RuleCard]) -> [RuleCard] {
+        let temaer = Set(content.kart.flatMap(\.folk).compactMap(\.fagkontor)
+            .filter { badges.contains(TownTrials.badgeKey($0)) }
+            .flatMap(\.temaer))
+        let fresh = cards.filter { temaer.contains($0.tema) && !regelkort.contains($0.id) }
+        regelkort.formUnion(fresh.map(\.id))
+        return fresh
+    }
+
     /// Adds the permits the badges earn (`TownDistricts.earned`) and returns the districts that are new.
     /// Never removes one: a permit stays even when a later call has fewer badges.
     @discardableResult

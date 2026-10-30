@@ -16,7 +16,8 @@ extension AppStore {
     /// Shows the town; the first visit starts a game on 1 January of the year `satser.json` was checked.
     /// A flow showing a dialog is kept, so a message told after a run is not lost on appear.
     /// Before the flow is built: a player in a district without permit wakes at the office, badges
-    /// won outside town give their permits, and a cleared sandbox case gives its credit.
+    /// won outside town give their permits (and, for a 2b save, their cards), and a cleared sandbox
+    /// case gives its credit.
     func openTown() {
         guard let library else { return }
         if progress.game.town == nil {
@@ -28,6 +29,7 @@ extension AppStore {
         guard town == nil || town?.phase == .walking else { return }
         let moved = progress.game.town?.relocateIfLocked(content: library.town) == true
         townNotice += grantFullmakter()
+        townNotice += backfillCards()
         if moved { saveProgress() }
         creditSandboxIfCleared()
         refreshTown()
@@ -45,6 +47,16 @@ extension AppStore {
         let fresh = progress.game.town?.grantFullmakter(content: library.town, badges: badges, regions: regions) ?? []
         if !fresh.isEmpty { saveProgress() }
         return fresh.map { "Du har fullmakt til \($0.navn)!" }
+    }
+
+    /// Gives the cards of badges won before badges gave cards (a 2b save) and saves them; returns
+    /// the lines that tell the new ones.
+    private func backfillCards() -> [String] {
+        guard let library else { return [] }
+        let badges = Set(progress.game.badges.keys)
+        let fresh = progress.game.town?.backfillCards(badges: badges, content: library.town, cards: library.rules) ?? []
+        if !fresh.isEmpty { saveProgress() }
+        return fresh.map { "Du fikk regelkortet «\($0.tittel)»." }
     }
 
     /// Builds the flow again from the saved state: a run may have changed the state, badges, damage or pool.
