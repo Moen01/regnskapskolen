@@ -225,6 +225,29 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(try withFunn(nil), id: "kart:sentrum", contains: "gir")
     }
 
+    // Rule 14b
+    private func withSandbox(_ extra: [String: Any]) throws -> TownContent {
+        try town(editing: "kart/sentrum.json") { json in
+            var folk = json["folk"] as! [[String: Any]]
+            folk.append(person("perm-1", x: 4, y: 2, rolle: "sandkasse", extra: extra))
+            json["folk"] = folk
+        }
+    }
+
+    func testAcceptsSandboxPersonWithClientOrCard() throws {
+        XCTAssertEqual(messages(try withSandbox(["sandkasse": "kafe-001", "klient": "kafeen"])), [])
+        XCTAssertEqual(messages(try withSandbox(["sandkasse": "bank-001", "gir": Self.library.rules[0].id])), [])
+    }
+
+    func testRejectsUnknownSandboxCase() throws {
+        assertOneProblem(try withSandbox(["sandkasse": "finnes-ikke", "klient": "kafeen"]), id: "kart:sentrum", contains: "finnes-ikke")
+        assertOneProblem(try withSandbox(["klient": "kafeen"]), id: "kart:sentrum", contains: "saken")
+    }
+
+    func testRejectsSandboxPersonWithNothingToGive() throws {
+        assertOneProblem(try withSandbox(["sandkasse": "kafe-001"]), id: "kart:sentrum", contains: "hverken")
+    }
+
     // Rule 7
     func testRejectsUnknownRuleCard() throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)

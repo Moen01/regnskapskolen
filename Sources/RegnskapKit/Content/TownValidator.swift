@@ -93,6 +93,9 @@ extension ContentValidator {
                     out.append("funnet «\(p.id)» har ikke gir")
                 }
             }
+            if p.rolle == .sandkasse {
+                out += validateSandbox(p, in: town, library: library)
+            }
             if p.rolle == .kundesak {
                 out += validateCase(p, in: town, library: library)
             }
@@ -108,6 +111,19 @@ extension ContentValidator {
 
         // Rule 9: word width.
         out += longWords(in: [map.navn] + map.folk.flatMap(\.tekst), where: "kartet")
+        return out
+    }
+
+    /// Rule 14b: a sandbox person names a case that exists, and gives a month (client) or a card.
+    private static func validateSandbox(_ person: TownPerson, in town: TownContent, library: ContentLibrary) -> [String] {
+        var out: [String] = []
+        let cases = SandboxCase.load(folder: library.root.appendingPathComponent("sandkasse"), includeGenerated: false)
+        if !cases.contains(where: { $0.id == person.sandkasse }) {
+            out.append("sandkassen «\(person.id)» har saken «\(person.sandkasse ?? "")» som ikke finnes")
+        }
+        if let id = person.klient, town.client(id) == nil { out.append("sandkassen «\(person.id)» peker på klienten «\(id)» som ikke finnes") }
+        if let card = person.gir, !library.rules.contains(where: { $0.id == card }) { out.append("sandkassen «\(person.id)» gir regelkortet «\(card)» som ikke finnes") }
+        if person.klient == nil && person.gir == nil { out.append("sandkassen «\(person.id)» har hverken klient eller gir") }
         return out
     }
 

@@ -92,7 +92,7 @@ public struct Door: Codable, Hashable, Sendable {
 }
 
 public enum PersonRole: String, Codable, Sendable {
-    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv
+    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv, sandkasse
 }
 
 public struct FagkontorRef: Codable, Hashable, Sendable {
@@ -113,8 +113,10 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
     public let oppgave: String?
     /// The rule card id a `funn` person gives, once.
     public let gir: String?
+    /// The sandbox case id a `sandkasse` person opens.
+    public let sandkasse: String?
 
-    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil) {
+    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil, sandkasse: String? = nil) {
         self.id = id
         self.rolle = rolle
         self.x = x
@@ -124,6 +126,7 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
         self.tekst = tekst
         self.oppgave = oppgave
         self.gir = gir
+        self.sandkasse = sandkasse
     }
 }
 
@@ -189,6 +192,10 @@ public struct TownContent: Hashable, Sendable {
 
     public func map(_ id: String) -> TownMap? { kart.first { $0.id == id } }
     public func client(_ id: String) -> TownClient? { klienter.first { $0.id == id } }
+    /// The folder in town that opens this sandbox case.
+    public func sandboxPerson(_ caseId: String) -> TownPerson? {
+        kart.lazy.flatMap(\.folk).first { $0.rolle == .sandkasse && $0.sandkasse == caseId }
+    }
     public func bransje(_ id: String) -> Bransje? { bransjer.first { $0.id == id } }
 
     /// Reads `bransjer.json`, `klienter/*.json` and `kart/*.json`, sorted by id. Throws the first

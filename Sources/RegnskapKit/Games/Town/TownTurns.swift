@@ -6,7 +6,7 @@ extension TownAction {
     /// start the next day and make the sleep skip the event the player wanted to stop at.
     public var spendsAction: Bool {
         switch self {
-        case .none, .walked, .enteredDoor, .save, .openTraining, .openCollection, .sleep: false
+        case .none, .walked, .enteredDoor, .save, .openTraining, .openCollection, .openSandbox, .sleep: false
         case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .startCase, .closedMonth, .deliver: true
         }
     }

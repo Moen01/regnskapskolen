@@ -65,6 +65,9 @@ extension AppStore {
             showTraining = true
         case .openCollection:
             showCollection = true
+        case .openSandbox:
+            // Opened from the sandbox entrances in a later task.
+            break
         case .sleep:
             sleepInTown()
         case .startTrial where activeClientCount >= TownRules.portfolioSize:

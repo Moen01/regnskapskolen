@@ -26,6 +26,8 @@ public enum TownAction: Hashable, Sendable {
     case save
     case openTraining
     case openCollection
+    /// The player chose to open a sandbox case from its folder in town. Free.
+    case openSandbox(caseId: String)
 }
 
 /// The town on the Game Boy, driven by keys: walking, talking (dialog pages and JA/NEI choices),
@@ -69,6 +71,7 @@ public struct TownFlow: Hashable, Sendable {
         case trial(client: String)
         case fagkontor(FagkontorRef)
         case kundesak(client: String, puzzle: String)
+        case sandbox(caseId: String)
     }
 
     enum CounterTask: Hashable, Sendable {
@@ -163,6 +166,8 @@ public struct TownFlow: Hashable, Sendable {
             return findCard(person)
         case .arkiv:
             return openArchive()
+        case .sandkasse:
+            return talkToSandbox(person)
         }
     }
 
@@ -198,6 +203,13 @@ public struct TownFlow: Hashable, Sendable {
         guard let clientState = state.clients[id], clientState.status == .active else { return say(["Jeg er ikke kunde hos deg."]) }
         guard !clientState.casesDone.contains(puzzle), pool.contains(puzzle) else { return say(person.tekst) }
         return say(person.tekst, then: .choice(prompt: "Hjelpe nå?", yes: .kundesak(client: id, puzzle: puzzle)))
+    }
+
+    /// A folder with a sandbox case. Once the case is cleared, only a word is left.
+    private mutating func talkToSandbox(_ person: TownPerson) -> TownAction {
+        guard let caseId = person.sandkasse else { return say(person.tekst) }
+        if state.sandboxCleared.contains(caseId) { return say(["Denne saken er ryddet."]) }
+        return say(person.tekst, then: .choice(prompt: "Åpne sandkassen?", yes: .sandbox(caseId: caseId)))
     }
 
     private mutating func talkToFagkontor(_ person: TownPerson) -> TownAction {
@@ -293,6 +305,9 @@ public struct TownFlow: Hashable, Sendable {
         case .kundesak(let client, let puzzle):
             walk()
             return .startCase(client: client, puzzle: puzzle)
+        case .sandbox(let caseId):
+            walk()
+            return .openSandbox(caseId: caseId)
         }
     }
 

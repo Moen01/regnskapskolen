@@ -113,6 +113,7 @@ enum GBTheme {
         case .kaffe: SpritePalette(outline: hex(0x282830), body: hex(0x8890A0), detail: hex(0xC84030))
         // Temporary until the final palettes of phase 2c.
         case .arkiv: SpritePalette(outline: hex(0x282830), body: hex(0xA8B0B8), detail: hex(0x58C0D8))
+        case .sandkasse: SpritePalette(outline: hex(0x5A3418), body: hex(0xD8B060), detail: hex(0xF0E0B0))
         case .funn: SpritePalette(outline: hex(0x5A3418), body: hex(0xE8D8A8), detail: hex(0xC84030))
         }
     }
