@@ -86,11 +86,9 @@ extension AppStore {
         let cleared = activeCase.kontoutskrift != nil
             ? bankCheck?.done == true
             : activeCase.compare(journal: sandbox, chart: library.chart).isEmpty
-        guard cleared, let (credit, damage) = progress.game.town?.creditSandbox(
-            activeCase.id, content: library.town, pool: Set(pool.map(\.id)), tema: { library.puzzle(id: $0)?.tema }) else { return }
+        guard cleared, let credit = progress.game.town?.creditSandbox(activeCase.id, content: library.town) else { return }
         let texts = TownFlow.sandboxTexts(credit, content: library.town, ruleCards: library.rules)
         guard !texts.isEmpty else { return }
-        addDamage(damage)
         saveProgress()
         townNotice += texts
         // The flow holds its own copy of the state and would write the old one back on its next key.

@@ -41,8 +41,8 @@ final class TownSandboxTests: XCTestCase {
         return s
     }
 
-    private func credit(_ s: inout TownState, _ p: TownPerson, tema: @escaping (String) -> String? = { _ in nil }) throws -> SandboxCredit {
-        s.creditSandbox(p.sandkasse!, content: with(p, in: try town()), pool: Set(ids), tema: tema).credit
+    private func credit(_ s: inout TownState, _ p: TownPerson) throws -> SandboxCredit {
+        s.creditSandbox(p.sandkasse!, content: with(p, in: try town()))
     }
 
     func testClearedCaseClosesTheEarliestEndedMonth() throws {
@@ -72,11 +72,17 @@ final class TownSandboxTests: XCTestCase {
         XCTAssertEqual(s.sandboxCleared, ["kafe-001"])
     }
 
-    func testMonthWithOpenErrorIsNotTaken() throws {
-        var s = try state(today: day(4, 15))
-        s.clients["kafeen"]!.book(BookedBilag(puzzleId: "x1", month: jan, day: day(1, 3), correct: false), boxBefore: 0, client: "kafeen")
-        XCTAssertEqual(try credit(&s, person()), .closedMonth(client: "kafeen", month: feb))
-        XCTAssertFalse(s.clients["kafeen"]!.closedMonths.contains(jan))
+    /// The month is chosen without looking at verdicts (spec Mål 7): a right and a wrong booking
+    /// in January give the same result, so the credit tells nothing about January.
+    func testMonthWithBookingsIsNotTakenWhateverTheVerdict() throws {
+        var results: [SandboxCredit] = []
+        for correct in [true, false] {
+            var s = try state(today: day(4, 15))
+            s.clients["kafeen"]!.book(BookedBilag(puzzleId: "x1", month: jan, day: day(1, 3), correct: correct), boxBefore: 0, client: "kafeen")
+            results.append(try credit(&s, person()))
+            XCTAssertFalse(s.clients["kafeen"]!.closedMonths.contains(jan), "correct: \(correct)")
+        }
+        XCTAssertEqual(results, [.closedMonth(client: "kafeen", month: feb), .closedMonth(client: "kafeen", month: feb)])
     }
 
     func testInactiveClientGetsNoCredit() throws {
@@ -98,16 +104,18 @@ final class TownSandboxTests: XCTestCase {
 
     func testUnknownCaseIsNotStored() throws {
         var s = try state(today: day(1, 5))
-        XCTAssertEqual(s.creditSandbox("finnes-ikke", content: try town(), pool: Set(ids), tema: { _ in nil }).credit, .unknown)
+        XCTAssertEqual(s.creditSandbox("finnes-ikke", content: try town()), .unknown)
         XCTAssertTrue(s.sandboxCleared.isEmpty)
     }
 
-    func testClosedMonthPaysItsHeldBackDamage() throws {
+    /// January's damage is held back until the player closes January at the counter; the case
+    /// closes February, which has no bookings and so no damage.
+    func testHeldBackDamageWaitsForTheCounter() throws {
         var s = try state(today: day(4, 15))
         s.clients["kafeen"]!.book(BookedBilag(puzzleId: "x1", month: jan, day: day(1, 3), correct: true, damage: 3), boxBefore: 0, client: "kafeen")
-        let result = s.creditSandbox("kafe-001", content: with(person(), in: try town()), pool: Set(ids), tema: { _ in "mva" })
-        XCTAssertEqual(result.credit, .closedMonth(client: "kafeen", month: jan))
-        XCTAssertEqual(result.damage, ["mva": 3])
+        XCTAssertEqual(try credit(&s, person()), .closedMonth(client: "kafeen", month: feb))
+        XCTAssertFalse(s.clients["kafeen"]!.closedMonths.contains(jan))
+        XCTAssertEqual(s.clients["kafeen"]!.closeIfClean(jan, tema: { _ in "mva" }), ["mva": 3])
     }
 
     func testSandboxPersonOffersTheChoiceOnce() throws {
