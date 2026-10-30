@@ -21,6 +21,9 @@ public struct BilagRun: Hashable, Sendable {
     public private(set) var currentError: OpenError?
     public private(set) var chosenMove: Move?
     public private(set) var hasChosen = false
+    /// Counts the encounters shown so far. A correction over found errors can bring the same puzzle
+    /// twice (piles start again every January), so the screen keys on this, not the puzzle id.
+    public private(set) var step = 0
     private var queue: [Pending]
 
     private struct Pending: Hashable, Sendable {
@@ -102,6 +105,7 @@ public struct BilagRun: Hashable, Sendable {
             return
         }
         let next = queue.removeFirst()
+        step += 1
         current = next.encounter
         currentError = next.error
         phase = .encounter

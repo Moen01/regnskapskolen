@@ -47,6 +47,7 @@ struct BattleHost {
 
     /// A bilag or a correction at a client: no HP (a bilag cannot flee, FLYKT just leaves the desk),
     /// and the stage the bilag had before booking, since Kit shows every bilag as fresh.
+    /// Keyed on the run's step, since a correction can bring the same puzzle twice.
     @MainActor
     static func bilag(_ store: AppStore) -> BattleHost {
         BattleHost(
@@ -63,7 +64,8 @@ struct BattleHost {
             next: { store.proceedBilag() },
             library: { store.library },
             setAttempt: { store.townSession?.attempt = $0 },
-            stage: { store.bilagStage })
+            stage: { store.bilagStage },
+            key: { store.bilagRun.map { "\($0.step)" } })
     }
 
     /// A customer case: the same `BilagRun` as a bilag, but its verdict is told and the creature
