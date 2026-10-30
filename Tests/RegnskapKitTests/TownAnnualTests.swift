@@ -139,16 +139,24 @@ final class TownAnnualTests: XCTestCase {
         return s
     }
 
-    func testMissedSkattemeldingCostsTwentyFiveOnce() {
+    func testMissedSkattemeldingCostsTwentyFiveOnce() throws {
         var s = activeState(on: DayKey(year: 2027, month: 6, day: 1))
         s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+        // Only the skattemelding may go missed, so the cost is not clamped at zero.
+        let client = try XCTUnwrap(Self.town.client(cafe))
+        for year in 2026...2027 {
+            for d in DeadlinePlanner.deadlines(for: client, year: year, deadlines: deadlines) where d.kind != .skattemelding(year: 2026) {
+                s.clients[cafe]!.delivered.insert(d.kind.id)
+            }
+        }
         let before = s.clients[cafe]!.satisfaction
+        XCTAssertGreaterThan(before, 25)
         let missed = s.checkMissed(content: Self.town, deadlines: deadlines)
-        XCTAssertTrue(missed.contains { $0.kind.id == "skatt-2026" })
-        XCTAssertTrue(s.clients[cafe]!.missed.contains("skatt-2026"))
-        XCTAssertEqual(TownRules.missedDeadline, -25)
-        XCTAssertEqual(s.clients[cafe]!.satisfaction, max(0, before + TownRules.missedDeadline * missed.count))
+        XCTAssertEqual(missed.count, 1)
+        XCTAssertEqual(missed.filter { $0.kind.id == "skatt-2026" }.count, 1)
+        XCTAssertEqual(s.clients[cafe]!.satisfaction, before - 25)
         XCTAssertEqual(s.checkMissed(content: Self.town, deadlines: deadlines), [])
+        XCTAssertEqual(s.clients[cafe]!.satisfaction, before - 25)
     }
 
     func testDeliverSkattemeldingOnTheDay() {
@@ -170,15 +178,36 @@ final class TownAnnualTests: XCTestCase {
         XCTAssertEqual(s.calendar.today, DayKey(year: 2027, month: 5, day: 28))
     }
 
-    func testCounterRowsFitTheListBox() {
-        let rows = counterRows(on: DayKey(year: 2027, month: 1, day: 4), closed: allMonths2026)
-        XCTAssertTrue(rows.contains { $0.text.hasSuffix("LEVER SKATT") })
-        for r in rows { XCTAssertLessThanOrEqual(r.text.count, TownFlow.rowColumns, r.text) }
-        var s = activeState(on: DayKey(year: 2027, month: 5, day: 28))
-        s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
-        var f = TownFlow(content: Self.town, state: s, deadlines: deadlines, pool: [], regions: [], damage: [:], badges: [], ruleCards: Self.library.rules)
-        _ = f.openFristnav()
-        XCTAssertTrue(f.rows.contains { $0.text.contains("SKATT") }, f.rows.map(\.text).joined(separator: ", "))
-        for r in f.rows { XCTAssertLessThanOrEqual(r.text.count, TownFlow.rowColumns, r.text) }
+    func testCounterRowsFitTheListBox() throws {
+        // A first word of 24 letters: name + " LEVER ÅRSREGN" would pass 34 columns, so only the name is cut.
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(try XCTUnwrap(Self.town.client(cafe)))) as! [String: Any]
+        json["navn"] = "Verkstedsmekanikerforeningen AS"
+        var town = Self.town
+        town.klienter[town.klienter.firstIndex { $0.id == cafe }!] = try JSONDecoder().decode(TownClient.self, from: JSONSerialization.data(withJSONObject: json))
+        func flow(on day: DayKey) -> TownFlow {
+            var s = TownState.new(content: town, year: 2026)
+            s.calendar = TownCalendar(start: day)
+            s.annualFrom = DayKey(year: 2026, month: 1, day: 1)
+            s.clients[cafe]!.status = .active
+            s.clients[cafe]!.closedMonths = Set(allMonths2026)
+            return TownFlow(content: town, state: s, deadlines: deadlines, pool: [], regions: [], damage: [:], badges: [], ruleCards: Self.library.rules)
+        }
+        var counter = flow(on: DayKey(year: 2027, month: 1, day: 4))
+        _ = counter.openCounter()
+        for detail in ["LEVER SKATT", "LEVER ÅRSREGN"] {
+            let row = try XCTUnwrap(counter.rows.first { $0.text.hasSuffix(detail) }, counter.rows.map(\.text).joined(separator: ", "))
+            XCTAssertLessThanOrEqual(row.text.count, TownFlow.rowColumns)
+            XCTAssertTrue(row.text.contains("…"), row.text)
+        }
+        var fristnav = flow(on: DayKey(year: 2027, month: 5, day: 28))
+        _ = fristnav.openFristnav()
+        let row = try XCTUnwrap(fristnav.rows.first { $0.text.hasPrefix("31.05 SKATT") }, fristnav.rows.map(\.text).joined(separator: ", "))
+        XCTAssertLessThanOrEqual(row.text.count, TownFlow.rowColumns)
+        XCTAssertTrue(row.text.contains("…"), row.text)
+    }
+
+    func testEnkGetsSkattemeldingAtTheCounter() {
+        let rows = counterRows(on: DayKey(year: 2027, month: 1, day: 4), closed: allMonths2026, client: "konsulenten")
+        XCTAssertTrue(rows.contains { $0.text.hasSuffix("LEVER SKATT") }, rows.map(\.text).joined(separator: ", "))
     }
 }
