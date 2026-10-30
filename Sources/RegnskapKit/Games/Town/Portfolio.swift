@@ -107,10 +107,25 @@ extension ClientState {
     /// Closes the month when no error is left. With `pool`, errors on hidden puzzles do not block
     /// it (Review Focus 1: otherwise the month could never close); they are dropped with the close,
     /// because a closed month is never corrected again.
-    public mutating func closeIfClean(_ month: MonthKey, pool: Set<String>? = nil) {
-        guard errors(in: month, pool: pool).isEmpty else { return }
+    /// Returns the booking damage that falls due by this close, per topic (`bookingDamage`); empty
+    /// when the month stays open or was closed already, so no damage is ever paid twice.
+    @discardableResult
+    public mutating func closeIfClean(_ month: MonthKey, pool: Set<String>? = nil, tema: (String) -> String? = { _ in nil }) -> [String: Int] {
+        guard !closedMonths.contains(month), errors(in: month, pool: pool).isEmpty else { return [:] }
         openErrors.removeAll { $0.month == month }
         closedMonths.insert(month)
+        return bookingDamage(in: month, tema: tema)
+    }
+
+    /// The damage the month's bookings earned, per topic of their puzzle (`tema` looks it up; a
+    /// puzzle without one is left out). A wrong booking earned none.
+    public func bookingDamage(in month: MonthKey, tema: (String) -> String?) -> [String: Int] {
+        var out: [String: Int] = [:]
+        for bilag in booked where bilag.month == month && bilag.damage > 0 {
+            guard let topic = tema(bilag.puzzleId) else { continue }
+            out[topic, default: 0] += bilag.damage
+        }
+        return out
     }
 
     /// Whether the deadline falls on or after the day the client was won.

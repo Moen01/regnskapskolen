@@ -10,7 +10,8 @@ public enum BilagRunKind: Hashable, Sendable {
 /// A session at a client's desk: the bilag of the pile in order, or the errors that came back when
 /// the month was closed. The battle is the same as in `RegionRun` (moves, verdict, damage), but a
 /// booking never says whether it was right; a correction does. No HP: a bilag cannot flee.
-/// Pure state: the app hands every `AttemptResult` to `Scheduler.record` and adds `damage` to the topic.
+/// Pure state: the app hands every `AttemptResult` to `Scheduler.record` and adds `damage` to the topic,
+/// a booking's only when its month closes (`BookedBilag.damage`), so the gym count keeps the verdict.
 public struct BilagRun: Hashable, Sendable {
     public let client: String
     public let kind: BilagRunKind

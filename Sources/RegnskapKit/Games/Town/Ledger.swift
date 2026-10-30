@@ -5,12 +5,27 @@ public struct BookedBilag: Hashable, Codable, Sendable {
     public let month: MonthKey
     public let day: DayKey
     public let correct: Bool
+    /// The topic damage the booking earned. Held back until the month closes: added at once, the
+    /// gym count would tell whether the bilag was right. Saves from before the field read as 0.
+    public let damage: Int
 
-    public init(puzzleId: String, month: MonthKey, day: DayKey, correct: Bool) {
+    public init(puzzleId: String, month: MonthKey, day: DayKey, correct: Bool, damage: Int = 0) {
         self.puzzleId = puzzleId
         self.month = month
         self.day = day
         self.correct = correct
+        self.damage = damage
+    }
+
+    private enum CodingKeys: String, CodingKey { case puzzleId, month, day, correct, damage }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        puzzleId = try c.decode(String.self, forKey: .puzzleId)
+        month = try c.decode(MonthKey.self, forKey: .month)
+        day = try c.decode(DayKey.self, forKey: .day)
+        correct = try c.decode(Bool.self, forKey: .correct)
+        damage = try c.decodeIfPresent(Int.self, forKey: .damage) ?? 0
     }
 }
 

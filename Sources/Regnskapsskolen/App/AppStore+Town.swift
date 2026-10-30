@@ -71,8 +71,10 @@ extension AppStore {
             showTown(["Porteføljen er full."])
         case .deliver(let id, let kind):
             deliver(id, kind: kind)
-        case .closedMonth:
-            // Kit closed the month and told it; the close costs its action like a correction.
+        case .closedMonth(let id, let month):
+            // Kit closed the month and told it: the month's held-back booking damage falls due now,
+            // and the close costs its action like a correction.
+            addDamage(progress.game.town?.clients[id]?.bookingDamage(in: month, tema: tema(of:)) ?? [:])
             townActionPending = true
             showTown()
         case .startBilag(let id):
@@ -239,8 +241,9 @@ extension AppStore {
         bilagStage = Stage.of(box: maskedProgress.puzzles[id]?.box)
     }
 
-    /// The learner pressed «Sjekk» on a bilag: the scheduler hears it now, the ledger books it, the
-    /// topic gets the damage. A booking keeps the verdict to itself; a correction tells it.
+    /// The learner pressed «Sjekk» on a bilag: the scheduler hears it now, the ledger books it. A
+    /// booking keeps the verdict to itself, its damage too, until the month closes; a correction
+    /// and a case tell the verdict, so their damage counts at once.
     func answerBilag() {
         guard var run = bilagRun, let session = townSession, session.attempt.isAnswered, let encounter = run.current else { return }
         let puzzle = encounter.puzzle
@@ -252,18 +255,26 @@ extension AppStore {
         switch run.kind {
         case .booking(let month):
             let day = progress.game.town?.calendar.today ?? month.first
-            progress.game.town?.clients[run.client]?.book(BookedBilag(puzzleId: puzzle.id, month: month, day: day, correct: result.correctFirstTry),
-                                                         boxBefore: boxBefore, client: run.client)
+            // R7: BilagRun gives damage only for the day's first answer to the puzzle.
+            let bilag = BookedBilag(puzzleId: puzzle.id, month: month, day: day, correct: result.correctFirstTry, damage: damage)
+            progress.game.town?.clients[run.client]?.book(bilag, boxBefore: boxBefore, client: run.client)
         case .correction:
             if let error { progress.game.town?.clients[run.client]?.correct(error, ok: result.correctFirstTry) }
+            addDamage([puzzle.tema: damage])
         case .kundesak(let id):
             progress.game.town?.clients[run.client]?.answerCase(id, ok: result.correctFirstTry)
+            addDamage([puzzle.tema: damage])
         }
-        // R7: BilagRun gives damage only for the day's first answer to the puzzle.
-        if damage > 0 { progress.game.regionDamage[puzzle.tema, default: 0] += damage }
         spendEncounterEnergy()
         saveProgress()
     }
+
+    private func addDamage(_ damage: [String: Int]) {
+        for (tema, value) in damage where value > 0 { progress.game.regionDamage[tema, default: 0] += value }
+    }
+
+    /// The puzzle's topic, for the booking damage a closed month pays out.
+    private func tema(of puzzleId: String) -> String? { library?.puzzle(id: puzzleId)?.tema }
 
     /// Every answered encounter costs the same energy, right or wrong, so the bar never tells the verdict.
     private func spendEncounterEnergy() {
@@ -285,7 +296,7 @@ extension AppStore {
         guard let run = bilagRun else { return }
         var lines: [String] = []
         if case .correction = run.kind, let month = correctionMonth {
-            progress.game.town?.clients[run.client]?.closeIfClean(month, pool: poolIds)
+            addDamage(progress.game.town?.clients[run.client]?.closeIfClean(month, pool: poolIds, tema: tema(of:)) ?? [:])
             let name = TownFlow.monthNames[month.month - 1]
             let closed = progress.game.town?.clients[run.client]?.closedMonths.contains(month) == true
             lines = [closed ? "\(clientName(run.client)): \(name) er lukket." : "Det er fortsatt feil i \(name)."]

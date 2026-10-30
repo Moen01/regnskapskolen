@@ -124,6 +124,56 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(state.closedMonths, [jan])
     }
 
+    func testRightBookingDamageFallsDueOnlyWhenTheMonthCloses() {
+        var state = ClientState.fresh(.active)
+        let tema: (String) -> String? = { ["p0": "mva", "p1": "mva", "p2": "lonn"][$0] }
+        state.book(BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true, damage: 30), boxBefore: 0, client: "k1")
+        state.book(BookedBilag(puzzleId: "p2", month: jan, day: day(1, 5), correct: true, damage: 20), boxBefore: 0, client: "k1")
+        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false, damage: 0), boxBefore: 3, client: "k1")
+        // Before the close nothing is paid: the open error keeps the month open.
+        XCTAssertEqual(state.closeIfClean(jan, tema: tema), [:])
+        state.correct(state.openErrors[0], ok: true)
+        // The close pays the right bookings per topic; the wrong one earned nothing.
+        XCTAssertEqual(state.closeIfClean(jan, tema: tema), ["mva": 30, "lonn": 20])
+        XCTAssertEqual(state.bookingDamage(in: jan, tema: tema), ["mva": 30, "lonn": 20])
+        // A month closed once never pays again.
+        XCTAssertEqual(state.closeIfClean(jan, tema: tema), [:])
+    }
+
+    func testWrongBookingPaysNoDamageBeforeOrAfterTheClose() {
+        var state = ClientState.fresh(.active)
+        state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
+        XCTAssertEqual(state.bookingDamage(in: jan, tema: { _ in "mva" }), [:])
+        state.correct(state.openErrors[0], ok: true)
+        XCTAssertEqual(state.closeIfClean(jan, tema: { _ in "mva" }), [:])
+    }
+
+    func testBookingDamageFromABilagRunIsHeldOnTheBooking() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let town = try TownContent.load(folder: TownContentTests.fixtureTown)
+        let puzzle = try XCTUnwrap(library.pool(includeDrafts: false).first { $0.kind == .quiz })
+        guard case .quiz(let q) = puzzle.payload else { return XCTFail("not a quiz") }
+        var run = BilagRun(client: town.klienter[0], puzzles: [puzzle], kind: .booking(jan), errors: [], bransjeCards: [], otherCards: [], seed: 1)
+        let (outcome, result, damage) = try XCTUnwrap(run.answer(.quiz(q.svar), progress: LearnerProgress(), today: day(2, 2)))
+        XCTAssertEqual(outcome, .booked)
+        XCTAssertTrue(result.correctFirstTry)
+        XCTAssertGreaterThan(damage, 0)
+        var state = ClientState.fresh(.active)
+        state.book(BookedBilag(puzzleId: puzzle.id, month: jan, day: day(2, 2), correct: true, damage: damage), boxBefore: 0, client: "k1")
+        XCTAssertEqual(state.closeIfClean(jan, tema: { _ in puzzle.tema }), [puzzle.tema: damage])
+    }
+
+    func testOldSaveBookingHasNoDamage() throws {
+        // A booking as phase 2a/2b wrote it: encode a current one and drop the new key.
+        let new = BookedBilag(puzzleId: "p0", month: jan, day: day(1, 5), correct: true, damage: 25)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(new)) as? [String: Any])
+        XCTAssertNotNil(object.removeValue(forKey: "damage"))
+        let old = try JSONDecoder().decode(BookedBilag.self, from: JSONSerialization.data(withJSONObject: object))
+        XCTAssertEqual(old.damage, 0)
+        XCTAssertEqual(old.puzzleId, "p0")
+        XCTAssertEqual(try JSONDecoder().decode(BookedBilag.self, from: JSONEncoder().encode(new)), new)
+    }
+
     func testFailedCorrectionCostsTenAndStays() {
         var state = ClientState.fresh(.active)
         state.book(BookedBilag(puzzleId: "p1", month: jan, day: day(1, 6), correct: false), boxBefore: 3, client: "k1")
