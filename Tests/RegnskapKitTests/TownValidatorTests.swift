@@ -211,6 +211,20 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(try withCase(client: "butikken", puzzle: "mva-quiz-002"), id: "kart:sentrum", contains: "bilag eller prøvesak")
     }
 
+    // Rule 14a
+    func testRejectsFunnWithUnknownCard() throws {
+        func withFunn(_ gir: String?) throws -> TownContent {
+            try town(editing: "kart/sentrum.json") { json in
+                var folk = json["folk"] as! [[String: Any]]
+                folk.append(person("funn-1", x: 4, y: 2, rolle: "funn", extra: gir.map { ["gir": $0] } ?? [:]))
+                json["folk"] = folk
+            }
+        }
+        XCTAssertEqual(messages(try withFunn(Self.library.rules[0].id)), [])
+        assertOneProblem(try withFunn("finnes-ikke"), id: "kart:sentrum", contains: "finnes-ikke")
+        assertOneProblem(try withFunn(nil), id: "kart:sentrum", contains: "gir")
+    }
+
     // Rule 7
     func testRejectsUnknownRuleCard() throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)

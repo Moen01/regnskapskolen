@@ -107,7 +107,7 @@ final class TownEnergyTests: XCTestCase {
         var f = flow(s)
         f.openBag()
         XCTAssertEqual(f.phase, .bag)
-        XCTAssertEqual(f.rows.map(\.text), ["KAFFE x3", "AVTALER x2"])
+        XCTAssertEqual(f.rows.map(\.text), ["KAFFE x3", "AVTALER x2", "REGELKORT x0", "FULLMAKT x0"])
         XCTAssertEqual(TownFlow.mainMenu, ["FRISTNAV", "PORTEFØLJE", "BAG", "SAMLING", "TRENING", "LAGRE"])
     }
 

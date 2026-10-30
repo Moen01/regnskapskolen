@@ -85,6 +85,14 @@ extension ContentValidator {
             if p.rolle == .klient, p.klient.flatMap({ town.client($0) }) == nil {
                 out.append("personen «\(p.id)» peker på klienten «\(p.klient ?? "")» som ikke finnes")
             }
+            if p.rolle == .funn {
+                // Rule 14a: a pile gives one rule card that exists.
+                if let card = p.gir {
+                    if !library.rules.contains(where: { $0.id == card }) { out.append("funnet «\(p.id)» gir regelkortet «\(card)» som ikke finnes") }
+                } else {
+                    out.append("funnet «\(p.id)» har ikke gir")
+                }
+            }
             if p.rolle == .kundesak {
                 out += validateCase(p, in: town, library: library)
             }

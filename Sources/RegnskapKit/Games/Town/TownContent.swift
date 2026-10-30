@@ -92,7 +92,7 @@ public struct Door: Codable, Hashable, Sendable {
 }
 
 public enum PersonRole: String, Codable, Sendable {
-    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak
+    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn
 }
 
 public struct FagkontorRef: Codable, Hashable, Sendable {
@@ -111,8 +111,10 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
     public let tekst: [String]
     /// The puzzle a `kundesak` person asks about.
     public let oppgave: String?
+    /// The rule card id a `funn` person gives, once.
+    public let gir: String?
 
-    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil) {
+    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil) {
         self.id = id
         self.rolle = rolle
         self.x = x
@@ -121,6 +123,7 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
         self.fagkontor = fagkontor
         self.tekst = tekst
         self.oppgave = oppgave
+        self.gir = gir
     }
 }
 

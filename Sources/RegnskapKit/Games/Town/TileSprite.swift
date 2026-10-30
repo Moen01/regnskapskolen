@@ -20,6 +20,7 @@ public enum TileSprite {
 
     public static func person(_ role: PersonRole, facing: Facing) -> PixelSprite {
         if role == .kaffe { return coffeeMachine }
+        if role == .funn { return paperPile }
         let base = switch facing {
         case .down: personDown
         case .up: personUp

@@ -24,11 +24,15 @@ public struct TownState: Hashable, Codable, Sendable {
     public var regelkort: Set<String> = []
     /// Ids of the districts whose gate is open (`TownMap.fullmakt`). They belong to the player, and nothing takes them back.
     public var fullmakter: Set<String> = []
+    /// Ids of the `funn` people the player has already taken a card from.
+    public var found: Set<String> = []
+    /// The rule card that counts in the next battle only, like a TM.
+    public var equippedCard: String?
     /// Errors found since `takeDiscoveries` was last called. Not part of the save.
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = []) {
+                payrollFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = [], found: Set<String> = [], equippedCard: String? = nil) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -41,9 +45,11 @@ public struct TownState: Hashable, Codable, Sendable {
         self.coffeeTakenOn = coffeeTakenOn
         self.regelkort = regelkort
         self.fullmakter = fullmakter
+        self.found = found
+        self.equippedCard = equippedCard
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter, found, equippedCard }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -60,6 +66,8 @@ public struct TownState: Hashable, Codable, Sendable {
         coffeeTakenOn = try c.decodeIfPresent(DayKey.self, forKey: .coffeeTakenOn)
         regelkort = try c.decodeIfPresent(Set<String>.self, forKey: .regelkort) ?? []
         fullmakter = try c.decodeIfPresent(Set<String>.self, forKey: .fullmakter) ?? []
+        found = try c.decodeIfPresent(Set<String>.self, forKey: .found) ?? []
+        equippedCard = try c.decodeIfPresent(String.self, forKey: .equippedCard)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -76,6 +84,14 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encodeIfPresent(coffeeTakenOn, forKey: .coffeeTakenOn)
         try c.encode(regelkort, forKey: .regelkort)
         try c.encode(fullmakter, forKey: .fullmakter)
+        try c.encode(found, forKey: .found)
+        try c.encodeIfPresent(equippedCard, forKey: .equippedCard)
+    }
+
+    /// The equipped card for one battle: returns it and clears it, so it never carries over.
+    public mutating func takeEquippedCard() -> String? {
+        defer { equippedCard = nil }
+        return equippedCard
     }
 
     /// A new game: the player stands in front of the boss in `kontoret` on 1 January of `year`.

@@ -114,7 +114,14 @@ extension TownFlow {
 
     private var bagRows: [PanelRow] {
         [PanelRow(id: "kaffe", text: "KAFFE x\(state.coffee)", full: "Kaffe gir deg \(TownRules.coffeeEnergy) energi"),
-         PanelRow(id: "avtaler", text: "AVTALER x\(state.contracts)", full: "Oppdragsavtaler du kan bruke på en prøvesak")]
+         PanelRow(id: "avtaler", text: "AVTALER x\(state.contracts)", full: "Oppdragsavtaler du kan bruke på en prøvesak"),
+         PanelRow(id: "regelkort", text: "REGELKORT x\(heldCards.count)", full: "Et regelkort gir deg trekk i én kamp"),
+         PanelRow(id: "fullmakt", text: "FULLMAKT x\(state.fullmakter.count)", full: "Fullmakter åpner nye bydeler")]
+    }
+
+    /// The rule cards the player has, in library order. An id the library no longer has is left out.
+    private var heldCards: [RuleCard] {
+        ruleCards.filter { state.regelkort.contains($0.id) }
     }
 
     mutating func openBag() {
@@ -123,7 +130,17 @@ extension TownFlow {
 
     /// A on the coffee drinks one cup; the list stays open so the player sees the numbers change.
     mutating func selectBag() -> TownAction {
-        guard cursor == 0 else { turnPage(); return .none }
+        switch cursor {
+        case 0: return drinkCoffee()
+        case 2: return openCards()
+        case 3: return showFullmakter()
+        default:
+            turnPage()
+            return .none
+        }
+    }
+
+    private mutating func drinkCoffee() -> TownAction {
         guard state.coffee > 0 else {
             show(["Du har ingen kaffe."])
             return .none
@@ -133,6 +150,50 @@ extension TownFlow {
         rows = bagRows
         show(["Du føler deg våken."])
         return .none
+    }
+
+    private mutating func showFullmakter() -> TownAction {
+        let names = TownDistricts.all(in: content).filter { $0.fullmakt.map(state.fullmakter.contains) ?? false }.map(\.navn)
+        show(names.isEmpty ? ["Ingen fullmakter ennå."] : ["Du har fullmakt til: \(names.joined(separator: ", "))."])
+        return .none
+    }
+
+    // MARK: Rule cards
+
+    private func cardRows() -> [PanelRow] {
+        heldCards.map { card in
+            PanelRow(id: card.id, text: TextWrap.truncate(card.tittel, to: Self.rowColumns),
+                     full: "\(card.tittel). Legges til trekkene i neste kamp.", marked: state.equippedCard == card.id)
+        }
+    }
+
+    mutating func openCards() -> TownAction {
+        let rows = cardRows()
+        guard !rows.isEmpty else {
+            show(["Du har ingen regelkort."])
+            return .none
+        }
+        openList(.cards, rows: rows)
+        return .none
+    }
+
+    /// A on a card equips it for the next battle; A on the equipped card puts it back.
+    mutating func selectCard() -> TownAction {
+        guard rows.indices.contains(cursor) else { return .none }
+        let id = rows[cursor].id
+        state.equippedCard = state.equippedCard == id ? nil : id
+        rows = cardRows()
+        show([rows[cursor].full ?? rows[cursor].text])
+        return .none
+    }
+
+    /// A pile of papers in town: the first visit gives its card, later ones find nothing.
+    mutating func findCard(_ person: TownPerson) -> TownAction {
+        guard let id = person.gir, !state.found.contains(person.id) else { return say(["Det er ikke mer her."]) }
+        state.found.insert(person.id)
+        state.regelkort.insert(id)
+        let title = ruleCards.first { $0.id == id }?.tittel ?? id
+        return say(["Du fant et regelkort!", title])
     }
 
     // MARK: Counter

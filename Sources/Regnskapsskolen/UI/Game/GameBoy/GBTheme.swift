@@ -111,6 +111,8 @@ enum GBTheme {
         case .skilt: SpritePalette(outline: hex(0x5A3418), body: hex(0xC89058), detail: hex(0xF0E0B0))
         case .seng: SpritePalette(outline: hex(0x202850), body: hex(0x4058A8), detail: hex(0x88A0E0))
         case .kaffe: SpritePalette(outline: hex(0x282830), body: hex(0x8890A0), detail: hex(0xC84030))
+        // Temporary until the final palettes of phase 2c.
+        case .funn: SpritePalette(outline: hex(0x5A3418), body: hex(0xE8D8A8), detail: hex(0xC84030))
         }
     }
 
