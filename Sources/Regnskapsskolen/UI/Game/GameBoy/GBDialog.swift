@@ -26,11 +26,13 @@ struct GBDialog: View {
     var body: some View {
         GBBox(x: 0, y: 112, width: 160, height: 32, padding: 0, fill: GBTheme.dialogFill) {
             ZStack(alignment: .bottomTrailing) {
-                // Four lines at a 5.5 px pitch from y 5 (5, 10.5, 16, 21.5; the letters of the last
-                // end at 25). The marker sits at y 25.5–29.5, under the fourth line, and its letters
-                // end at 29, where the inner border starts. Over line one, an accent on a capital
-                // (`GBText`) reaches 2 px up and stays clear of the border at y 2.
-                VStack(alignment: .leading, spacing: 1.5 * scale) {
+                // GBBox draws its inner border 1 px thick at y 2 and y 29 (height − 3), so the free
+                // inside is y 3–28. Four 4 px lines at a 5 px pitch: y 5, 10, 15, 20, the last
+                // ending at 24. The marker's 4 px cell is y 25–28, under line four and clear of the
+                // border at 29. All whole logical pixels, so every integer scale lands on device pixels.
+                // An accent on a capital (`GBText`) reaches 1 px up: on line one it stays below the
+                // border, on the others inside the 1 px gap.
+                VStack(alignment: .leading, spacing: 1 * scale) {
                     ForEach(Array(visibleLines.enumerated()), id: \.offset) { _, line in
                         GBText(line, size: .small, color: GBTheme.dialogText)
                     }
@@ -42,7 +44,7 @@ struct GBDialog: View {
                     GBText(tabTurns && !showsMarker ? "TAB▼" : "▼", size: .small, color: GBTheme.cursor)
                         .opacity(blink || !typing ? 1 : 0)
                         .padding(.trailing, 3 * scale)
-                        .padding(.bottom, 2.5 * scale)
+                        .padding(.bottom, 3 * scale)
                 }
             }
         }

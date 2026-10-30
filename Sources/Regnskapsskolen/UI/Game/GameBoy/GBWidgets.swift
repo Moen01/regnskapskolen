@@ -84,7 +84,7 @@ struct GBText: View {
                 for (row, line) in accent.rows.enumerated() {
                     for (column, mark) in line.enumerated() where mark == "#" {
                         let x = CGFloat(index * 8 + column) * pixel
-                        let y = CGFloat(CapitalAccent.headroom - CapitalAccent.lift + row) * pixel
+                        let y = CGFloat(CapitalAccent.headroom - CapitalAccent.lift(size) + row) * pixel
                         context.fill(Path(CGRect(x: x, y: y, width: pixel, height: pixel)), with: .color(color))
                     }
                 }
@@ -104,8 +104,12 @@ struct GBText: View {
 private enum CapitalAccent {
     /// Font pixels the canvas reaches above the text.
     static let headroom = 4
-    /// The accent's top row, in font pixels above the letter: two rows, then one row of air.
-    static let lift = 3
+    /// The accent's top row, in font pixels above the letter. At 8 px: two rows, then one row of
+    /// air. At 4 px the dialog's lines are 1 px (two font pixels) apart, so the accent sits right on
+    /// the letter and keeps clear of the line above; half a pixel of air would not show anyway.
+    static func lift(_ size: GBTextSize) -> Int {
+        size == .small ? 2 : 3
+    }
 
     static let letters: [Character: (base: Character, rows: [String])] = [
         "Å": ("A", ["..###..", "..#.#.."]),
