@@ -204,4 +204,27 @@ final class TownDistrictTests: XCTestCase {
             XCTAssertTrue(f.pages[pageIndex].allSatisfy { $0.count <= DialogBox.columns })
         }
     }
+
+    /// Breadth-first over walkable squares without a person, from the arrival square of Bryggen to the square in front of the Avgiftskontoret door.
+    func testAvgiftskontoretIsWithinTwentyStepsOfArrival() throws {
+        let town = Self.library.town
+        let bryggen = try XCTUnwrap(town.map("bryggen"))
+        let door = try XCTUnwrap(bryggen.dorer.first { $0.til == "avgiftskontoret" })
+        let start = try XCTUnwrap(bryggen.ankomst)
+        let goal = TownSpot(x: door.x, y: door.y + 1)
+        let blocked = Set(bryggen.folk.map { TownSpot(x: $0.x, y: $0.y) })
+        var dist = [start: 0]
+        var queue = [start]
+        while !queue.isEmpty {
+            let at = queue.removeFirst()
+            for (dx, dy) in [(0, 1), (0, -1), (1, 0), (-1, 0)] {
+                let next = TownSpot(x: at.x + dx, y: at.y + dy)
+                guard dist[next] == nil, bryggen.tile(x: next.x, y: next.y)?.walkable == true, !blocked.contains(next) else { continue }
+                dist[next] = dist[at]! + 1
+                queue.append(next)
+            }
+        }
+        let steps = try XCTUnwrap(dist[goal])
+        XCTAssertLessThanOrEqual(steps, 20)
+    }
 }

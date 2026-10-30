@@ -21,9 +21,9 @@
     "#......................#",
     "#......................#",
     "#,,,,,,,,,,,,,,,,,,,,,,#",
-    "#~~~~~~~~,,,,,,,,,,,,,,#",
-    "#~~~~~~~~,,,,,,,,,,,,,,#",
-    "#~~~~~~~~,,,,,,,,,,,,,,#",
+    "#~~~~~~~~,,,,,,,,^^^^^^#",
+    "#~~~~~~~~,,,,,,,,^^^^^^#",
+    "#~~~~~~~~,,,,,,,,##D####",
     "#~~~~~~~~,,,,,,,,,,,,,,#",
     "###############D########"
   ],
@@ -33,12 +33,14 @@
     { "x": 18, "y": 9, "til": "valutakontoret", "tilX": 4, "tilY": 6 },
     { "x": 11, "y": 4, "til": "importen", "tilX": 4, "tilY": 6 },
     { "x": 11, "y": 9, "til": "radgivning", "tilX": 4, "tilY": 6 },
-    { "x": 4, "y": 9, "til": "tannklinikken", "tilX": 4, "tilY": 6 }
+    { "x": 4, "y": 9, "til": "tannklinikken", "tilX": 4, "tilY": 6 },
+    { "x": 19, "y": 15, "til": "avgiftskontoret", "tilX": 4, "tilY": 6 }
   ],
   "folk": [
     { "id": "skilt-arsoppgjor", "rolle": "skilt", "x": 19, "y": 5, "tekst": ["Årsoppgjørskontor"] },
     { "id": "skilt-valuta", "rolle": "skilt", "x": 19, "y": 10, "tekst": ["Valutakontoret"] },
-    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 16, "y": 16, "tekst": ["Til Sentrum. Porten står i sør."] },
+    { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 14, "y": 16, "tekst": ["Til Sentrum. Porten står i sør."] },
+    { "id": "skilt-avgiftskontoret", "rolle": "skilt", "x": 20, "y": 16, "tekst": ["Avgiftskontoret"] },
     { "id": "funn-bryggen", "rolle": "funn", "x": 4, "y": 3, "gir": "bokforingsloven-dokumentasjon", "tekst": ["En perm står igjen på en kasse. Øverst ligger et regelkort om dokumentasjon av bilag."] },
     { "id": "folk-bryggen", "rolle": "folk", "x": 12, "y": 13, "tekst": ["Skipene kommer fra hele verden."] },
     { "id": "skilt-importen", "rolle": "skilt", "x": 12, "y": 5, "tekst": ["Bryggen Import"] },

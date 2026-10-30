@@ -429,7 +429,8 @@ final class TownValidatorTests: XCTestCase {
     // Rule 13
     func testCoverageListsThemesWithoutOffice() throws {
         let problems = ContentValidator.validateTownCoverage(try town(), library: Self.library)
-        XCTAssertEqual(problems.map(\.id), ["by:fagkontor"])
+        // The fixture town has no audit desk, so rule 17's coverage reports that too.
+        XCTAssertEqual(problems.map(\.id), ["by:fagkontor", "by:bokettersyn"])
         let themeMessage = try XCTUnwrap(problems.first?.messages.first { $0.contains("uten fagkontor") })
         let withOffice: Set<String> = ["mva", "lonn"]
         for tema in Self.library.topics.map(\.id) {

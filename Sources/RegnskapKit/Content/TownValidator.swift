@@ -294,11 +294,12 @@ extension ContentValidator {
         for district in TownDistricts.all(in: town) where district.offices.count != districtOffices {
             messages.append("bydelen «\(district.id)» har \(district.offices.count) fagkontor, skal ha \(districtOffices)")
         }
-        return messages.isEmpty ? [] : [ContentProblem(id: "by:fagkontor", file: "kart/", messages: messages)]
+        var problems = messages.isEmpty ? [] : [ContentProblem(id: "by:fagkontor", file: "kart/", messages: messages)]
+        problems += validateAuditCoverage(town)
+        return problems
     }
 
-    /// Rule 17 (coverage): exactly one audit desk in town. Kept apart from `validateTownCoverage`
-    /// until the desk exists in the town's content.
+    /// Rule 17 (coverage): exactly one audit desk in town.
     static func validateAuditCoverage(_ town: TownContent) -> [ContentProblem] {
         guard !town.kart.isEmpty else { return [] }
         let desks = town.kart.flatMap(\.folk).filter { $0.rolle == .bokettersyn }.count
