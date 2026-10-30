@@ -127,7 +127,7 @@ Du er ny regnskapsfører på et lite kontor i byen Hovedbok. Sjefen gir deg din 
 
 1. **2a: MVP.** Sentrum med seks bygg man kan gå inn i: kontoret, banken, restaurant, legekontor, nettbutikk og verksted. Fire klienter i fire bransjer. Restauranten får du av sjefen ved start; de tre andre finner du ved å gå rundt, snakke med eieren (behovskortet) og vinne prøvesaken. Restauranten og legekontoret har full papirhaug (20 bilag til sammen); nettbutikken og verkstedet har prøvesak og noen få bilag. Én frist: mva-meldingen. Månedslukking og åpne feil. Ett fagkontor (MVA). Lagring. Ferdig når man kan spille én termin fra 1. januar til fristen 10. april, finne alle fire klientene og se en egen feil komme tilbake. Det er også testen på om det er gøy: blir det ikke det, stopper vi her.
 2. **2b: Resten av fristene.** A-melding, forskuddstrekk, AGA, energi, sove, klienten som oppdager feil.
-3. **2c: Bydeler og fagkontor.** De tre andre bydelene, alle åtte fagkontor, fullmakter, prøvesaker for nye klienter, arkivet.
+3. **2c: Bydeler og fagkontor (ferdig, se [planen](../plans/2026-10-30-rubin-2c.md)).** De tre andre bydelene, alle åtte fagkontor, fullmakter, prøvesaker for nye klienter, arkivet.
 4. **2d: Bokettersynet.** Avgiftskontoret, gjennomgang av åpne feil, de fem kampene, nytt regnskapsår.
 
 Hver fase er en egen plan og en egen PR mot `staging`.
