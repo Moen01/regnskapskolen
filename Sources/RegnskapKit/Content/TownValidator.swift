@@ -127,6 +127,14 @@ extension ContentValidator {
         return out
     }
 
+    /// Rule 6 (text): the question or explanation names input VAT or a VAT balance account (2700–2749).
+    /// 2770/2780 (payroll) are not banned here.
+    private static func teachesVat(_ puzzle: Puzzle) -> Bool {
+        let text = puzzle.oppgave + " " + puzzle.forklaring
+        if text.range(of: "inngående mva", options: .caseInsensitive) != nil { return true }
+        return text.range(of: #"(?<![0-9])27[0-4][0-9](?![0-9])"#, options: .regularExpression) != nil
+    }
+
     /// Rule 11: a customer case names an existing client and an existing `sak` or `quiz` puzzle
     /// that is not in the client's `oppgaver` or `provesak`. A VAT task is never a case (its type is
     /// `mva`), but a quiz on the VAT topic can be one (rule 15).
@@ -146,6 +154,9 @@ extension ContentValidator {
         // A case tells its verdict; as one of the client's bilag or trial puzzles it would give that verdict away.
         if let client, client.oppgaver.contains(id) || client.provesak.contains(id) {
             out.append("kundesaken «\(person.id)» har oppgaven «\(id)», som klienten også har som bilag eller prøvesak")
+        }
+        if let client, !client.mvaRegistrert, puzzle.kind == .quiz || puzzle.kind == .sak, teachesVat(puzzle) {
+            out.append("kundesaken «\(person.id)» har oppgaven «\(id)» med mva i teksten, men klienten «\(client.id)» er ikke mva-registrert")
         }
         // Rule 15: the key of a VAT-topic quiz assumes a registered company.
         if let client, !client.mvaRegistrert, puzzle.tema == "mva", puzzle.kind == .quiz || puzzle.kind == .sak {
@@ -287,9 +298,12 @@ extension ContentValidator {
             var seen = Set<String>()
             for id in tasks {
                 guard seen.insert(id).inserted, let puzzle = library.puzzle(id: id) else { continue }
-                if puzzle.kind == .mva { out.append("oppgave «\(id)» er av typen mva, men klienten er ikke mva-registrert") }
-                if case .posting(let p) = puzzle.payload, p.fasit.contains(where: { Int($0.konto).map(vatAccounts.contains) == true }) {
+                if puzzle.kind == .mva {
+                    out.append("oppgave «\(id)» er av typen mva, men klienten er ikke mva-registrert")
+                } else if case .posting(let p) = puzzle.payload, p.fasit.contains(where: { Int($0.konto).map(vatAccounts.contains) == true }) {
                     out.append("oppgave «\(id)» bruker mva-konto (2700–2799), men klienten er ikke mva-registrert")
+                } else if teachesVat(puzzle) {
+                    out.append("oppgave «\(id)» handler om inngående mva eller mva-konto i teksten, men klienten er ikke mva-registrert")
                 }
             }
         }

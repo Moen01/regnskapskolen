@@ -159,13 +159,22 @@ final class TownValidatorTests: XCTestCase {
 
     // Rule 6
     func testRejectsVatTaskForUnregisteredClient() throws {
-        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-quiz-010", "mva-behandling-001"] }
+        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-web-quiz-01", "mva-behandling-001"] }
         assertOneProblem(t, id: "klient:konsulenten", contains: "mva-behandling-001")
     }
 
     func testRejectsVatAccountPostingForUnregisteredClient() throws {
-        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-quiz-010", "grunnlag-001"] }
+        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["grunnlag-web-quiz-01", "grunnlag-001"] }
         assertOneProblem(t, id: "klient:konsulenten", contains: "grunnlag-001")
+    }
+
+    func testRejectsVatTextForUnregisteredClient() throws {
+        // The key has no VAT account, but the text teaches input VAT or names 2710.
+        let t = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["mva-quiz-006"] }
+        assertOneProblem(t, id: "klient:konsulenten", contains: "mva-quiz-006")
+        let u = try town(editing: "klienter/konsulenten.json") { $0["oppgaver"] = ["periodisering-postering-005"] }
+        assertOneProblem(u, id: "klient:konsulenten", contains: "periodisering-postering-005")
+        XCTAssertEqual(messages(try town(editing: "klienter/butikken.json") { $0["oppgaver"] = ["mva-quiz-006"] }), [])
     }
 
     func testAllowsVatTaskForRegisteredClient() throws {

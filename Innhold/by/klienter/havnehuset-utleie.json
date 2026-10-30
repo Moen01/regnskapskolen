@@ -6,7 +6,7 @@
   "mvaRegistrert": false,
   "ansatte": 0,
   "sted": { "kart": "utleie", "x": 4, "y": 2 },
-  "oppgaver": ["periodisering-postering-002", "periodisering-postering-004", "periodisering-postering-005", "periodisering-regnut-001", "korrigering-postering-001", "reskontro-regnut-002", "arsoppgjor-sorter-001"],
+  "oppgaver": ["periodisering-postering-001", "periodisering-postering-004", "periodisering-postering-003", "periodisering-regnut-001", "korrigering-postering-002", "reskontro-regnut-002", "arsoppgjor-sorter-001"],
   "provesak": ["periodisering-quiz-001", "mva-quiz-004", "korrigering-quiz-001"],
   "replikker": {
     "hilsen": ["God dag. Jeg eier huset ved havnen."],
