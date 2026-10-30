@@ -37,11 +37,18 @@ public enum DeadlineKind: Hashable, Codable, Sendable {
     case mva(termin: Int, year: Int)
     /// Annual filers cover the whole year in one go.
     case mvaAarlig(year: Int)
+    case amelding(month: MonthKey)
+    /// Withholding tax for the pay day in `month`.
+    case forskuddstrekk(month: MonthKey)
+    case aga(termin: Int, year: Int)
 
     public var id: String {
         switch self {
         case let .mva(termin, year): return "mva-\(year)-\(termin)"
         case let .mvaAarlig(year): return "mva-\(year)-aar"
+        case let .amelding(month): return String(format: "amelding-%04d-%02d", month.year, month.month)
+        case let .forskuddstrekk(month): return String(format: "trekk-%04d-%02d", month.year, month.month)
+        case let .aga(termin, year): return "aga-\(year)-\(termin)"
         }
     }
 
@@ -53,6 +60,13 @@ public enum DeadlineKind: Hashable, Codable, Sendable {
             return nums.map { MonthKey(year: year, month: $0) }
         case let .mvaAarlig(year):
             return (1...12).map { MonthKey(year: year, month: $0) }
+        case let .amelding(month):
+            return [month]
+        case .forskuddstrekk:
+            return []
+        case let .aga(termin, year):
+            let nums = rates.agaTerminer.first { $0.nr == termin }?.maaneder ?? []
+            return nums.map { MonthKey(year: year, month: $0) }
         }
     }
 }
@@ -61,9 +75,12 @@ public struct TownDeadline: Hashable, Sendable {
     public let day: DayKey
     public let kind: DeadlineKind
     public let client: String
+    /// The first day the deadline can be delivered.
+    public let opens: DayKey
 
-    public init(day: DayKey, kind: DeadlineKind, client: String) {
+    public init(day: DayKey, kind: DeadlineKind, client: String, opens: DayKey? = nil) {
         self.day = day
+        self.opens = opens ?? day
         self.kind = kind
         self.client = client
     }
@@ -74,8 +91,13 @@ public struct TownDeadline: Hashable, Sendable {
         switch kind {
         case let .mva(termin, _): return "\(date) MVA \(termin). TERMIN"
         case .mvaAarlig: return "\(date) MVA ÅRLIG"
+        case let .amelding(month): return "\(date) A-MELDING \(Self.monthNames[month.month - 1])"
+        case let .forskuddstrekk(month): return "\(date) TREKK \(Self.monthNames[month.month - 1])"
+        case let .aga(termin, _): return "\(date) AGA \(termin). TERMIN"
         }
     }
+
+    private static let monthNames = ["JAN", "FEB", "MAR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DES"]
 
     /// "10.04 MVA1": short enough that a list row keeps the client's name in 17 columns.
     public var shortLabel: String {
@@ -89,21 +111,55 @@ extension DeadlineKind {
         switch self {
         case let .mva(termin, _): return "MVA\(termin)"
         case .mvaAarlig: return "MVAÅR"
+        case let .amelding(month): return "AMELD\(month.month)"
+        case let .forskuddstrekk(month): return "TREKK\(month.month)"
+        case let .aga(termin, _): return "AGA\(termin)"
         }
     }
 }
 
 public enum DeadlinePlanner {
     public static func deadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {
+        vatDeadlines(for: client, year: year, deadlines: deadlines) + payrollDeadlines(for: client, year: year, deadlines: deadlines)
+    }
+
+    private static func vatDeadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {
         guard client.mvaRegistrert, let type = client.mvaTermin else { return [] }
         switch type {
         case .tomaanedlig:
             return deadlines.rates.mvaTerminer.map {
-                TownDeadline(day: deadlines.mvaFrist(termin: $0.nr, year: year), kind: .mva(termin: $0.nr, year: year), client: client.id)
+                let kind = DeadlineKind.mva(termin: $0.nr, year: year)
+                return TownDeadline(day: deadlines.mvaFrist(termin: $0.nr, year: year), kind: kind, client: client.id, opens: opens(kind, rates: deadlines.rates))
             }
         case .aarlig:
-            return [TownDeadline(day: deadlines.mvaAarligFrist(year: year), kind: .mvaAarlig(year: year), client: client.id)]
+            let kind = DeadlineKind.mvaAarlig(year: year)
+            return [TownDeadline(day: deadlines.mvaAarligFrist(year: year), kind: kind, client: client.id, opens: opens(kind, rates: deadlines.rates))]
         }
+    }
+
+    private static func payrollDeadlines(for client: TownClient, year: Int, deadlines: Deadlines) -> [TownDeadline] {
+        guard client.ansatte > 0, let payDay = client.lonnsdag else { return [] }
+        let rates = deadlines.rates
+        let months = (1...12).map { MonthKey(year: year, month: $0) }
+        let ameldinger = months.map { m -> TownDeadline in
+            let kind = DeadlineKind.amelding(month: m)
+            return TownDeadline(day: deadlines.ameldingFrist(forMonth: m.month, year: year), kind: kind, client: client.id, opens: opens(kind, rates: rates))
+        }
+        let trekk = months.map { m -> TownDeadline in
+            let kind = DeadlineKind.forskuddstrekk(month: m)
+            let paid = DayKey(year: year, month: m.month, day: payDay)
+            return TownDeadline(day: deadlines.forskuddstrekkFrist(utbetalt: paid), kind: kind, client: client.id, opens: paid)
+        }
+        let aga = rates.agaTerminer.map {
+            let kind = DeadlineKind.aga(termin: $0.nr, year: year)
+            return TownDeadline(day: deadlines.agaFrist(termin: $0.nr, year: year), kind: kind, client: client.id, opens: opens(kind, rates: rates))
+        }
+        return ameldinger + trekk + aga
+    }
+
+    /// The day after the last month the deadline covers; withholding opens on the pay day instead.
+    private static func opens(_ kind: DeadlineKind, rates: Rates) -> DayKey {
+        kind.months(rates: rates).last?.next.first ?? DayKey(year: 1970, month: 1, day: 1)
     }
 
     /// Deadlines with `day <= d < day + days`, by date then client id.

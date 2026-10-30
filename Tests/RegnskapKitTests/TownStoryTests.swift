@@ -7,7 +7,21 @@ import XCTest
 /// The steps call Kit the way `AppStore+Town` does.
 final class TownStoryTests: XCTestCase {
     static let library = try! ContentLibrary(root: ContentLocator.repoContent)
-    var town: TownContent { Self.library.town }
+    /// The repo town without staff: this is the phase 2a play-through, which has no payroll. Payroll
+    /// deadlines are covered by `TownPayrollTests` until the later phase 2b steps join them to the story.
+    static let town: TownContent = {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("by-\(UUID().uuidString)", isDirectory: true)
+        try! FileManager.default.copyItem(at: ContentLocator.repoContent.appendingPathComponent("by"), to: folder)
+        let clients = folder.appendingPathComponent("klienter")
+        for file in try! FileManager.default.contentsOfDirectory(at: clients, includingPropertiesForKeys: nil) where file.pathExtension == "json" {
+            var json = try! JSONSerialization.jsonObject(with: Data(contentsOf: file)) as! [String: Any]
+            json["ansatte"] = 0
+            json["lonnsdag"] = nil
+            try! JSONSerialization.data(withJSONObject: json).write(to: file)
+        }
+        return try! TownContent.load(folder: folder)
+    }()
+    var town: TownContent { Self.town }
     var deadlines: Deadlines { Self.library.deadlines }
     var puzzles: [Puzzle] { Self.library.pool(includeDrafts: false) }
     var pool: Set<String> { Set(puzzles.map(\.id)) }

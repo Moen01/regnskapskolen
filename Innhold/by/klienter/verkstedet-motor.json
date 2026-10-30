@@ -5,6 +5,7 @@
   "selskapsform": "AS",
   "mvaRegistrert": true,
   "ansatte": 2,
+  "lonnsdag": 15,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "verkstedet", "x": 4, "y": 2 },
   "oppgaver": ["avskrivning-postering-002", "avskrivning-quiz-001", "avskrivning-regnut-001"],

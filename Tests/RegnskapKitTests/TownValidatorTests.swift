@@ -232,4 +232,20 @@ final class TownValidatorTests: XCTestCase {
         let t = try town(editing: "kart/kontoret.json") { $0["navn"] = "Abcdefghijklmnopqr" }
         XCTAssertEqual(messages(t), [])
     }
+
+    // Rule 10
+    func testRejectsStaffWithoutPayDay() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["ansatte"] = 3 }
+        assertOneProblem(t, id: "klient:butikken", contains: "lonnsdag")
+    }
+
+    func testRejectsPayDayWithoutStaff() throws {
+        let t = try town(editing: "klienter/konsulenten.json") { $0["lonnsdag"] = 20 }
+        assertOneProblem(t, id: "klient:konsulenten", contains: "lonnsdag")
+    }
+
+    func testRejectsPayDayAfterTwentyEighth() throws {
+        let t = try town(editing: "klienter/butikken.json") { $0["ansatte"] = 3; $0["lonnsdag"] = 29 }
+        assertOneProblem(t, id: "klient:butikken", contains: "lonnsdag")
+    }
 }

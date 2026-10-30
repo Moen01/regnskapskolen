@@ -142,6 +142,13 @@ extension ContentValidator {
             out.append("mvaTermin skal være satt hvis og bare hvis mvaRegistrert er true")
         }
 
+        // Rule 10: payroll deadlines need a pay day, and only clients with staff have one.
+        if (client.ansatte > 0) != (client.lonnsdag != nil) {
+            out.append("lonnsdag skal være satt hvis og bare hvis klienten har ansatte")
+        } else if let day = client.lonnsdag, !(1...28).contains(day) {
+            out.append("lonnsdag skal være mellom 1 og 28, ikke \(day)")
+        }
+
         let standing = town.map(client.sted.kart)?.folk.first { $0.rolle == .klient && $0.klient == client.id && $0.x == client.sted.x && $0.y == client.sted.y }
         if standing == nil { out.append("sted (\(client.sted.kart), \(client.sted.x), \(client.sted.y)) har ingen klient-person med id «\(client.id)»") }
 

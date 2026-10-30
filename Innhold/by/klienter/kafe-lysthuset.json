@@ -5,6 +5,7 @@
   "selskapsform": "AS",
   "mvaRegistrert": true,
   "ansatte": 4,
+  "lonnsdag": 20,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "restauranten", "x": 4, "y": 2 },
   "oppgaver": ["mva-behandling-003", "mva-behandling-004", "mva-behandling-009", "mva-regnut-001", "grunnlag-001", "mva-behandling-010", "mva-behandling-007", "periodisering-postering-003", "reskontro-postering-001", "mva-postering-002"],

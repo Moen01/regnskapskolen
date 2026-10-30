@@ -122,6 +122,9 @@ extension AppStore {
         switch kind {
         case let .mva(termin, _): what = "Mva-meldingen for \(termin). termin"
         case .mvaAarlig: what = "Den årlige mva-meldingen"
+        case .amelding: what = "A-meldingen"
+        case .forskuddstrekk: what = "Forskuddstrekket"
+        case .aga: what = "Arbeidsgiveravgiften"
         }
         showTown(["\(what) er levert for \(clientName(id))."])
     }

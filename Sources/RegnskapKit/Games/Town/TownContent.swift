@@ -35,6 +35,8 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
     public let selskapsform: String
     public let mvaRegistrert: Bool
     public let ansatte: Int
+    /// The day of the month staff are paid (1...28); set exactly when `ansatte > 0`.
+    public let lonnsdag: Int?
     public let mvaTermin: MvaTerminType?
     public let sted: TownPlace
     public let oppgaver: [String]
@@ -44,7 +46,7 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
     public let status: PuzzleStatus
 
     private enum CodingKeys: String, CodingKey {
-        case id, navn, bransje, selskapsform, mvaRegistrert, ansatte, mvaTermin, sted, oppgaver, provesak, replikker, startklient, status
+        case id, navn, bransje, selskapsform, mvaRegistrert, ansatte, lonnsdag, mvaTermin, sted, oppgaver, provesak, replikker, startklient, status
     }
 
     public init(from decoder: Decoder) throws {
@@ -55,6 +57,7 @@ public struct TownClient: Codable, Hashable, Sendable, Identifiable {
         selskapsform = try c.decode(String.self, forKey: .selskapsform)
         mvaRegistrert = try c.decode(Bool.self, forKey: .mvaRegistrert)
         ansatte = try c.decode(Int.self, forKey: .ansatte)
+        lonnsdag = try c.decodeIfPresent(Int.self, forKey: .lonnsdag)
         mvaTermin = try c.decodeIfPresent(MvaTerminType.self, forKey: .mvaTermin)
         sted = try c.decode(TownPlace.self, forKey: .sted)
         oppgaver = try c.decode([String].self, forKey: .oppgaver)
