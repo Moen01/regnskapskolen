@@ -22,6 +22,12 @@ public enum TownAudit {
         return count.held == count.needed
     }
 
+    /// The panel of a desk person; a person without examiners has an empty panel.
+    public static func panel(_ person: TownPerson, content: TownContent, pool: [Puzzle]) -> [AuditExaminer] {
+        guard let sensor = person.sensor else { return [] }
+        return panel(examiners: person.kontrollorer ?? [], sensor: sensor, content: content, pool: pool)
+    }
+
     /// The controllers in order, then the sensor. Taking the examiners as parameters keeps this free
     /// of the person's fields; the person-based overload comes with the audit people.
     public static func panel(examiners: [FagkontorRef], sensor: FagkontorRef, content: TownContent, pool: [Puzzle]) -> [AuditExaminer] {

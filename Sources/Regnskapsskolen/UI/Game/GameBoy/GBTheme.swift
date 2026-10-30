@@ -134,6 +134,8 @@ enum GBTheme {
         case .arkiv: SpritePalette(outline: hex(0x1E2630), body: hex(0xC8C4B0), detail: hex(0x3CA878))
         // A sandbox binder: mustard with a pale label, apart from the brown sign.
         case .sandkasse: SpritePalette(outline: hex(0x4A3008), body: hex(0xE0A020), detail: hex(0xF8F0D0))
+        // Temporary: the audit officer, a dark slate suit, until the desk gets its final look.
+        case .bokettersyn: SpritePalette(outline: hex(0x1E2630), body: hex(0x546878), detail: skin)
         // A paper find: white sheets with a red stamp, darker outline than the floor.
         case .funn: SpritePalette(outline: hex(0x3C3850), body: hex(0xF8F4E8), detail: hex(0xD03838))
         }

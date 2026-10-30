@@ -443,4 +443,67 @@ final class TownValidatorTests: XCTestCase {
         XCTAssertTrue(messages.contains { $0.contains("«havna»") && $0.contains("0 fagkontor") }, messages.joined(separator: "\n"))
         XCTAssertFalse(messages.contains { $0.contains("«sentrum»") }, messages.joined(separator: "\n"))
     }
+
+    // Rule 17
+    private func examiner(_ id: String, _ temaer: [String]) -> [String: Any] { ["id": id, "navn": "Kontrollør \(id)", "temaer": temaer] }
+
+    private var validExaminers: [[String: Any]] {
+        [examiner("a", ["grunnlag"]), examiner("b", ["mva"]), examiner("c", ["lonn"]), examiner("d", ["arsoppgjor"])]
+    }
+
+    private var validSensor: [String: Any] { examiner("s", ["resultat-balanse", "reskontro-bank", "valuta-korrigeringer"]) }
+
+    private func deskTown(examiners: [[String: Any]]? = nil, sensor: [String: Any]? = nil, rolle: String = "bokettersyn") throws -> TownContent {
+        try town(editing: "kart/kontoret.json") {
+            $0["folk"] = [self.person("sjef", x: 3, y: 2, rolle: "sjef"),
+                          self.person("avgift", x: 1, y: 1, rolle: rolle, extra: ["kontrollorer": examiners ?? self.validExaminers, "sensor": sensor ?? self.validSensor])]
+        }
+    }
+
+    func testAcceptsValidDesk() throws {
+        XCTAssertEqual(messages(try deskTown()), [])
+    }
+
+    func testRejectsDeskWithThreeExaminers() throws {
+        assertOneProblem(try deskTown(examiners: Array(validExaminers.prefix(3))), id: "kart:kontoret", contains: "4 kontrollører")
+    }
+
+    func testRejectsUnknownExaminerTopic() throws {
+        var e = validExaminers
+        e[0] = examiner("a", ["finnes-ikke"])
+        assertOneProblem(try deskTown(examiners: e), id: "kart:kontoret", contains: "finnes-ikke")
+    }
+
+    func testRejectsOverlappingExaminers() throws {
+        var e = validExaminers
+        e[1] = examiner("b", ["grunnlag"])
+        assertOneProblem(try deskTown(examiners: e), id: "kart:kontoret", contains: "grunnlag")
+    }
+
+    func testRejectsSensorWithTwoTopics() throws {
+        assertOneProblem(try deskTown(sensor: examiner("s", ["resultat-balanse", "reskontro-bank"])), id: "kart:kontoret", contains: "sensor")
+    }
+
+    func testRejectsExaminersOnAnotherRole() throws {
+        assertOneProblem(try deskTown(rolle: "folk"), id: "kart:kontoret", contains: "bare står på bokettersyn")
+    }
+
+    func testRejectsLongExaminerName() throws {
+        var e = validExaminers
+        e[0] = ["id": "a", "navn": "Avskrivningskontrollør", "temaer": ["grunnlag"]]
+        assertOneProblem(try deskTown(examiners: e), id: "kart:kontoret", contains: "Avskrivningskontrollør")
+    }
+
+    func testCoverageNeedsOneDesk() throws {
+        let none = ContentValidator.validateAuditCoverage(try town())
+        XCTAssertEqual(none.map(\.id), ["by:bokettersyn"])
+        let two = ContentValidator.validateAuditCoverage(try town(editing: "kart/kontoret.json") {
+            $0["folk"] = [self.person("sjef", x: 3, y: 2, rolle: "sjef"),
+                          self.person("a1", x: 1, y: 1, rolle: "bokettersyn", extra: ["kontrollorer": self.validExaminers, "sensor": self.validSensor]),
+                          self.person("a2", x: 2, y: 1, rolle: "bokettersyn", extra: ["kontrollorer": self.validExaminers, "sensor": self.validSensor])]
+        })
+        XCTAssertEqual(two.map(\.id), ["by:bokettersyn"])
+        let one = ContentValidator.validateAuditCoverage(try deskTown())
+        XCTAssertTrue(one.isEmpty)
+    }
 }

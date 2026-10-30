@@ -130,6 +130,9 @@ extension AppStore {
             startFagkontor(ref)
         case .startCase(let id, let puzzle):
             startCustomerCase(id, puzzle: puzzle)
+        case .startAudit:
+            // Filled in with the audit run in the app.
+            break
         }
     }
 

@@ -3,7 +3,7 @@ import XCTest
 
 final class TileSpriteTests: XCTestCase {
     private let allTiles: [Tile] = [.wall, .floor, .water, .grass, .door, .roof, .counter]
-    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk, .kaffe, .funn, .arkiv, .sandkasse]
+    private let allRoles: [PersonRole] = [.klient, .fagkontor, .skilt, .sjef, .skranke, .seng, .folk, .kaffe, .funn, .arkiv, .sandkasse, .bokettersyn]
     private let allFacings: [Facing] = [.up, .down, .left, .right]
 
     private func assertSixteen(_ sprite: PixelSprite, _ label: String, file: StaticString = #filePath, line: UInt = #line) {

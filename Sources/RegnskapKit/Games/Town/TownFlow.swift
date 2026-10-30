@@ -28,6 +28,8 @@ public enum TownAction: Hashable, Sendable {
     case openCollection
     /// The player chose to open a sandbox case from its folder in town. Free.
     case openSandbox(caseId: String)
+    /// The player chose to start the bokettersyn of `year` at the desk.
+    case startAudit(year: Int)
 }
 
 /// The town on the Game Boy, driven by keys: walking, talking (dialog pages and JA/NEI choices),
@@ -72,6 +74,7 @@ public struct TownFlow: Hashable, Sendable {
         case fagkontor(FagkontorRef)
         case kundesak(client: String, puzzle: String)
         case sandbox(caseId: String)
+        case audit(year: Int)
     }
 
     enum CounterTask: Hashable, Sendable {
@@ -168,6 +171,8 @@ public struct TownFlow: Hashable, Sendable {
             return openArchive()
         case .sandkasse:
             return talkToSandbox(person)
+        case .bokettersyn:
+            return talkToAudit(person)
         }
     }
 
@@ -210,6 +215,28 @@ public struct TownFlow: Hashable, Sendable {
         guard let caseId = person.sandkasse else { return say(person.tekst) }
         if state.sandboxCleared.contains(caseId) { return say(["Denne saken er ryddet."]) }
         return say(person.tekst, then: .choice(prompt: "Åpne sandkassen?", yes: .sandbox(caseId: caseId)))
+    }
+
+    /// The desk at Avgiftskontoret. The order matters: badges first, then whether the panel can be
+    /// built, then the calendar, then the one try a day.
+    private mutating func talkToAudit(_ person: TownPerson) -> TownAction {
+        let count = TownAudit.badgeCount(content: content, badges: badges, regions: regions)
+        if count.held != count.needed {
+            return say(person.tekst + ["Kom tilbake med alle fagmerkene.", "MERKER \(count.held)/\(count.needed)"])
+        }
+        let temaer = Set((person.kontrollorer ?? []).flatMap(\.temaer) + (person.sensor?.temaer ?? []))
+        if regions.filter({ temaer.contains($0.tema) }).map(\.puzzles.count).reduce(0, +) < TownTrials.fagkontorSize {
+            return say(person.tekst + ["Avgiftskontoret er under bygging."])
+        }
+        let year = today.year
+        guard let auditYear = state.auditYear else {
+            if state.revidert.contains(year - 1) {
+                return say(["Bokettersynet for \(year - 1) er avsluttet uten merknader.", "Neste bokettersyn er 1. januar \(year + 1)."])
+            }
+            return say(["Bokettersynet for \(year) starter 1. januar \(year + 1)."])
+        }
+        if state.auditTriedOn == today { return say(["Vi fortsetter i morgen."]) }
+        return say(person.tekst + ["Bokettersynet for \(auditYear) gjelder alle klientene dine."], then: .choice(prompt: "Starte bokettersynet?", yes: .audit(year: auditYear)))
     }
 
     private mutating func talkToFagkontor(_ person: TownPerson) -> TownAction {
@@ -308,6 +335,9 @@ public struct TownFlow: Hashable, Sendable {
         case .sandbox(let caseId):
             walk()
             return .openSandbox(caseId: caseId)
+        case .audit(let year):
+            walk()
+            return .startAudit(year: year)
         }
     }
 

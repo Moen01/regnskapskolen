@@ -9,6 +9,9 @@ extension ContentValidator {
     static let townTrialSize = 3
     /// The fagkontor in each district (spec Mål 2).
     static let districtOffices = 2
+    /// Rule 17: the controllers at the audit desk. The sensor comes on top.
+    static let auditExaminers = 4
+    static let sensorMinTopics = 3
     /// Accounts for VAT balances (2700–2799); a posting key that uses them assumes a VAT-registered company.
     static let vatAccounts = 2700...2799
 
@@ -109,8 +112,33 @@ extension ContentValidator {
             }
         }
 
+        // Rule 17: the audit desk.
+        for p in map.folk { out += validateAuditDesk(p, library: library) }
+
         // Rule 9: word width.
         out += longWords(in: [map.navn] + map.folk.flatMap(\.tekst), where: "kartet")
+        return out
+    }
+
+    /// Rule 17: a `bokettersyn` has four controllers with no shared topic and a sensor with at least
+    /// three topics; no other role has them.
+    private static func validateAuditDesk(_ person: TownPerson, library: ContentLibrary) -> [String] {
+        guard person.rolle == .bokettersyn else {
+            return person.kontrollorer != nil || person.sensor != nil ? ["personen «\(person.id)» har kontrollører eller sensor, som bare står på bokettersyn"] : []
+        }
+        var out: [String] = []
+        let examiners = person.kontrollorer ?? []
+        if examiners.count != auditExaminers { out.append("skranken «\(person.id)» skal ha \(auditExaminers) kontrollører, har \(examiners.count)") }
+        guard let sensor = person.sensor else { return out + ["skranken «\(person.id)» har ingen sensor"] }
+        if sensor.temaer.count < sensorMinTopics { out.append("sensoren på «\(person.id)» skal ha minst \(sensorMinTopics) temaer, har \(sensor.temaer.count)") }
+        var seen = Set<String>()
+        for ref in examiners + [sensor] {
+            for tema in ref.temaer where library.topic(tema) == nil { out.append("«\(ref.id)» på «\(person.id)» har ukjent tema «\(tema)»") }
+        }
+        for ref in examiners {
+            for tema in ref.temaer where !seen.insert(tema).inserted { out.append("kontrollørene på «\(person.id)» deler temaet «\(tema)»") }
+        }
+        out += longWords(in: (examiners + [sensor]).map(\.navn), where: "kartet")
         return out
     }
 
@@ -267,6 +295,15 @@ extension ContentValidator {
             messages.append("bydelen «\(district.id)» har \(district.offices.count) fagkontor, skal ha \(districtOffices)")
         }
         return messages.isEmpty ? [] : [ContentProblem(id: "by:fagkontor", file: "kart/", messages: messages)]
+    }
+
+    /// Rule 17 (coverage): exactly one audit desk in town. Kept apart from `validateTownCoverage`
+    /// until the desk exists in the town's content.
+    static func validateAuditCoverage(_ town: TownContent) -> [ContentProblem] {
+        guard !town.kart.isEmpty else { return [] }
+        let desks = town.kart.flatMap(\.folk).filter { $0.rolle == .bokettersyn }.count
+        guard desks != 1 else { return [] }
+        return [ContentProblem(id: "by:bokettersyn", file: "kart/", messages: ["byen skal ha nøyaktig én bokettersyn-skranke, har \(desks)"])]
     }
 
     // MARK: Clients

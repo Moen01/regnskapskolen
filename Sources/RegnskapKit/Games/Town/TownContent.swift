@@ -92,7 +92,7 @@ public struct Door: Codable, Hashable, Sendable {
 }
 
 public enum PersonRole: String, Codable, Sendable {
-    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv, sandkasse
+    case klient, fagkontor, skilt, sjef, skranke, seng, folk, kaffe, kundesak, funn, arkiv, sandkasse, bokettersyn
 }
 
 public struct FagkontorRef: Codable, Hashable, Sendable {
@@ -115,8 +115,12 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
     public let gir: String?
     /// The sandbox case id a `sandkasse` person opens.
     public let sandkasse: String?
+    /// The four controllers of the `bokettersyn` desk.
+    public let kontrollorer: [FagkontorRef]?
+    /// The sensor of the `bokettersyn` desk.
+    public let sensor: FagkontorRef?
 
-    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil, sandkasse: String? = nil) {
+    public init(id: String, rolle: PersonRole, x: Int, y: Int, klient: String?, fagkontor: FagkontorRef?, tekst: [String], oppgave: String? = nil, gir: String? = nil, sandkasse: String? = nil, kontrollorer: [FagkontorRef]? = nil, sensor: FagkontorRef? = nil) {
         self.id = id
         self.rolle = rolle
         self.x = x
@@ -127,6 +131,8 @@ public struct TownPerson: Codable, Hashable, Sendable, Identifiable {
         self.oppgave = oppgave
         self.gir = gir
         self.sandkasse = sandkasse
+        self.kontrollorer = kontrollorer
+        self.sensor = sensor
     }
 }
 

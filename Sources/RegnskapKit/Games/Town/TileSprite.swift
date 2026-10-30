@@ -32,11 +32,12 @@ public enum TileSprite {
         // Only the front and side views show a tie or glasses; from behind every role looks alike.
         guard facing != .up else { return base }
         var pixels = base.pixels
-        switch role {
-        case .sjef:
+        // The audit officer wears both: glasses like a fagkontor and a tie like the sjef.
+        if role == .sjef || role == .bokettersyn {
             let column = facing == .down ? [7, 8] : [facing == .left ? 5 : 10]
             for x in column { for y in 8...10 { pixels[y][x] = 1 } }
-        case .fagkontor:
+        }
+        if role == .fagkontor || role == .bokettersyn {
             let columns = switch facing {
             case .left: [4, 5, 6]
             case .right: [9, 10, 11]
@@ -44,8 +45,6 @@ public enum TileSprite {
             }
             for x in columns { pixels[4][x] = 1 }
             if facing == .down { pixels[4][7] = 1 }
-        default:
-            break
         }
         return PixelSprite(pixels: pixels)
     }
