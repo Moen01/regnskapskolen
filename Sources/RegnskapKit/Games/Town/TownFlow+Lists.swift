@@ -39,9 +39,39 @@ extension TownFlow {
                                       detail: d.shortLabel, nameFirst: false, full: "\(d.label) \(client?.navn ?? d.client)",
                                       marked: DayKey.daysBetween(today, d.day) <= TownRules.warnDaysBefore)
             }
-        openList(.fristnav, rows: rows)
+        openList(.fristnav, rows: rows + [PanelRow(id: Self.travelRowId, text: "KART", full: "Reis til en bydel")])
         if rows.isEmpty { show(["Ingen frister de neste 7 dagene."]) }
         return .none
+    }
+
+    // MARK: Fast travel
+
+    static let travelRowId = "kart"
+
+    /// One row per open district; the one the player stands in is marked.
+    mutating func openTravel() -> TownAction {
+        let here = TownDistricts.district(of: state.mapId, in: content)?.id
+        let open = TownDistricts.all(in: content).filter {
+            TownDistricts.isOpen($0.id, content: content, fullmakter: state.fullmakter)
+        }
+        openList(.travel, rows: open.map { PanelRow(id: $0.id, text: $0.navn.uppercased(), marked: $0.id == here) })
+        return .none
+    }
+
+    /// Travel is free and saved like a door. Choosing the current district only closes the list.
+    mutating func selectTravel() -> TownAction {
+        guard rows.indices.contains(cursor), let district = TownDistricts.all(in: content).first(where: { $0.id == rows[cursor].id }) else {
+            walk()
+            return .none
+        }
+        if district.id == TownDistricts.district(of: state.mapId, in: content)?.id {
+            walk()
+            return .none
+        }
+        state.mapId = district.id
+        state.walker = TownWalker(x: district.ankomst.x, y: district.ankomst.y, facing: .down)
+        walk()
+        return .enteredDoor
     }
 
     // MARK: Portfolio

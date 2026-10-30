@@ -1,7 +1,7 @@
 import Foundation
 
 public enum TownPhase: Hashable, Sendable {
-    case walking, dialog, menu, fristnav, portfolio, bag, counter, choice
+    case walking, dialog, menu, fristnav, travel, portfolio, bag, counter, choice
 }
 
 /// What the app must do after a key. The flow never spends calendar actions itself: the app
@@ -106,7 +106,7 @@ public struct TownFlow: Hashable, Sendable {
             guard key == .a || key == .tab || key == .character(" ") else { return .none }
             if hasMorePages { page += 1; return .none }
             return follow(then)
-        case .menu, .fristnav, .portfolio, .bag, .counter, .choice:
+        case .menu, .fristnav, .travel, .portfolio, .bag, .counter, .choice:
             return handleList(key)
         }
     }
@@ -235,9 +235,16 @@ public struct TownFlow: Hashable, Sendable {
         case .choice: return choose()
         // The dialog already shows the row in full; A reads on through it.
         case .bag: return selectBag()
-        case .fristnav, .portfolio: turnPage(); return .none
+        case .fristnav: return rows.indices.contains(cursor) && rows[cursor].id == Self.travelRowId ? openTravel() : turnPageOnly()
+        case .travel: return selectTravel()
+        case .portfolio: return turnPageOnly()
         case .walking, .dialog: return .none
         }
+    }
+
+    private mutating func turnPageOnly() -> TownAction {
+        turnPage()
+        return .none
     }
 
     private mutating func openMenu() {

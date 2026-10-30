@@ -308,12 +308,12 @@ final class TownFlowTests: XCTestCase {
         var f = flow(s)
         _ = f.key(.a)
         _ = f.key(.a)
-        XCTAssertEqual(f.rows.map(\.text), ["21.01 TREKK1 KAFÉ"])
+        XCTAssertEqual(f.rows.map(\.text), ["21.01 TREKK1 KAFÉ", "KART"])
         s.clients["kafeen"]!.delivered = ["trekk-2026-01"]
         var g = flow(s)
         _ = g.key(.a)
         XCTAssertEqual(g.key(.a), .none)
-        XCTAssertEqual(g.rows, [])
+        XCTAssertEqual(g.rows.map(\.id), ["kart"])
     }
 
     // MARK: Fristnav
@@ -325,7 +325,7 @@ final class TownFlowTests: XCTestCase {
             _ = f.key(.a)
             XCTAssertEqual(f.key(.a), .none)
             XCTAssertEqual(f.phase, .fristnav)
-            XCTAssertEqual(f.rows.count, 1)
+            XCTAssertEqual(f.rows.count, 2)
             XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKER…")
             XCTAssertEqual(f.rows[0].full, "10.04 MVA 1. TERMIN Bakeren AS")
             XCTAssertEqual(f.rows[0].marked, marked, "\(today)")
@@ -334,7 +334,7 @@ final class TownFlowTests: XCTestCase {
         var empty = flow(state(x: 3, y: 3, facing: .left, today: day(1, 5)))
         _ = empty.key(.a)
         _ = empty.key(.a)
-        XCTAssertEqual(empty.rows, [])
+        XCTAssertEqual(empty.rows.map(\.id), ["kart"])
         XCTAssertFalse(text(empty).isEmpty)
         XCTAssertEqual(empty.key(.b), .none)
         XCTAssertEqual(empty.phase, .walking)

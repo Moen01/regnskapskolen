@@ -33,7 +33,7 @@ struct TownScreen: View {
             TownDateBox(day: flow.state.calendar.today, energy: flow.state.energy)
             TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 64, width: 96, onClick: { click($0, flow) })
             dialog(flow, marker: false)
-        case .fristnav, .portfolio, .bag, .counter:
+        case .fristnav, .travel, .portfolio, .bag, .counter:
             TownListBox(title: title(flow.phase), rows: flow.rows, cursor: flow.cursor, x: 4, width: 152, onClick: { click($0, flow) })
             dialog(flow, marker: false)
         case .choice:
@@ -52,6 +52,7 @@ struct TownScreen: View {
     private func title(_ phase: TownPhase) -> String {
         switch phase {
         case .fristnav: "FRISTNAV"
+        case .travel: "KART"
         case .portfolio: "PORTEFØLJE"
         case .bag: "BAG"
         default: "SKRANKE"

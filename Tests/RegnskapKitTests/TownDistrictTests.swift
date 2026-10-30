@@ -147,4 +147,61 @@ final class TownDistrictTests: XCTestCase {
         XCTAssertEqual(s.grantFullmakter(content: Self.town, badges: ["fag-mva"], regions: Self.regions), [])
         XCTAssertEqual(s.checkMissed(content: Self.town, deadlines: Self.library.deadlines), [])
     }
+
+    // MARK: Fast travel
+
+    func openTravel(_ f: inout TownFlow) {
+        _ = f.openFristnav()
+        let kart = f.rows.firstIndex { $0.id == "kart" } ?? 0
+        for _ in 0..<kart { _ = f.key(.down) }
+        _ = f.key(.a)
+    }
+
+    func testFristnavEndsWithKart() {
+        var f = flow(state(x: 4, y: 3, facing: .down))
+        _ = f.openFristnav()
+        XCTAssertEqual(f.rows.last, PanelRow(id: "kart", text: "KART", full: "Reis til en bydel"))
+    }
+
+    func testTravelListsOnlyOpenDistricts() {
+        var f = flow(state(x: 4, y: 3, facing: .down))
+        openTravel(&f)
+        XCTAssertEqual(f.phase, .travel)
+        XCTAssertEqual(f.rows.map(\.text), ["SENTRUM"])
+        var g = flow(state(x: 4, y: 3, facing: .down, fullmakter: ["havna"]))
+        openTravel(&g)
+        XCTAssertEqual(g.rows.map(\.text), ["SENTRUM", "HAVNA"])
+        XCTAssertEqual(g.rows.map(\.marked), [true, false], "the district the player stands in is marked")
+    }
+
+    func testTravelPutsPlayerOnArrival() throws {
+        var f = flow(state(x: 4, y: 3, facing: .left, fullmakter: ["havna"]))
+        openTravel(&f)
+        _ = f.key(.down)
+        XCTAssertEqual(f.key(.a), .enteredDoor)
+        let havna = try XCTUnwrap(TownDistricts.all(in: Self.town).first { $0.id == "havna" })
+        XCTAssertEqual(f.state.mapId, "havna")
+        XCTAssertEqual(f.state.walker, TownWalker(x: havna.ankomst.x, y: havna.ankomst.y, facing: .down))
+        XCTAssertEqual(f.phase, .walking)
+        XCTAssertFalse(TownAction.enteredDoor.spendsAction)
+    }
+
+    func testTravelToTheSameDistrictOnlyCloses() {
+        var f = flow(state(x: 4, y: 3, facing: .left, fullmakter: ["havna"]))
+        openTravel(&f)
+        XCTAssertEqual(f.key(.a), .none)
+        XCTAssertEqual(f.state.mapId, "sentrum")
+        XCTAssertEqual(f.state.walker, TownWalker(x: 4, y: 3, facing: .left))
+        XCTAssertEqual(f.phase, .walking)
+    }
+
+    func testTravelLinesFitTheBox() {
+        var f = flow(state(x: 4, y: 3, facing: .down, fullmakter: ["havna"]))
+        openTravel(&f)
+        XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns })
+        for pageIndex in f.pages.indices {
+            XCTAssertLessThanOrEqual(f.pages[pageIndex].count, 6)
+            XCTAssertTrue(f.pages[pageIndex].allSatisfy { $0.count <= 36 })
+        }
+    }
 }
