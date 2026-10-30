@@ -15,7 +15,8 @@
     "drift": ["Vi kjøpte ny løftebukk og en varebil i år."],
     "haug": ["Bilagene ligger på benken. Litt olje på dem."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det var dumt."]
+    "glippetFrist": ["Fristen gikk ut. Det var dumt."],
+    "oppdagetFeil": ["Regnskapsføreren min fant noe rart!"]
   },
   "status": "utkast"
 }

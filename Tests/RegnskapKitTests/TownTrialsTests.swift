@@ -8,7 +8,7 @@ final class TownTrialsTests: XCTestCase {
 
     func trialClient(_ provesak: [String]) -> TownClient {
         let ids = provesak.map { "\"\($0)\"" }.joined(separator: ",")
-        let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[]}"
+        let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[],\"oppdagetFeil\":[]}"
         let json = """
         {"id":"kafe","navn":"Kafé AS","bransje":"b","selskapsform":"as","mvaRegistrert":true,"ansatte":1,
          "sted":{"kart":"m","x":0,"y":0},"oppgaver":[],"provesak":[\(ids)],"replikker":\(lines),"status":"godkjent"}

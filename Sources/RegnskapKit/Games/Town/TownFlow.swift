@@ -13,6 +13,8 @@ public enum TownAction: Hashable, Sendable {
     case enteredDoor
     case startBilag(client: String)
     case startCorrection(client: String, month: MonthKey)
+    /// A correction over only the errors the client found itself.
+    case fixDiscovered(client: String)
     case startTrial(client: String)
     case startFagkontor(FagkontorRef)
     case deliver(client: String, kind: DeadlineKind)
@@ -65,6 +67,7 @@ public struct TownFlow: Hashable, Sendable {
     }
 
     enum CounterTask: Hashable, Sendable {
+        case fixDiscovered(client: String)
         case close(client: String, month: MonthKey)
         case deliver(client: String, kind: DeadlineKind)
     }

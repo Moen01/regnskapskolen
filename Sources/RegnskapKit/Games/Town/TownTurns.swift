@@ -7,7 +7,7 @@ extension TownAction {
     public var spendsAction: Bool {
         switch self {
         case .none, .walked, .enteredDoor, .save, .openTraining, .openCollection, .sleep: false
-        case .startBilag, .startCorrection, .startTrial, .startFagkontor, .deliver: true
+        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .deliver: true
         }
     }
 }
@@ -46,16 +46,18 @@ extension TownState {
     /// Spends one action. Call it *after* the action is done: spent first, the last action of a
     /// day would already see the next day (a delivery on the deadline marked missed, a bilag
     /// booked on the wrong date). On a new day, returns the deadlines that were missed.
-    public mutating func spendAction(content: TownContent, deadlines: Deadlines) -> [TownDeadline] {
+    public mutating func spendAction(content: TownContent, deadlines: Deadlines, pool: Set<String>) -> [TownDeadline] {
         guard calendar.act() else { return [] }
-        return checkMissed(content: content, deadlines: deadlines)
+        let missed = checkMissed(content: content, deadlines: deadlines)
+        _ = discover(day: calendar.today, content: content, pool: pool)
+        return missed
     }
 
     /// Delivers at the counter, then spends the action, so a delivery on the deadline day counts
     /// even when it is the day's last action. Returns the deadlines missed on a new day.
-    public mutating func deliver(client: String, kind: DeadlineKind, content: TownContent, deadlines: Deadlines) -> [TownDeadline] {
+    public mutating func deliver(client: String, kind: DeadlineKind, content: TownContent, deadlines: Deadlines, pool: Set<String>) -> [TownDeadline] {
         clients[client]?.deliver(kind)
-        return spendAction(content: content, deadlines: deadlines)
+        return spendAction(content: content, deadlines: deadlines, pool: pool)
     }
 
     /// The days a sleep stops at: the first of next month and, for every active client, each
@@ -75,9 +77,46 @@ extension TownState {
     }
 
     /// Sleeps to the next event and returns the deadlines that were missed on the way.
-    public mutating func sleep(content: TownContent, deadlines: Deadlines) -> [TownDeadline] {
+    /// Every day passed on the way gets its own roll for discovered errors.
+    public mutating func sleep(content: TownContent, deadlines: Deadlines, pool: Set<String>) -> [TownDeadline] {
+        let from = calendar.today
         calendar.sleep(events: sleepEvents(content: content, deadlines: deadlines))
-        return checkMissed(content: content, deadlines: deadlines)
+        let missed = checkMissed(content: content, deadlines: deadlines)
+        var day = from.adding(days: 1)
+        while day <= calendar.today {
+            _ = discover(day: day, content: content, pool: pool)
+            day = day.adding(days: 1)
+        }
+        return missed
+    }
+
+    /// Lets the active clients find old errors on `day`: an error that is not found yet, is at least
+    /// `discoverAfterDays` old and sits on a visible puzzle is found when its roll for the day hits.
+    /// The roll depends only on the error and the day, so a day gives the same answer every time.
+    /// The found errors are also kept for `takeDiscoveries`, so `spendAction` and `sleep` can tell them.
+    @discardableResult
+    public mutating func discover(day: DayKey, content: TownContent, pool: Set<String>) -> [(client: String, error: OpenError)] {
+        var found: [(client: String, error: OpenError)] = []
+        for client in content.klienter where clients[client.id]?.status == .active {
+            for error in clients[client.id]?.openErrors ?? [] where !error.discovered && pool.contains(error.puzzleId) {
+                guard DayKey.daysBetween(error.day, day) >= TownRules.discoverAfterDays, clients[client.id]?.status == .active else { continue }
+                var generator = SplitMix64(seed: SpeciesName.fnv1a("\(error.id)|\(day.string)"))
+                guard generator.next() % TownRules.discoverOneIn == 0 else { continue }
+                clients[client.id]?.discover(error)
+                var shown = error
+                shown.discovered = true
+                found.append((client.id, shown))
+            }
+        }
+        newlyDiscovered += found.map(\.error)
+        return found
+    }
+
+    /// The errors found since the last call, for the app to tell. Not saved: a message lost to a
+    /// crash is no harm, the error itself stays found.
+    public mutating func takeDiscoveries() -> [OpenError] {
+        defer { newlyDiscovered = [] }
+        return newlyDiscovered
     }
 }
 

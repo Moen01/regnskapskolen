@@ -13,7 +13,8 @@
     "drift": ["Det er rolig om dagen."],
     "haug": ["Dette er månedens bilag."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Vi glapp fristen."]
+    "glippetFrist": ["Vi glapp fristen."],
+    "oppdagetFeil": ["Noe stemmer ikke i bøkene!"]
   },
   "status": "utkast"
 }

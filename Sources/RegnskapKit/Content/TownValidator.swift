@@ -165,7 +165,8 @@ extension ContentValidator {
         }
 
         let lines = client.replikker
-        out += longWords(in: [client.navn] + lines.hilsen + lines.drift + lines.haug + lines.tomHaug + lines.glippetFrist, where: "klienten")
+        if lines.oppdagetFeil.isEmpty { out.append("replikker.oppdagetFeil kan ikke være tom") }
+        out += longWords(in: [client.navn] + lines.hilsen + lines.drift + lines.haug + lines.tomHaug + lines.glippetFrist + lines.oppdagetFeil, where: "klienten")
         return out
     }
 

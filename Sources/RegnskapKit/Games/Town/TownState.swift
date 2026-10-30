@@ -15,6 +15,8 @@ public struct TownState: Hashable, Codable, Sendable {
     /// the start. A save from phase 2a has no such field and gets the day it is opened, so the
     /// payroll deadlines of the months before do not all go missed in that moment.
     public var payrollFrom: DayKey?
+    /// Errors found since `takeDiscoveries` was last called. Not part of the save.
+    var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
                 payrollFrom: DayKey? = nil) {

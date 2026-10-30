@@ -15,7 +15,8 @@
     "drift": ["Vi har servering i salen og take-away i disken."],
     "haug": ["Her er bilagene. Kassen og fakturaene ligger i esken."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det liker jeg ikke."]
+    "glippetFrist": ["Fristen gikk ut. Det liker jeg ikke."],
+    "oppdagetFeil": ["Gjesten vår så noe rart i regnskapet!"]
   },
   "startklient": true,
   "status": "utkast"

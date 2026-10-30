@@ -288,7 +288,7 @@ final class TownFlowTests: XCTestCase {
         var s = cafeState(today: day(1, 19))
         let before = s.clients["kafeen"]!.satisfaction
         var missed: [TownDeadline] = []
-        while s.calendar.today <= day(1, 21) { missed += s.sleep(content: Self.town, deadlines: Self.library.deadlines) }
+        while s.calendar.today <= day(1, 21) { missed += s.sleep(content: Self.town, deadlines: Self.library.deadlines, pool: []) }
         XCTAssertEqual(missed.filter { $0.client == "kafeen" }.map(\.kind.id), ["trekk-2026-01"])
         XCTAssertEqual(s.clients["kafeen"]!.missed, ["trekk-2026-01"])
         XCTAssertEqual(s.clients["kafeen"]!.satisfaction, before + TownRules.missedDeadline)

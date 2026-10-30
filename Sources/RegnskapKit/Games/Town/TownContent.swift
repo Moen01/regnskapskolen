@@ -26,6 +26,8 @@ public struct ClientLines: Codable, Hashable, Sendable {
     public let haug: [String]
     public let tomHaug: [String]
     public let glippetFrist: [String]
+    /// Said when the client finds an old error. It must not give the answer away.
+    public let oppdagetFeil: [String]
 }
 
 public struct TownClient: Codable, Hashable, Sendable, Identifiable {

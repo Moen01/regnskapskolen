@@ -21,13 +21,29 @@ public struct OpenError: Hashable, Codable, Sendable, Identifiable {
     public let month: MonthKey
     public let day: DayKey
     public let boxBefore: Int
+    /// Set when the client finds the error itself (`TownState.discover`). Saves from before the
+    /// field read as `false`.
+    public var discovered: Bool
 
-    public init(puzzleId: String, client: String, month: MonthKey, day: DayKey, boxBefore: Int) {
+    public init(puzzleId: String, client: String, month: MonthKey, day: DayKey, boxBefore: Int, discovered: Bool = false) {
         self.puzzleId = puzzleId
         self.client = client
         self.month = month
         self.day = day
         self.boxBefore = boxBefore
+        self.discovered = discovered
+    }
+
+    private enum CodingKeys: String, CodingKey { case puzzleId, client, month, day, boxBefore, discovered }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        puzzleId = try c.decode(String.self, forKey: .puzzleId)
+        client = try c.decode(String.self, forKey: .client)
+        month = try c.decode(MonthKey.self, forKey: .month)
+        day = try c.decode(DayKey.self, forKey: .day)
+        boxBefore = try c.decode(Int.self, forKey: .boxBefore)
+        discovered = try c.decodeIfPresent(Bool.self, forKey: .discovered) ?? false
     }
 
     public var id: String { "\(client):\(puzzleId):\(day.string)" }

@@ -91,6 +91,9 @@ extension TownFlow {
         func add(_ task: CounterTask, _ detail: String, full: String) {
             out.append((task, Self.clientRow(id: "\(out.count):\(client.id)", name: name, detail: detail, nameFirst: true, full: full)))
         }
+        if !clientState.discoveredErrors(pool: pool).isEmpty {
+            add(.fixDiscovered(client: client.id), "RETT FEIL", full: "Rett feilene \(client.navn) fant")
+        }
         if let month = firstOpenMonth(clientState),
            Ledger.canClose(month, client: client, start: state.start, state: clientState, today: today, pool: pool) {
             add(.close(client: client.id, month: month), "LUKK \(Self.monthAbbreviations[month.month - 1])",
@@ -121,6 +124,9 @@ extension TownFlow {
     mutating func selectCounter() -> TownAction {
         guard counterTasks.indices.contains(cursor) else { return .none }
         switch counterTasks[cursor] {
+        case let .fixDiscovered(id):
+            walk()
+            return .fixDiscovered(client: id)
         case let .close(id, month):
             guard state.clients[id]?.errors(in: month, pool: pool).isEmpty == true else {
                 walk()

@@ -218,6 +218,21 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(t, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")
     }
 
+    func testValidatorRequiresDiscoveredLine() throws {
+        let t = try town(editing: "klienter/butikken.json") {
+            var lines = $0["replikker"] as! [String: Any]
+            lines["oppdagetFeil"] = [String]()
+            $0["replikker"] = lines
+        }
+        assertOneProblem(t, id: "klient:butikken", contains: "oppdagetFeil")
+        let long = try town(editing: "klienter/butikken.json") {
+            var lines = $0["replikker"] as! [String: Any]
+            lines["oppdagetFeil"] = ["Skatteforvaltningsforskriften!"]
+            $0["replikker"] = lines
+        }
+        assertOneProblem(long, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")
+    }
+
     func testRejectsLongWordInClientName() throws {
         let t = try town(editing: "klienter/butikken.json") { $0["navn"] = "Skatteforvaltningsforskriften AS" }
         assertOneProblem(t, id: "klient:butikken", contains: "Skatteforvaltningsforskriften")

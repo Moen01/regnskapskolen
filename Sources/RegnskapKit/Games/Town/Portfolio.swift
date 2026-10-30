@@ -55,9 +55,22 @@ extension ClientState {
         openErrors.filter { $0.month == month && pool?.contains($0.puzzleId) != false }
     }
 
+    /// The errors the client found itself, on puzzles the player can see.
+    public func discoveredErrors(pool: Set<String>) -> [OpenError] {
+        openErrors.filter { $0.discovered && pool.contains($0.puzzleId) }
+    }
+
+    /// Marks the error as found and costs satisfaction. Nothing happens for an error that is gone or already found.
+    public mutating func discover(_ error: OpenError) {
+        guard let i = openErrors.firstIndex(where: { $0.id == error.id && !$0.discovered }) else { return }
+        openErrors[i].discovered = true
+        adjustSatisfaction(by: TownRules.discoveredPenalty)
+    }
+
     public mutating func correct(_ error: OpenError, ok: Bool) {
         if ok {
-            openErrors.removeAll { $0 == error }
+            // By id: the caller's copy may have been taken before the client found the error.
+            openErrors.removeAll { $0.id == error.id }
         } else {
             adjustSatisfaction(by: TownRules.correctionMiss)
         }

@@ -14,7 +14,8 @@
     "drift": ["Vi tar betalt for konsultasjoner og selger litt hudkrem."],
     "haug": ["Kvitteringene ligger i denne mappen."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det er ikke bra."]
+    "glippetFrist": ["Fristen gikk ut. Det er ikke bra."],
+    "oppdagetFeil": ["Revisoren fant noe rart i bøkene."]
   },
   "status": "utkast"
 }

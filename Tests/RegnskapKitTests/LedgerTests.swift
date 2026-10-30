@@ -4,7 +4,7 @@ import XCTest
 /// Builds a client with 12 made-up puzzle ids (p0 ... p11) without touching repo content.
 func makeLedgerClient(count: Int = 12) -> TownClient {
     let ids = (0..<count).map { "\"p\($0)\"" }.joined(separator: ",")
-    let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[]}"
+    let lines = "{\"hilsen\":[],\"drift\":[],\"haug\":[],\"tomHaug\":[],\"glippetFrist\":[],\"oppdagetFeil\":[]}"
     let json = """
     {"id":"k1","navn":"Test AS","bransje":"b","selskapsform":"as","mvaRegistrert":true,"ansatte":1,
      "sted":{"kart":"m","x":0,"y":0},"oppgaver":[\(ids)],"provesak":[],"replikker":\(lines),"status":"godkjent"}

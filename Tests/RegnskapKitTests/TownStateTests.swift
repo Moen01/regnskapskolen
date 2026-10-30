@@ -78,7 +78,7 @@ final class TownStateTests: XCTestCase {
 
         var loaded = old
         var missed: [TownDeadline] = []
-        for _ in 0..<TownRules.actionsPerDay { missed += loaded.spendAction(content: content, deadlines: library.deadlines) }
+        for _ in 0..<TownRules.actionsPerDay { missed += loaded.spendAction(content: content, deadlines: library.deadlines, pool: []) }
         XCTAssertEqual(loaded.calendar.today, day(4, 13))
         XCTAssertEqual(missed, [])
         XCTAssertEqual(loaded.clients["kafeen"]?.missed, [])

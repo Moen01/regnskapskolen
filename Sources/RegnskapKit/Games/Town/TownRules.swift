@@ -10,6 +10,11 @@ public enum TownRules {
     public static let correctionMiss = -10
     public static let missedDeadline = -25
     public static let warnDaysBefore = 3
+    /// A client finds an old error on its own: one day in `discoverOneIn`, once the error is
+    /// `discoverAfterDays` old, at a cost in satisfaction.
+    public static let discoverOneIn: UInt64 = 4
+    public static let discoverAfterDays = 7
+    public static let discoveredPenalty = -15
     public static let portfolioSize = 6
     public static let trialWinsNeeded = 2
     public static let fagkontorWinsNeeded = 3

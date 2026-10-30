@@ -14,7 +14,8 @@
     "drift": ["Vi har hatt en travel uke."],
     "haug": ["Her er bilagene dine."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det ble dyrt."]
+    "glippetFrist": ["Fristen gikk ut. Det ble dyrt."],
+    "oppdagetFeil": ["Revisoren min fant noe rart i bøkene!"]
   },
   "startklient": true,
   "status": "godkjent"

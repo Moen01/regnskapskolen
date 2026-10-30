@@ -33,6 +33,9 @@
     ],
     "glippetFrist": [
       "Fristen gikk ut. Det ble dyrt."
+    ],
+    "oppdagetFeil": [
+      "Revisoren min fant noe rart i bøkene!"
     ]
   },
   "startklient": false,

@@ -75,7 +75,7 @@ extension AppStore {
         case .deliver(let id, let kind):
             deliver(id, kind: kind)
             return
-        case .startBilag, .startCorrection, .startTrial, .startFagkontor:
+        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor:
             break
         }
         // The action happens first and costs its time when the player is back in town (`showTown`),
@@ -84,6 +84,7 @@ extension AppStore {
         switch action {
         case .startBilag(let id): startBilag(id)
         case .startCorrection(let id, let month): startCorrection(id, month: month)
+        case .fixDiscovered(let id): startCorrection(id, month: nil)
         case .startTrial(let id): startTrial(id)
         case .startFagkontor(let ref): startFagkontor(ref)
         default: break
@@ -98,25 +99,25 @@ extension AppStore {
     private func spendPendingAction() {
         guard townActionPending, let library else { return }
         townActionPending = false
-        let missed = progress.game.town?.spendAction(content: library.town, deadlines: library.deadlines) ?? []
-        townNotice += missedLines(missed)
+        let missed = progress.game.town?.spendAction(content: library.town, deadlines: library.deadlines, pool: poolIds) ?? []
+        townNotice += missedLines(missed) + discoveryLines()
         saveProgress()
     }
 
     private func sleepInTown() {
         guard let library, var state = progress.game.town else { return }
-        let missed = state.sleep(content: library.town, deadlines: library.deadlines)
+        let missed = state.sleep(content: library.town, deadlines: library.deadlines, pool: poolIds)
         progress.game.town = state
         saveProgress()
         let day = state.calendar.today
-        showTown([String(format: "Du sov til %02d.%02d.", day.day, day.month)] + missedLines(missed))
+        showTown([String(format: "Du sov til %02d.%02d.", day.day, day.month)] + missedLines(missed) + discoveryLines())
     }
 
     private func deliver(_ id: String, kind: DeadlineKind) {
         guard let library else { return }
         // Kit delivers before it spends the action, so the deadline day's last action still counts.
-        let missed = progress.game.town?.deliver(client: id, kind: kind, content: library.town, deadlines: library.deadlines) ?? []
-        townNotice += missedLines(missed)
+        let missed = progress.game.town?.deliver(client: id, kind: kind, content: library.town, deadlines: library.deadlines, pool: poolIds) ?? []
+        townNotice += missedLines(missed) + discoveryLines()
         saveProgress()
         let what: String
         switch kind {
@@ -127,6 +128,15 @@ extension AppStore {
         case .aga: what = "Arbeidsgiveravgiften"
         }
         showTown(["\(what) er levert for \(clientName(id))."])
+    }
+
+    /// What a client says when it finds an old error: its own line and the task title, never the answer.
+    private func discoveryLines() -> [String] {
+        guard let library, let found = progress.game.town?.takeDiscoveries() else { return [] }
+        return found.flatMap { error in
+            ["\(clientName(error.client)): \(library.puzzle(id: error.puzzleId)?.tittel ?? error.puzzleId)"]
+                + (library.town.client(error.client)?.replikker.oppdagetFeil ?? [])
+        }
     }
 
     /// The client's own line about a missed deadline, after its name and the deadline.
@@ -161,12 +171,14 @@ extension AppStore {
                        bransjeCards: cards.own, otherCards: cards.other, seed: townSeed))
     }
 
-    private func startCorrection(_ id: String, month: MonthKey) {
+    /// A correction over a month's errors, or, with no month, over the errors the client found itself.
+    private func startCorrection(_ id: String, month: MonthKey?) {
         let visible = poolIds
-        guard let library, let client = library.town.client(id), let errors = progress.game.town?.clients[id]?.errors(in: month, pool: visible) else {
+        guard let library, let client = library.town.client(id), let clientState = progress.game.town?.clients[id] else {
             showTown()
             return
         }
+        let errors = month.map { clientState.errors(in: $0, pool: visible) } ?? clientState.discoveredErrors(pool: visible)
         let cards = ruleCards(for: client)
         correctionMonth = month
         // Only visible errors: a hidden draft cannot be shown, and it does not block the close either.

@@ -114,7 +114,7 @@ final class TownStoryTests: XCTestCase {
         XCTAssertEqual(readDialog(&f), .startBilag(client: cafe))
         state = f.state
         XCTAssertTrue(TownAction.startBilag(client: cafe).spendsAction)
-        _ = state.spendAction(content: town, deadlines: deadlines)
+        _ = state.spendAction(content: town, deadlines: deadlines, pool: [])
 
         // Five bilag, the second one wrong; none of them tells the verdict.
         var run = try booking(state)
@@ -129,11 +129,11 @@ final class TownStoryTests: XCTestCase {
         // before and on the day. The player delivers it, then the next stop is 1 February.
         let trekk = DeadlineKind.forskuddstrekk(month: jan)
         for stop in [18, 21] {
-            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines, pool: []), [])
             XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 1, day: stop))
         }
         state.clients[cafe]?.deliver(trekk)
-        XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+        XCTAssertEqual(state.sleep(content: town, deadlines: deadlines, pool: []), [])
         XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 2, day: 1))
 
         // The counter offers to close January; the error sends the player to correct it.
@@ -193,7 +193,7 @@ final class TownStoryTests: XCTestCase {
         var stops: [DayKey] = []
         var missed: [TownDeadline] = []
         while state.calendar.today < deadlines.mvaFrist(termin: 1, year: 2026) {
-            missed += state.sleep(content: town, deadlines: deadlines)
+            missed += state.sleep(content: town, deadlines: deadlines, pool: [])
             stops.append(state.calendar.today)
         }
         // March is never booked in this story, so March payroll goes by; the VAT term does not.
@@ -210,7 +210,7 @@ final class TownStoryTests: XCTestCase {
         state.clients[cafe]?.deliver(kind)
 
         // The day after the deadline: nothing missed for the café.
-        XCTAssertEqual(state.sleep(content: town, deadlines: deadlines).filter { $0.client == cafe }, [])
+        XCTAssertEqual(state.sleep(content: town, deadlines: deadlines, pool: []).filter { $0.client == cafe }, [])
         XCTAssertTrue(state.clients[cafe]?.delivered.contains(kind.id) == true)
         XCTAssertEqual(state.clients[cafe]?.missed, ["trekk-2026-03", "amelding-2026-03"])
     }
@@ -248,7 +248,7 @@ final class TownStoryTests: XCTestCase {
         XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LEVER TREKK1"])
         XCTAssertEqual(f.key(.a), .deliver(client: cafe, kind: trekk))
         state = f.state
-        XCTAssertEqual(state.deliver(client: cafe, kind: trekk, content: town, deadlines: deadlines), [])
+        XCTAssertEqual(state.deliver(client: cafe, kind: trekk, content: town, deadlines: deadlines, pool: []), [])
 
         // The month is booked and sleeping reaches 1 February without anything missed.
         let client = try XCTUnwrap(town.client(cafe))
@@ -256,7 +256,7 @@ final class TownStoryTests: XCTestCase {
             state.clients[cafe]?.book(BookedBilag(puzzleId: id, month: jan, day: jan.first, correct: true), boxBefore: 0, client: cafe)
         }
         while state.calendar.today < DayKey(year: 2026, month: 2, day: 1) {
-            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), [])
+            XCTAssertEqual(state.sleep(content: town, deadlines: deadlines, pool: []), [])
         }
         XCTAssertEqual(state.calendar.today, DayKey(year: 2026, month: 2, day: 1))
 
@@ -270,13 +270,13 @@ final class TownStoryTests: XCTestCase {
         _ = f.talk(to: counter)
         XCTAssertEqual(f.rows.map(\.text), ["KAFÉ LEVER AMELD1"])
         let due = deadlines.ameldingFrist(forMonth: 1, year: 2026)
-        while state.calendar.today < due { XCTAssertEqual(state.sleep(content: town, deadlines: deadlines), []) }
+        while state.calendar.today < due { XCTAssertEqual(state.sleep(content: town, deadlines: deadlines, pool: []), []) }
         XCTAssertEqual(state.calendar.today, due)
         f = flow(state)
         _ = f.talk(to: counter)
         XCTAssertEqual(f.key(.a), .deliver(client: cafe, kind: amelding))
         state = f.state
-        XCTAssertEqual(state.deliver(client: cafe, kind: amelding, content: town, deadlines: deadlines), [])
+        XCTAssertEqual(state.deliver(client: cafe, kind: amelding, content: town, deadlines: deadlines, pool: []), [])
         XCTAssertEqual(state.clients[cafe]?.delivered, [trekk.id, amelding.id])
         XCTAssertEqual(state.clients[cafe]?.missed, [])
     }
@@ -287,7 +287,7 @@ final class TownStoryTests: XCTestCase {
         state.calendar = TownCalendar(start: due)
         // Spending the last action of the deadline day starts the next day: the term is missed.
         var missed: [TownDeadline] = []
-        for _ in 0..<TownRules.actionsPerDay { missed += state.spendAction(content: town, deadlines: deadlines) }
+        for _ in 0..<TownRules.actionsPerDay { missed += state.spendAction(content: town, deadlines: deadlines, pool: []) }
         XCTAssertEqual(state.calendar.today, due.adding(days: 1))
         XCTAssertEqual(Set(missed.map(\.client)), [cafe], "only the active café; prospects have no deadlines")
         // The term, and the payroll of January to March that went by without delivery.
@@ -318,11 +318,11 @@ final class TownStoryTests: XCTestCase {
         let kind = DeadlineKind.mva(termin: 1, year: 2026)
         state.calendar = TownCalendar(start: due)
         state.payrollFrom = due // the café's payroll before the term is not under test here
-        for _ in 0..<(TownRules.actionsPerDay - 1) { _ = state.spendAction(content: town, deadlines: deadlines) }
+        for _ in 0..<(TownRules.actionsPerDay - 1) { _ = state.spendAction(content: town, deadlines: deadlines, pool: []) }
         XCTAssertEqual(state.calendar.today, due, "eleven actions keep the day")
         let before = state.clients[cafe]!.satisfaction
 
-        let missed = state.deliver(client: cafe, kind: kind, content: town, deadlines: deadlines)
+        let missed = state.deliver(client: cafe, kind: kind, content: town, deadlines: deadlines, pool: [])
 
         XCTAssertEqual(state.calendar.today, due.adding(days: 1), "the twelfth action ends the day")
         XCTAssertEqual(missed, [], "delivered before the day ended")
@@ -371,7 +371,7 @@ final class TownStoryTests: XCTestCase {
         XCTAssertEqual(f.key(.a), .startTrial(client: id))
         state = f.state
         state.winTrial(client: id, on: state.calendar.today)
-        _ = state.spendAction(content: town, deadlines: deadlines)
+        _ = state.spendAction(content: town, deadlines: deadlines, pool: [])
     }
 
     func testAllThreeTrialsCanBeWonInPhase2a() throws {
@@ -393,7 +393,7 @@ final class TownStoryTests: XCTestCase {
         XCTAssertEqual(state.clients[pixel]?.activeFrom, wonOn)
 
         var missed: [TownDeadline] = []
-        while state.calendar.today < DayKey(year: 2026, month: 5, day: 2) { missed += state.sleep(content: town, deadlines: deadlines) }
+        while state.calendar.today < DayKey(year: 2026, month: 5, day: 2) { missed += state.sleep(content: town, deadlines: deadlines, pool: []) }
         XCTAssertEqual(missed.filter { $0.client == pixel }, [], "term 1 fell due on 10 April, before Pixel was won")
         XCTAssertEqual(state.clients[pixel]?.missed, [])
         XCTAssertEqual(state.clients[pixel]?.satisfaction, TownRules.startSatisfaction)
@@ -410,7 +410,7 @@ final class TownStoryTests: XCTestCase {
         f = flow(state)
         _ = f.openFristnav()
         XCTAssertTrue(f.rows.contains { $0.id == "\(pixel):mva-2026-2" }, "\(f.rows.map(\.id))")
-        while state.calendar.today <= deadlines.mvaFrist(termin: 2, year: 2026) { missed += state.sleep(content: town, deadlines: deadlines) }
+        while state.calendar.today <= deadlines.mvaFrist(termin: 2, year: 2026) { missed += state.sleep(content: town, deadlines: deadlines, pool: []) }
         XCTAssertTrue(missed.contains { $0.client == pixel && $0.kind == .mva(termin: 2, year: 2026) })
     }
 
