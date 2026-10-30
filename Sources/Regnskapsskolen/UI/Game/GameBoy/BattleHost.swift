@@ -23,6 +23,8 @@ struct BattleHost {
     /// What tells one encounter from the next; nil falls back to the puzzle id. A host that can
     /// show the same puzzle twice in a row gives its own, or the screen keeps the old battle.
     var key: () -> String? = { nil }
+    /// The name above the HP bar: the client's in most games, the trust of the audit in the town.
+    var hpLabel = "KUNDEN"
 
     /// The key the screen restarts on: a new key gives a fresh flow, a flash and a slide-in.
     var encounterKey: String? { key() ?? encounter()?.puzzle.id }
@@ -115,6 +117,7 @@ struct BattleHost {
             next: { store.proceedAudit() },
             library: { store.library },
             setAttempt: { store.townSession?.attempt = $0 },
-            key: { store.auditRun.map { "\($0.step)" } })
+            key: { store.auditRun.map { "\($0.step)" } },
+            hpLabel: "TILLIT")
     }
 }

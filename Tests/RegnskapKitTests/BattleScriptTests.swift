@@ -96,9 +96,9 @@ final class BattleScriptTests: XCTestCase {
         let error = encounter(context: .auditError(client: "k", name: "KAFÉ", day: day))
         let examiner = encounter(context: .examiner(name: "Aas", first: true))
         XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: error), ["Feilen er rettet."])
-        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_000), encounter: error), ["Feilen står.", "Tilliten falt med 1 000."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_000), encounter: error), ["Feilen står.", "Tilliten falt med 1 000 kr."])
         XCTAssertEqual(BattleScript.result(.audited(ok: true, hpLost: 0), encounter: examiner), ["Ingen merknad."])
-        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_500), encounter: examiner), ["Merknad!", "Tilliten falt med 1 500."])
+        XCTAssertEqual(BattleScript.result(.audited(ok: false, hpLost: 1_500), encounter: examiner), ["Merknad!", "Tilliten falt med 1 500 kr."])
     }
 
     func testAuditLinesFitTheBox() throws {
@@ -112,6 +112,7 @@ final class BattleScriptTests: XCTestCase {
         }
         pages += TownFlow.auditResultTexts(won: true, year: 2026, today: day, standing: 0, newBadge: true)
         pages += TownFlow.auditResultTexts(won: false, year: 2026, today: day, standing: 10, newBadge: false)
+        pages += TownFlow.auditResultTexts(won: true, year: 2026, today: day, standing: 10, newBadge: true)
         for page in pages {
             let lines = TextWrap.lines(page, columns: DialogBox.columns)
             XCTAssertTrue(lines.allSatisfy { $0.count <= DialogBox.columns } && lines.count <= DialogBox.rows, "\(lines)")

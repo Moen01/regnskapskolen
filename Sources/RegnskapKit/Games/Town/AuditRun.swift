@@ -88,15 +88,16 @@ public struct AuditRun: Hashable, Sendable {
                 fixed.append(error)
                 outcome = .audited(ok: true, hpLost: 0)
             } else {
-                hp -= min(hp, TownRules.auditErrorCost)
+                let loss = min(hp, TownRules.auditErrorCost)
+                hp -= loss
                 standing.append(error)
-                outcome = .audited(ok: false, hpLost: TownRules.auditErrorCost)
+                outcome = .audited(ok: false, hpLost: loss)
             }
         } else if correct {
             outcome = .audited(ok: true, hpLost: 0)
         } else {
-            let loss = puzzle.vanskelighet * RegionRun.hpLossPerLevel
-            hp -= min(hp, loss)
+            let loss = min(hp, puzzle.vanskelighet * RegionRun.hpLossPerLevel)
+            hp -= loss
             remarks += 1
             outcome = .audited(ok: false, hpLost: loss)
         }

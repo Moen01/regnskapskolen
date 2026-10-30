@@ -37,7 +37,7 @@ struct BattleScreen: View {
     var body: some View {
         GBScreen(onKey: handle) {
             if let encounter = host.encounter(), let flow {
-                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(),
+                BattleField(encounter: encounter, stage: host.stage() ?? encounter.stageBefore, hp: host.hp(), hpLabel: host.hpLabel,
                             species: SpeciesName.name(for: encounter.puzzle.id), caught: isCaught, key: host.encounterKey ?? encounter.puzzle.id)
                 switch flow.phase {
                 case .moves:
@@ -141,6 +141,7 @@ private struct BattleField: View {
     let encounter: Encounter
     let stage: Stage
     let hp: Int?
+    let hpLabel: String
     let species: String
     let caught: Bool
     /// The host's encounter key, so the creature slides in again for a repeated puzzle.
@@ -173,7 +174,7 @@ private struct BattleField: View {
             // Three 8 px rows, two 2 px gaps and 3 px padding top and bottom: 34 px, so the text stays inside the border.
             GBBox(x: 62, y: 60, width: 94, height: 34, padding: 3) {
                 VStack(alignment: .leading, spacing: 2 * scale) {
-                    GBText("KUNDEN")
+                    GBText(hpLabel)
                     HStack(spacing: 2 * scale) {
                         GBText("HP:")
                         GBBar(value: Double(hp) / Double(RegionRun.hp), width: 58)

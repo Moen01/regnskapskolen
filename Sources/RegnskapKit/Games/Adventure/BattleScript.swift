@@ -54,7 +54,7 @@ public enum BattleScript {
             var examiner = false
             if case .examiner = encounter.context { examiner = true }
             if ok { return [examiner ? "Ingen merknad." : "Feilen er rettet."] }
-            return [examiner ? "Merknad!" : "Feilen står.", "Tilliten falt med \(kroner(hpLost))."]
+            return [examiner ? "Merknad!" : "Feilen står.", "Tilliten falt med \(kroner(hpLost)) kr."]
         }
     }
 

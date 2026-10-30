@@ -106,6 +106,18 @@ final class AuditRunTests: XCTestCase {
         XCTAssertEqual(r.remarks, 1)
     }
 
+    func testReportedLossIsClampedToTheTrustLeft() throws {
+        // Difficulty 3 costs 1 500 per miss: after six misses 1 000 is left, so the seventh reports 1 000.
+        let panel = (0..<7).map { examiner("Kontrollør \($0)", [puzzle("x\($0)", difficulty: 3)]) }
+        var r = run(errors: [], panel: panel)
+        for _ in 0..<6 { play(&r, wrong) }
+        XCTAssertEqual(r.hp, 1_000)
+        r.choose(nil)
+        let done = try XCTUnwrap(r.answer(wrong, progress: LearnerProgress(), today: today))
+        XCTAssertEqual(done.outcome, .audited(ok: false, hpLost: 1_000))
+        XCTAssertEqual(r.hp, 0)
+    }
+
     func testMustChooseAMoveWhenOneIsOffered() {
         let real = Self.library.pool(includeDrafts: false).first { $0.kind == .quiz && Moves.canHit($0, regionCards: Self.library.rules(tema: $0.tema)) }!
         var r = run(errors: [real])
@@ -176,6 +188,9 @@ final class AuditRunTests: XCTestCase {
         let won = TownFlow.auditResultTexts(won: true, year: 2026, today: today, standing: 0, newBadge: true)
         XCTAssertEqual(won, ["Bokettersynet er avsluttet uten merknader.", "Regnskapsåret 2027 er i gang.", "Du fikk merket «Revisorens beste venn»!"])
         XCTAssertEqual(TownFlow.auditResultTexts(won: true, year: 2026, today: today, standing: 0, newBadge: false).count, 2)
+        let wonWithErrors = TownFlow.auditResultTexts(won: true, year: 2026, today: today, standing: 2, newBadge: false)
+        XCTAssertFalse(wonWithErrors.joined().contains("uten merknader"))
+        XCTAssertEqual(wonWithErrors.last, "2 feil fra 2026 står fortsatt åpne.")
         let lost = TownFlow.auditResultTexts(won: false, year: 2026, today: today, standing: 3, newBadge: false)
         XCTAssertEqual(lost, ["Bokettersynet er avbrutt.", "Du er tilbake på kontoret. Merkene dine er i behold.", "3 feil står fortsatt åpne."])
         XCTAssertEqual(TownFlow.auditResultTexts(won: false, year: 2026, today: today, standing: 0, newBadge: true).count, 2)

@@ -30,6 +30,12 @@ final class TownAuditTests: XCTestCase {
         XCTAssertTrue(TownAudit.ready(content: Self.town, badges: all, regions: regions))
     }
 
+    func testAuditStaysClosedWithNothingToHold() {
+        // No region is ready, so no office is needed: that is not the same as every badge held.
+        XCTAssertEqual(TownAudit.badgeCount(content: Self.town, badges: [], regions: []).needed, 0)
+        XCTAssertFalse(TownAudit.ready(content: Self.town, badges: [], regions: []))
+    }
+
     func testOfficeUnderConstructionDoesNotBlockTheAudit() {
         let thin = Regions.build(topics: Self.library.topics, pool: pool.filter { $0.tema != "grunnlag" }, progress: LearnerProgress())
         let badges = Set(offices.filter { $0.id != "bilag" }.map(TownTrials.badgeKey))

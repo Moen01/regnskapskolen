@@ -19,7 +19,8 @@ public enum TownAudit {
     /// Like `TownDistricts.earned`: an office still under construction is not required.
     public static func ready(content: TownContent, badges: Set<String>, regions: [Region]) -> Bool {
         let count = badgeCount(content: content, badges: badges, regions: regions)
-        return count.held == count.needed
+        // With nothing ready there is nothing to hold, and the desk stays closed.
+        return count.needed > 0 && count.held == count.needed
     }
 
     /// The panel of a desk person; a person without examiners has an empty panel.
@@ -104,7 +105,10 @@ extension TownFlow {
     /// The dialog after the bokettersyn. A fail keeps the badges; the errors still open are told.
     public static func auditResultTexts(won: Bool, year: Int, today: DayKey, standing: Int, newBadge: Bool) -> [String] {
         if won {
-            var texts = ["Bokettersynet er avsluttet uten merknader.", "Regnskapsåret \(today.year) er i gang."]
+            // Errors left standing are not "without remarks"; the badge rule is the same either way.
+            var texts = [standing > 0 ? "Bokettersynet er avsluttet." : "Bokettersynet er avsluttet uten merknader.",
+                         "Regnskapsåret \(today.year) er i gang."]
+            if standing > 0 { texts.append("\(standing) feil fra \(year) står fortsatt åpne.") }
             if newBadge { texts.append("Du fikk merket «Revisorens beste venn»!") }
             return texts
         }
