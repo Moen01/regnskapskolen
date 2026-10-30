@@ -33,11 +33,15 @@ public struct TownState: Hashable, Codable, Sendable {
     public var equippedCard: String?
     /// Ids of the sandbox cases that have given their credit. They belong to the player.
     public var sandboxCleared: Set<String> = []
+    /// Years whose bokettersyn the player has passed.
+    public var revidert: Set<Int> = []
+    /// The day of the last audit attempt: one attempt per day, and quitting mid-audit counts.
+    public var auditTriedOn: DayKey?
     /// Errors found since `takeDiscoveries` was last called. Not part of the save.
     var newlyDiscovered: [OpenError] = []
 
     public init(mapId: String, walker: TownWalker, calendar: TownCalendar, start: MonthKey, clients: [String: ClientState], contracts: Int,
-                payrollFrom: DayKey? = nil, annualFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = [], found: Set<String> = [], equippedCard: String? = nil, sandboxCleared: Set<String> = []) {
+                payrollFrom: DayKey? = nil, annualFrom: DayKey? = nil, energy: Int = TownRules.maxEnergy, coffee: Int = 0, coffeeTakenOn: DayKey? = nil, regelkort: Set<String> = [], fullmakter: Set<String> = [], found: Set<String> = [], equippedCard: String? = nil, sandboxCleared: Set<String> = [], revidert: Set<Int> = [], auditTriedOn: DayKey? = nil) {
         self.mapId = mapId
         self.walker = walker
         self.calendar = calendar
@@ -54,9 +58,11 @@ public struct TownState: Hashable, Codable, Sendable {
         self.found = found
         self.equippedCard = equippedCard
         self.sandboxCleared = sandboxCleared
+        self.revidert = revidert
+        self.auditTriedOn = auditTriedOn
     }
 
-    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, annualFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter, found, equippedCard, sandboxCleared }
+    private enum CodingKeys: String, CodingKey { case mapId, walker, calendar, start, clients, contracts, payrollFrom, annualFrom, energy, coffee, coffeeTakenOn, regelkort, fullmakter, found, equippedCard, sandboxCleared, revidert, auditTriedOn }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -77,6 +83,8 @@ public struct TownState: Hashable, Codable, Sendable {
         found = try c.decodeIfPresent(Set<String>.self, forKey: .found) ?? []
         equippedCard = try c.decodeIfPresent(String.self, forKey: .equippedCard)
         sandboxCleared = try c.decodeIfPresent(Set<String>.self, forKey: .sandboxCleared) ?? []
+        revidert = try c.decodeIfPresent(Set<Int>.self, forKey: .revidert) ?? []
+        auditTriedOn = try c.decodeIfPresent(DayKey.self, forKey: .auditTriedOn)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -97,6 +105,8 @@ public struct TownState: Hashable, Codable, Sendable {
         try c.encode(found, forKey: .found)
         try c.encodeIfPresent(equippedCard, forKey: .equippedCard)
         try c.encode(sandboxCleared, forKey: .sandboxCleared)
+        try c.encode(revidert, forKey: .revidert)
+        try c.encodeIfPresent(auditTriedOn, forKey: .auditTriedOn)
     }
 
     /// The equipped card for one battle: returns it and clears it, so it never carries over.

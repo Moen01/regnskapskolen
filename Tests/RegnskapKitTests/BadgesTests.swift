@@ -6,10 +6,10 @@ final class BadgesTests: XCTestCase {
     var progress = LearnerProgress()
     func award(_ event: GameEvent) -> [String] { Badges.award(event, on: day, progress: &progress).map(\.id) }
 
-    func testCatalogHasTwelveBadgesWithUniqueIds() {
-        XCTAssertEqual(Badges.all.count, 12)
-        XCTAssertEqual(Set(Badges.all.map(\.id)).count, 12)
-        XCTAssertEqual(Badges.all.map(\.id), ["mva-mester", "fristfri", "null-differanse", "bank-avstemt", "lynrask", "reflekser", "sju-dager", "tretti-dager", "forste-fangst", "samler", "hele-regionen", "tolv-merker"])
+    func testCatalogHasThirteenBadgesWithUniqueIds() {
+        XCTAssertEqual(Badges.all.count, 13)
+        XCTAssertEqual(Set(Badges.all.map(\.id)).count, 13)
+        XCTAssertEqual(Badges.all.map(\.id), ["mva-mester", "fristfri", "null-differanse", "bank-avstemt", "lynrask", "reflekser", "sju-dager", "tretti-dager", "forste-fangst", "samler", "hele-regionen", "tolv-merker", "revisorens-beste-venn"])
     }
 
     func testCollectionBadges() {

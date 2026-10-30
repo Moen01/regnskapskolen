@@ -28,4 +28,6 @@ public enum TownRules {
     /// One at the start and one per fagkontor badge (spec Mål 11).
     public static let startContracts = 1
     public static let contractsPerBadge = 1
+    /// An open error that is not corrected costs trust before the controllers start.
+    public static let auditErrorCost = 1_000
 }
