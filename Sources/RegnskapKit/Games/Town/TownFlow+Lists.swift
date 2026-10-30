@@ -11,7 +11,7 @@ extension TownFlow {
     }
 
     /// A list row of a client's short name and a detail ("MVA1", "LUKK JAN"). Only the name is
-    /// cut, so the detail always survives the 17 columns; `full` goes to the dialog under the list.
+    /// cut, so the detail always survives the row's columns; `full` goes to the dialog under the list.
     static func clientRow(id: String, name: String, detail: String, nameFirst: Bool, full: String, marked: Bool = false) -> PanelRow {
         let cut = TextWrap.truncate(name, to: max(1, rowColumns - detail.count - 1))
         return PanelRow(id: id, text: nameFirst ? "\(cut) \(detail)" : "\(detail) \(cut)", full: full, marked: marked)

@@ -513,8 +513,8 @@ final class TownStoryTests: XCTestCase {
         state.calendar = TownCalendar(start: DayKey(year: 2026, month: 4, day: 7))
         var f = flow(state)
         _ = f.openFristnav()
-        // The a-melding for March is due 7 April; "MOTOR" is cut to fit, the deadline is not.
-        XCTAssertEqual(f.rows.map(\.text), ["07.04 AMELD3 KAFÉ", "07.04 AMELD3 MOT…", "10.04 MVA1 KAFÉ", "10.04 MVA1 PIXEL", "10.04 MVA1 MOTOR", "KART"])
+        // The a-melding for March is due 7 April; the 34-column row keeps every name whole.
+        XCTAssertEqual(f.rows.map(\.text), ["07.04 AMELD3 KAFÉ", "07.04 AMELD3 MOTOR", "10.04 MVA1 KAFÉ", "10.04 MVA1 PIXEL", "10.04 MVA1 MOTOR", "KART"])
         XCTAssertEqual(f.rows.first?.full, "07.04 A-MELDING MAR Kafé Lysthuset AS")
         XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns })
     }

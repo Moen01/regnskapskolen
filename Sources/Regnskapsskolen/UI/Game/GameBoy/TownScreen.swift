@@ -38,7 +38,7 @@ struct TownScreen: View {
             dialog(flow, marker: true)
         case .menu:
             TownDateBox(day: flow.state.calendar.today, energy: flow.state.energy)
-            TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 64, width: 96, onClick: { click($0, flow) })
+            TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 100, width: 60, onClick: { click($0, flow) })
             dialog(flow, marker: false)
         case .fristnav, .travel, .portfolio, .bag, .cards, .counter, .archive:
             TownListBox(title: title(flow.phase), rows: flow.rows, cursor: flow.cursor, x: 4, width: 152, onClick: { click($0, flow) })
@@ -231,7 +231,8 @@ private struct TownListBox: View {
     let width: CGFloat
     let onClick: (Int) -> Void
 
-    private var visibleCount: Int { title == nil ? TownFlow.mainMenu.count : AnswerPanel.visibleRows }
+    /// The menu shows all its rows; a titled list fills the 90 px box under its 8 px title (5 px padding).
+    private var visibleCount: Int { title == nil ? TownFlow.mainMenu.count : ListBox.rows(in: 90 - 2 * 5 - (8 + 2)) }
 
     private var visible: Range<Int> {
         let start = min(max(0, cursor - visibleCount + 1), max(0, rows.count - visibleCount))
@@ -239,7 +240,7 @@ private struct TownListBox: View {
     }
 
     var body: some View {
-        let height: CGFloat = title == nil ? CGFloat(visibleCount * 12 + 10) : 90
+        let height: CGFloat = title == nil ? CGFloat(visibleCount * ListBox.rowHeight + 10) : 90
         GBBox(x: x, y: 4, width: width, height: height, padding: 5) {
             VStack(alignment: .leading, spacing: 2 * scale) {
                 if let title { GBText(title) }
@@ -253,14 +254,14 @@ private struct TownListBox: View {
     }
 }
 
-/// JA / NEI above the dialog's right corner.
+/// JA / NEI above the dialog's right corner: two rows and 5 px padding, ending where the dialog starts at y 112.
 private struct TownChoiceBox: View {
     let rows: [PanelRow]
     let cursor: Int
     let onClick: (Int) -> Void
 
     var body: some View {
-        GBBox(x: 104, y: 60, width: 56, height: 36, padding: 5) {
+        GBBox(x: 120, y: 112 - CGFloat(2 * ListBox.rowHeight + 10), width: 40, height: CGFloat(2 * ListBox.rowHeight + 10), padding: 5) {
             GBList(rows: rows, cursor: cursor, visible: rows.indices, onClick: onClick)
         }
     }

@@ -10,7 +10,8 @@ struct MapScreen: View {
     @State private var page = 0
     @State private var showTraining = false
 
-    private static let visibleRows = 5
+    /// Rows under the two 8 px title lines of the 90 px box with 5 px padding.
+    private static let visibleRows = ListBox.rows(in: 90 - 2 * 5 - 2 * (8 + 2))
     private static let trainingId = "trening"
     private static let collectionId = "samling"
     private static let backId = "tilbake"
@@ -22,7 +23,7 @@ struct MapScreen: View {
             // The name has the row; the dialog carries the name in full. Locked rows are dimmed.
             let count = region.isEmpty ? "" : " \(region.caught)/\(region.puzzles.count)"
             let prefix = region.gymBadge != nil ? "*" : ""
-            let name = TextWrap.truncate(prefix + region.navn, to: AnswerPanel.columns - count.count)
+            let name = TextWrap.truncate(prefix + region.navn, to: ListBox.columns - count.count)
             return PanelRow(id: region.tema, text: name + count, full: region.navn, marked: !region.unlocked)
         } + [PanelRow(id: Self.trainingId, text: "TRENING"), PanelRow(id: Self.collectionId, text: "SAMLING"), PanelRow(id: Self.backId, text: "TILBAKE")]
     }
@@ -70,7 +71,7 @@ struct MapScreen: View {
 
     private var levelLine: String {
         let level = XP.level(for: store.progress.game.xp)
-        return TextWrap.truncate("\(level.navn) \(store.progress.game.xp) XP", to: AnswerPanel.columns)
+        return TextWrap.truncate("\(level.navn) \(store.progress.game.xp) XP", to: ListBox.titleColumns)
     }
 
     private func handle(_ key: GameKey) {

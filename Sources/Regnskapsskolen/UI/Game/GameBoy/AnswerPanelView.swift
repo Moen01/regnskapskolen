@@ -11,7 +11,7 @@ struct AnswerPanelView: View {
     private var headline: String {
         // While the voucher's lines are listed, the title gives way to the running sums.
         if panel.isListingLines, let sums = panel.sums {
-            return TextWrap.truncate("BILAG D\(AnswerPanel.amountText(sums.debet)) K\(AnswerPanel.amountText(sums.kredit))", to: AnswerPanel.columns)
+            return TextWrap.truncate("BILAG D\(AnswerPanel.amountText(sums.debet)) K\(AnswerPanel.amountText(sums.kredit))", to: ListBox.titleColumns)
         }
         return panel.title
     }

@@ -38,7 +38,7 @@ public struct TownFlow: Hashable, Sendable {
     public static let columns = DialogBox.columns
     public static let rows = DialogBox.rows
     /// List rows leave one column for the cursor.
-    public static let rowColumns = 17
+    public static let rowColumns = ListBox.columns
     static let choiceRows = [PanelRow(id: "ja", text: "JA"), PanelRow(id: "nei", text: "NEI")]
 
     let content: TownContent

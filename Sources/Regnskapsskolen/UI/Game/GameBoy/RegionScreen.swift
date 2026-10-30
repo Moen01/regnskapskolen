@@ -7,7 +7,8 @@ struct RegionScreen: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
     let region: Region
-    @State private var cursor = GBCursor(visible: 3)
+    /// Rows under the name, two meters and their labels in the 90 px box with 4 px padding.
+    @State private var cursor = GBCursor(visible: ListBox.rows(in: 90 - 2 * 4 - 3 * (8 + 2) - 2 * (6 + 2)))
     @State private var page = 0
 
     private var hp: Int { store.run?.hp ?? RegionRun.hp }
@@ -30,7 +31,7 @@ struct RegionScreen: View {
 
     var body: some View {
         GBScreen(onKey: handle) {
-            RegionPanel(name: TextWrap.truncate(region.navn.uppercased(), to: AnswerPanel.columns),
+            RegionPanel(name: TextWrap.truncate(region.navn.uppercased(), to: ListBox.titleColumns),
                         hpText: "KUNDEN \(hp) kr", hp: Double(hp) / Double(RegionRun.hp),
                         gymText: "GYM \(damage)/\(region.damageTarget)", gym: region.damageTarget == 0 ? 1 : Double(damage) / Double(region.damageTarget),
                         rows: rows, cursor: cursor.index, visible: cursor.range(count: rows.count),

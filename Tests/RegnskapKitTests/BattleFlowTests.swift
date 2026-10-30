@@ -38,7 +38,7 @@ final class BattleFlowTests: XCTestCase {
         XCTAssertEqual(f.handle(.a, attempt: &a), .none)      // KJEMP
         XCTAssertEqual(f.phase, .moves)
         XCTAssertEqual(f.moveRows.last?.text, "Ingen regel")
-        XCTAssertTrue(f.moveRows.allSatisfy { $0.text.count <= 17 })
+        XCTAssertTrue(f.moveRows.allSatisfy { $0.text.count <= ListBox.columns })
         let action = f.handle(.a, attempt: &a)
         guard case .chooseMove = action else { return XCTFail("\(action)") }
         XCTAssertTrue(f.hasChosen)
@@ -143,7 +143,7 @@ final class BattleFlowTests: XCTestCase {
 
     func testAnswerPagesShowTheRowThenTheTask() {
         let puzzle = Self.library.puzzles.first { p in
-            p.kind == .quiz && Moves.canHit(p, regionCards: Self.library.rules(tema: p.tema)) && p.payloadQuiz!.alternativer[0].count > 17
+            p.kind == .quiz && Moves.canHit(p, regionCards: Self.library.rules(tema: p.tema)) && p.payloadQuiz!.alternativer[0].count > ListBox.columns
         }!
         let cards = Self.library.rules(tema: puzzle.tema)
         let moves = Moves.options(for: puzzle, regionCards: cards, otherCards: Self.library.rules.filter { $0.tema != puzzle.tema }, seed: 1)

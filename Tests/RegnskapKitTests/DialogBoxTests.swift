@@ -2,9 +2,9 @@ import XCTest
 @testable import RegnskapKit
 
 final class DialogBoxTests: XCTestCase {
-    func testDialogBoxIsThirtySixBySix() {
+    func testDialogBoxIsThirtySixByFour() {
         XCTAssertEqual(DialogBox.columns, 36)
-        XCTAssertEqual(DialogBox.rows, 6)
+        XCTAssertEqual(DialogBox.rows, 4)
         XCTAssertEqual(DialogBox.glyph, 4)
         // 36 glyphs of 4 px leave 8 px on each side of the 160 px screen.
         XCTAssertEqual(DialogBox.columns * DialogBox.glyph + 2 * 8, 160)

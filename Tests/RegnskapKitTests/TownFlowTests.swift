@@ -238,8 +238,8 @@ final class TownFlowTests: XCTestCase {
         var g = flow(s)
         _ = g.key(.a)
         XCTAssertEqual(g.phase, .counter)
-        // "BAKEREN LEVER MVA1" is 18 columns: the name is cut, never the term.
-        XCTAssertEqual(g.rows.map(\.text), ["BAKER… LEVER MVA1"])
+        // "BAKEREN LEVER MVA1" fits the list row whole.
+        XCTAssertEqual(g.rows.map(\.text), ["BAKEREN LEVER MVA1"])
         XCTAssertEqual(g.rows.map(\.full), ["Lever 10.04 MVA 1. TERMIN for Bakeren AS"])
         XCTAssertEqual(g.key(.a), .deliver(client: "butikken", kind: .mva(termin: 1, year: 2026)))
         XCTAssertEqual(g.phase, .walking)
@@ -326,10 +326,10 @@ final class TownFlowTests: XCTestCase {
             XCTAssertEqual(f.key(.a), .none)
             XCTAssertEqual(f.phase, .fristnav)
             XCTAssertEqual(f.rows.count, 2)
-            XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKER…")
+            XCTAssertEqual(f.rows[0].text, "10.04 MVA1 BAKEREN")
             XCTAssertEqual(f.rows[0].full, "10.04 MVA 1. TERMIN Bakeren AS")
             XCTAssertEqual(f.rows[0].marked, marked, "\(today)")
-            XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= 17 })
+            XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= ListBox.columns })
         }
         var empty = flow(state(x: 3, y: 3, facing: .left, today: day(1, 5)))
         _ = empty.key(.a)
@@ -399,8 +399,8 @@ final class TownFlowTests: XCTestCase {
     // MARK: Width
 
     func testClientRowCutsTheNameNotTheDeadline() {
-        let annual = TownFlow.clientRow(id: "x", name: "LEGEKONTORET", detail: "LEVER MVAÅR", nameFirst: true, full: "full")
-        XCTAssertEqual(annual.text, "LEGE… LEVER MVAÅR")
+        let annual = TownFlow.clientRow(id: "x", name: "LEGEKONTORET OG TANNKLINIKKEN", detail: "LEVER MVAÅR", nameFirst: true, full: "full")
+        XCTAssertEqual(annual.text, "LEGEKONTORET OG TANNK… LEVER MVAÅR")
         XCTAssertLessThanOrEqual(annual.text.count, TownFlow.rowColumns)
         XCTAssertEqual(annual.full, "full")
         XCTAssertEqual(TownFlow.clientRow(id: "x", name: "KAFÉ", detail: "10.04 MVA1", nameFirst: false, full: "").text, "10.04 MVA1 KAFÉ")
@@ -415,7 +415,7 @@ final class TownFlowTests: XCTestCase {
                 XCTAssertLessThanOrEqual(page.count, DialogBox.rows, "\(label): \(page)")
                 for line in page { XCTAssertLessThanOrEqual(line.count, DialogBox.columns, "\(label): «\(line)»") }
             }
-            for row in f.rows { XCTAssertLessThanOrEqual(row.text.count, 17, "\(label): row «\(row.text)»") }
+            for row in f.rows { XCTAssertLessThanOrEqual(row.text.count, ListBox.columns, "\(label): row «\(row.text)»") }
         }
         /// Talks to the person, reads every page, then tries each choice row.
         func talkThrough(_ start: TownFlow, _ person: TownPerson) {

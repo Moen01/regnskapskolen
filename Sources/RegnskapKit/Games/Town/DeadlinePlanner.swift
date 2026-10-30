@@ -99,7 +99,7 @@ public struct TownDeadline: Hashable, Sendable {
 
     private static let monthNames = ["JAN", "FEB", "MAR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DES"]
 
-    /// "10.04 MVA1": short enough that a list row keeps the client's name in 17 columns.
+    /// "10.04 MVA1": short enough that a list row keeps the client's name.
     public var shortLabel: String {
         String(format: "%02d.%02d ", day.day, day.month) + kind.shortName
     }

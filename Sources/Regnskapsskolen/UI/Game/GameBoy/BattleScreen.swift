@@ -189,8 +189,9 @@ private struct ListPanel: View {
     let onClick: (Int) -> Void
 
     private var visible: Range<Int> {
-        let start = min(max(0, cursor - AnswerPanel.visibleRows + 1), max(0, rows.count - AnswerPanel.visibleRows))
-        return start..<min(rows.count, start + AnswerPanel.visibleRows)
+        let count = ListBox.rows(in: ListBox.windowRowSpace)
+        let start = min(max(0, cursor - count + 1), max(0, rows.count - count))
+        return start..<min(rows.count, start + count)
     }
 
     var body: some View {
@@ -214,7 +215,7 @@ private struct BattleMenu: View {
     let onClick: (Int) -> Void
 
     var body: some View {
-        GBBox(x: 0, y: 96, width: 160, height: 48, padding: 0) {
+        GBBox(x: 0, y: 112, width: 160, height: 32, padding: 0) {
             VStack(alignment: .leading, spacing: 4 * scale) {
                 ForEach(0..<2, id: \.self) { row in
                     HStack(spacing: 0) {
@@ -233,7 +234,8 @@ private struct BattleMenu: View {
                     }
                 }
             }
-            .padding(.top, 10 * scale)
+            // Two 8 px rows and a 4 px gap in the 32 px box: 6 px above and below.
+            .padding(.top, 6 * scale)
             .padding(.leading, 8 * scale)
         }
     }

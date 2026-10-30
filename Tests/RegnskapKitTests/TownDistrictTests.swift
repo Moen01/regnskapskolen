@@ -200,8 +200,8 @@ final class TownDistrictTests: XCTestCase {
         openTravel(&f)
         XCTAssertTrue(f.rows.allSatisfy { $0.text.count <= TownFlow.rowColumns })
         for pageIndex in f.pages.indices {
-            XCTAssertLessThanOrEqual(f.pages[pageIndex].count, 6)
-            XCTAssertTrue(f.pages[pageIndex].allSatisfy { $0.count <= 36 })
+            XCTAssertLessThanOrEqual(f.pages[pageIndex].count, DialogBox.rows)
+            XCTAssertTrue(f.pages[pageIndex].allSatisfy { $0.count <= DialogBox.columns })
         }
     }
 }

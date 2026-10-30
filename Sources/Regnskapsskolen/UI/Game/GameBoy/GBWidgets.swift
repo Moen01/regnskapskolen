@@ -37,7 +37,7 @@ struct GBBox<Content: View>: View {
     }
 }
 
-/// The two letter sizes: 8 px for lists, menus and name boxes, 4 px for the dialog box.
+/// The two letter sizes: 8 px for titles and name boxes, 4 px for the dialog box and list rows.
 enum GBTextSize {
     case normal, small
 
@@ -64,30 +64,59 @@ struct GBText: View {
     }
 
     var body: some View {
-        Text(text)
+        Text(String(text.map { CapitalAccent.letters[$0]?.base ?? $0 }))
             .font(GBFont.font(scale: scale * size.pixels / 8))
             .foregroundStyle(color)
             .lineLimit(1)
             .fixedSize()
             .frame(height: size.pixels * scale)
-            .overlay(alignment: .topLeading) { rings }
+            .overlay(alignment: .topLeading) { accents }
+            .accessibilityLabel(text)
     }
 
-    /// The font's uppercase Å has no visible ring, so one is drawn over each: 2 px wide, 1 px high,
-    /// one px above the letter. The font is monospaced, so the nth character sits at n cells.
-    private var rings: some View {
+    /// The accents of the capitals in `CapitalAccent`, in font pixels (an eighth of a glyph) over
+    /// the base letter. The font is monospaced, so the nth character sits at n cells.
+    private var accents: some View {
         Canvas { context, _ in
-            let cell = size.pixels * scale
-            for (index, character) in text.enumerated() where character == "Å" {
-                let ring = CGRect(x: (CGFloat(index) + 0.5) * cell - scale, y: 2 * scale, width: 2 * scale, height: scale)
-                context.fill(Path(ring), with: .color(color))
+            let pixel = size.pixels / 8 * scale
+            for (index, character) in text.enumerated() {
+                guard let accent = CapitalAccent.letters[character] else { continue }
+                for (row, line) in accent.rows.enumerated() {
+                    for (column, mark) in line.enumerated() where mark == "#" {
+                        let x = CGFloat(index * 8 + column) * pixel
+                        let y = CGFloat(CapitalAccent.headroom - CapitalAccent.lift + row) * pixel
+                        context.fill(Path(CGRect(x: x, y: y, width: pixel, height: pixel)), with: .color(color))
+                    }
+                }
             }
         }
-        // A canvas draws only inside its own frame, so it reaches 4 px above the text.
-        .frame(width: CGFloat(text.count) * size.pixels * scale, height: (size.pixels + 4) * scale)
-        .offset(y: -4 * scale)
+        // A canvas draws only inside its own frame, so it reaches `headroom` font pixels above the text.
+        .frame(width: CGFloat(text.count) * size.pixels * scale, height: size.pixels * scale * CGFloat(8 + CapitalAccent.headroom) / 8)
+        .offset(y: -size.pixels * scale * CGFloat(CapitalAccent.headroom) / 8)
         .allowsHitTesting(false)
     }
+}
+
+/// Press Start 2P squeezes an accented capital into the cap height: the accent takes the top rows
+/// and the letter shrinks to the height of a small letter, so at 4 px É reads as é, Ö as ö and Å
+/// loses its ring. These are drawn as the full base letter with the accent in pixels above it.
+/// Ø and Æ have no accent and keep the font's glyph.
+private enum CapitalAccent {
+    /// Font pixels the canvas reaches above the text.
+    static let headroom = 4
+    /// The accent's top row, in font pixels above the letter: two rows, then one row of air.
+    static let lift = 3
+
+    static let letters: [Character: (base: Character, rows: [String])] = [
+        "Å": ("A", ["..###..", "..#.#.."]),
+        "Á": ("A", ["....#..", "...#..."]),
+        "Ä": ("A", ["", ".##.##."]),
+        "É": ("E", ["....#..", "...#..."]),
+        "È": ("E", ["..#....", "...#..."]),
+        "Ê": ("E", ["...#...", "..#.#.."]),
+        "Ö": ("O", ["", ".##.##."]),
+        "Ü": ("U", ["", ".##.##."]),
+    ]
 }
 
 /// An HP-style bar: an outlined box that drains from the right. `width` in logical px. Without a
@@ -110,7 +139,8 @@ struct GBBar: View {
     }
 }
 
-/// Rows with a cursor. Each row is 12 px high and clickable; only `visible` rows are drawn.
+/// Rows with a cursor, in 4 px letters (`ListBox`). Each row is `ListBox.rowHeight` px high and
+/// clickable across its whole width; only `visible` rows are drawn.
 struct GBList: View {
     @Environment(\.gbScale) private var scale
     let rows: [PanelRow]
@@ -128,11 +158,12 @@ struct GBList: View {
                 let color = hit ? GBTheme.highlightText : (rows[index].marked ? GBTheme.textDim : GBTheme.text)
                 Button { onClick(index) } label: {
                     HStack(spacing: 0) {
-                        GBText(index == cursor ? "▶" : " ", color: hit ? color : GBTheme.cursor).frame(width: 8 * scale)
-                        GBText(rows[index].text, color: color)
+                        GBText(index == cursor ? "▶" : " ", size: .small, color: hit ? color : GBTheme.cursor)
+                            .frame(width: CGFloat(ListBox.glyph) * scale)
+                        GBText(rows[index].text, size: .small, color: color)
                         Spacer(minLength: 0)
                     }
-                    .frame(height: 12 * scale)
+                    .frame(height: CGFloat(ListBox.rowHeight) * scale)
                     .background(hit ? GBTheme.highlight : .clear)
                     .contentShape(Rectangle())
                 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The dialog box at the bottom of the screen: six lines of 36 characters in 4 px letters
+/// The dialog box at the bottom of the screen: four lines of 36 characters in 4 px letters
 /// (`DialogBox`), typed out at 30 characters a second, a ▼ that blinks when there is more (`TAB▼` when Tab turns the page).
 /// A click on the box shows the rest of the page, then turns it.
 struct GBDialog: View {
@@ -24,23 +24,25 @@ struct GBDialog: View {
     private var hasMore: Bool { page < pages.count - 1 }
 
     var body: some View {
-        GBBox(x: 0, y: 96, width: 160, height: 48, padding: 0, fill: GBTheme.dialogFill) {
+        GBBox(x: 0, y: 112, width: 160, height: 32, padding: 0, fill: GBTheme.dialogFill) {
             ZStack(alignment: .bottomTrailing) {
-                // Six lines at a 6 px pitch from y 6 (6, 12, … 36, the last one ending at 40); the
-                // marker sits at y 40–44, under the sixth line, inside the border at 45.
-                VStack(alignment: .leading, spacing: 2 * scale) {
+                // Four lines at a 5.5 px pitch from y 5 (5, 10.5, 16, 21.5; the letters of the last
+                // end at 25). The marker sits at y 25.5–29.5, under the fourth line, and its letters
+                // end at 29, where the inner border starts. Over line one, an accent on a capital
+                // (`GBText`) reaches 2 px up and stays clear of the border at y 2.
+                VStack(alignment: .leading, spacing: 1.5 * scale) {
                     ForEach(Array(visibleLines.enumerated()), id: \.offset) { _, line in
                         GBText(line, size: .small, color: GBTheme.dialogText)
                     }
                 }
-                .padding(.top, 6 * scale)
+                .padding(.top, 5 * scale)
                 .padding(.leading, 8 * scale)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 if complete, hasMore || tabTurns || showsMarker {
                     GBText(tabTurns && !showsMarker ? "TAB▼" : "▼", size: .small, color: GBTheme.cursor)
                         .opacity(blink || !typing ? 1 : 0)
-                        .padding(.trailing, 6 * scale)
-                        .padding(.bottom, 4 * scale)
+                        .padding(.trailing, 3 * scale)
+                        .padding(.bottom, 2.5 * scale)
                 }
             }
         }
