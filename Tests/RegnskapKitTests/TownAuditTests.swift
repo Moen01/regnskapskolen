@@ -109,6 +109,49 @@ final class TownAuditTests: XCTestCase {
         XCTAssertEqual(ids.count, 9)
     }
 
+    // MARK: Panel on a synthetic pool
+
+    func synthetic(_ id: String, _ tema: String, _ difficulty: Int) -> Puzzle {
+        try! Puzzle.decode(Data("""
+        {"id":"\(id)","type":"quiz","tema":"\(tema)","vanskelighet":\(difficulty),"tags":[],"tittel":"T","oppgave":"O","lov":[{"lov":"bokføringsloven","paragraf":"§ 4","tekst":"T."}],"forklaring":"F","status":"godkjent","alternativer":["A","B"],"svar":0}
+        """.utf8))
+    }
+
+    /// A town whose only fagkontor covers `temaer`; its three hardest puzzles are the excluded ones.
+    func town(office temaer: [String]) -> TownContent {
+        let ref = FagkontorRef(id: "kontor", navn: "Kontor", temaer: temaer)
+        let person = TownPerson(id: "p", rolle: .fagkontor, x: 0, y: 0, klient: nil, fagkontor: ref, tekst: [])
+        let map = TownMap(id: "m", navn: "M", bredde: 1, hoyde: 1, ruter: ["."], dorer: [], folk: [person])
+        return TownContent(bransjer: [], klienter: [], kart: [map])
+    }
+
+    func testSharedTopicNeverRepeatsAPuzzle() throws {
+        // a6, a5, a4 are the office's (excluded). Examiner one takes the fresh ones, so examiner two must
+        // skip them and fall back to the office's; the sensor finds topic a used up and takes b and c.
+        let pool = (1...6).map { synthetic("a\($0)", "a", $0) } + [synthetic("b1", "b", 2), synthetic("c1", "c", 2)]
+        let first = FagkontorRef(id: "e1", navn: "E1", temaer: ["a"])
+        let second = FagkontorRef(id: "e2", navn: "E2", temaer: ["a"])
+        let sensor = FagkontorRef(id: "s", navn: "S", temaer: ["a", "b", "c"])
+        let result = TownAudit.panel(examiners: [first, second], sensor: sensor, content: town(office: ["a"]), pool: pool)
+        XCTAssertEqual(result.map(\.ref.id), ["e1", "e2", "s"])
+        XCTAssertEqual(result[0].puzzles.map(\.id), ["a3", "a2", "a1"])
+        XCTAssertEqual(result[1].puzzles.map(\.id), ["a6", "a5", "a4"])
+        XCTAssertEqual(result[2].puzzles.map(\.id), ["c1", "b1"])
+        let ids = result.flatMap(\.puzzles).map(\.id)
+        XCTAssertEqual(ids.count, Set(ids).count)
+    }
+
+    func testSensorPrefersFreshPuzzlesAndFallsBackPerTopic() throws {
+        // The office on a and b owns a1, b1 and b2 (its three hardest). Topic b has nothing fresh, so b
+        // comes last and only with an office puzzle; a and c give their fresh puzzles first.
+        let pool = [synthetic("a1", "a", 5), synthetic("a2", "a", 1), synthetic("b1", "b", 4), synthetic("b2", "b", 1), synthetic("c1", "c", 3)]
+        let sensor = FagkontorRef(id: "s", navn: "S", temaer: ["a", "b", "c"])
+        let result = TownAudit.panel(examiners: [], sensor: sensor, content: town(office: ["a", "b"]), pool: pool)
+        let picked = try XCTUnwrap(result.first)
+        XCTAssertEqual(picked.puzzles.map(\.id), ["c1", "a2", "b1"])
+        XCTAssertEqual(Set(picked.puzzles.map(\.tema)), ["a", "b", "c"])
+    }
+
     func testExaminerWithoutPuzzlesIsLeftOut() {
         let empty = FagkontorRef(id: "tom", navn: "Tom", temaer: ["finnes-ikke"])
         let result = TownAudit.panel(examiners: [empty], sensor: sensorRef, content: Self.town, pool: pool)

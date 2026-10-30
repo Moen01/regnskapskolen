@@ -37,9 +37,9 @@ public enum TownTrials {
     /// The three hardest puzzles in the fagkontor's topics: edge cases first, then vanskelighet,
     /// then id, each highest first. Nil when the topics have fewer than three.
     public static func fagkontorRegion(_ ref: FagkontorRef, pool: [Puzzle], progress: LearnerProgress) -> Region? {
-        let ranked = ranked(ref.temaer, pool: pool)
-        guard ranked.count >= fagkontorSize else { return nil }
-        return region(tema: fagkontorPrefix + ref.id, navn: ref.navn, puzzles: Array(ranked.prefix(fagkontorSize)), progress: progress)
+        let top = ranked(ref.temaer, pool: pool)
+        guard top.count >= fagkontorSize else { return nil }
+        return region(tema: fagkontorPrefix + ref.id, navn: ref.navn, puzzles: Array(top.prefix(fagkontorSize)), progress: progress)
     }
 
     /// The puzzles in the topics, hardest first: edge cases, then vanskelighet, then id, each highest first.
