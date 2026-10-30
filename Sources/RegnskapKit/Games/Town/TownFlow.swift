@@ -1,7 +1,7 @@
 import Foundation
 
 public enum TownPhase: Hashable, Sendable {
-    case walking, dialog, menu, fristnav, portfolio, counter, choice
+    case walking, dialog, menu, fristnav, travel, portfolio, bag, cards, counter, choice, archive
 }
 
 /// What the app must do after a key. The flow never spends calendar actions itself: the app
@@ -13,24 +13,34 @@ public enum TownAction: Hashable, Sendable {
     case enteredDoor
     case startBilag(client: String)
     case startCorrection(client: String, month: MonthKey)
+    /// A correction over only the errors the client found itself.
+    case fixDiscovered(client: String)
     case startTrial(client: String)
     case startFagkontor(FagkontorRef)
+    /// A customer case from a person in town.
+    case startCase(client: String, puzzle: String)
+    /// A clean month was closed at the counter; the player has read the dialog that says so.
+    case closedMonth(client: String, month: MonthKey)
     case deliver(client: String, kind: DeadlineKind)
     case sleep
     case save
     case openTraining
     case openCollection
+    /// The player chose to open a sandbox case from its folder in town. Free.
+    case openSandbox(caseId: String)
+    /// The player chose to start the bokettersyn of `year` at the desk.
+    case startAudit(year: Int)
 }
 
 /// The town on the Game Boy, driven by keys: walking, talking (dialog pages and JA/NEI choices),
 /// the main menu, Fristnav, the portfolio and the counter. Pure state, like `BattleFlow`; the app
 /// draws `phase`, `pages` and `rows` and performs the returned `TownAction`.
 public struct TownFlow: Hashable, Sendable {
-    public static let mainMenu = ["FRISTNAV", "PORTEFØLJE", "SAMLING", "TRENING", "LAGRE"]
-    public static let columns = 18
-    public static let rows = 3
+    public static let mainMenu = ["FRISTNAV", "PORTEFØLJE", "BAG", "SAMLING", "TRENING", "LAGRE"]
+    public static let columns = DialogBox.columns
+    public static let rows = DialogBox.rows
     /// List rows leave one column for the cursor.
-    public static let rowColumns = 17
+    public static let rowColumns = ListBox.columns
     static let choiceRows = [PanelRow(id: "ja", text: "JA"), PanelRow(id: "nei", text: "NEI")]
 
     let content: TownContent
@@ -45,7 +55,7 @@ public struct TownFlow: Hashable, Sendable {
     public private(set) var phase: TownPhase = .walking
     public private(set) var pages: [[String]] = [[]]
     public private(set) var page = 0
-    public private(set) var rows: [PanelRow] = []
+    public internal(set) var rows: [PanelRow] = []
     public private(set) var cursor = 0
     /// What the last dialog page leads to; in `.choice`, what JA does.
     var then: Followup = .walk
@@ -62,9 +72,13 @@ public struct TownFlow: Hashable, Sendable {
         case sleep
         case trial(client: String)
         case fagkontor(FagkontorRef)
+        case kundesak(client: String, puzzle: String)
+        case sandbox(caseId: String)
+        case audit(year: Int)
     }
 
     enum CounterTask: Hashable, Sendable {
+        case fixDiscovered(client: String)
         case close(client: String, month: MonthKey)
         case deliver(client: String, kind: DeadlineKind)
     }
@@ -98,7 +112,7 @@ public struct TownFlow: Hashable, Sendable {
             guard key == .a || key == .tab || key == .character(" ") else { return .none }
             if hasMorePages { page += 1; return .none }
             return follow(then)
-        case .menu, .fristnav, .portfolio, .counter, .choice:
+        case .menu, .fristnav, .travel, .portfolio, .bag, .cards, .counter, .choice, .archive:
             return handleList(key)
         }
     }
@@ -110,12 +124,19 @@ public struct TownFlow: Hashable, Sendable {
             if key == .a { openMenu() }
             return .none
         }
+        let before = state.walker
         switch state.walker.step(key, on: map) {
         case .moved:
             return .walked
         case .turned, .blocked:
             return .none
         case .door(let door):
+            guard TownDistricts.isOpen(door.til, content: content, fullmakter: state.fullmakter) else {
+                // The step already moved the walker onto the gate square; the gate does not open.
+                state.walker = before
+                let name = TownDistricts.district(of: door.til, in: content)?.navn ?? door.til
+                return say(["Veien er stengt.", "Du trenger fullmakt til \(name)."])
+            }
             state.mapId = door.til
             state.walker = TownWalker(x: door.tilX, y: door.tilY, facing: state.walker.facing)
             return .enteredDoor
@@ -140,6 +161,18 @@ public struct TownFlow: Hashable, Sendable {
             return talkToClient(person)
         case .skranke:
             return openCounter()
+        case .kaffe:
+            return takeCoffee()
+        case .kundesak:
+            return talkAboutCase(person)
+        case .funn:
+            return findCard(person)
+        case .arkiv:
+            return openArchive()
+        case .sandkasse:
+            return talkToSandbox(person)
+        case .bokettersyn:
+            return talkToAudit(person)
         }
     }
 
@@ -162,19 +195,61 @@ public struct TownFlow: Hashable, Sendable {
             // R1: the oldest month with bilag left, not only this month.
             let month = Ledger.pileMonth(for: client, start: state.start, today: state.calendar.today, state: clientState, pool: pool)
             return month == nil ? say(intro + lines.tomHaug) : say(intro + lines.haug, then: .action(.startBilag(client: id)))
+        case .parked:
+            return say(["Vi venter i arkivet ditt."])
         case .archived:
-            return say(["Vi har funnet et annet kontor."])
+            return say(lines.hilsen + ["Vi har funnet et annet kontor."], then: .choice(prompt: "Prøvesak?", yes: .trial(client: id)))
         }
+    }
+
+    /// A person with a question for an active client. Answered once; then only the talk is left.
+    private mutating func talkAboutCase(_ person: TownPerson) -> TownAction {
+        guard let id = person.klient, let puzzle = person.oppgave else { return say(person.tekst) }
+        guard let clientState = state.clients[id], clientState.status == .active else { return say(["Jeg er ikke kunde hos deg."]) }
+        guard !clientState.casesDone.contains(puzzle), pool.contains(puzzle) else { return say(person.tekst) }
+        return say(person.tekst, then: .choice(prompt: "Hjelpe nå?", yes: .kundesak(client: id, puzzle: puzzle)))
+    }
+
+    /// A folder with a sandbox case. Once the case is cleared, only a word is left.
+    private mutating func talkToSandbox(_ person: TownPerson) -> TownAction {
+        guard let caseId = person.sandkasse else { return say(person.tekst) }
+        if state.sandboxCleared.contains(caseId) { return say(["Denne saken er ryddet."]) }
+        return say(person.tekst, then: .choice(prompt: "Åpne sandkassen?", yes: .sandbox(caseId: caseId)))
+    }
+
+    /// The desk at Avgiftskontoret. The order matters: badges first, then whether the panel can be
+    /// built, then the calendar, then the one try a day.
+    private mutating func talkToAudit(_ person: TownPerson) -> TownAction {
+        let count = TownAudit.badgeCount(content: content, badges: badges, regions: regions)
+        if count.held != count.needed {
+            return say(person.tekst + ["Kom tilbake med alle fagmerkene.", "MERKER \(count.held)/\(count.needed)"])
+        }
+        let temaer = Set((person.kontrollorer ?? []).flatMap(\.temaer) + (person.sensor?.temaer ?? []))
+        if regions.filter({ temaer.contains($0.tema) }).map(\.puzzles.count).reduce(0, +) < TownTrials.fagkontorSize {
+            return say(person.tekst + ["Avgiftskontoret er under bygging."])
+        }
+        let year = today.year
+        guard let auditYear = state.auditYear else {
+            if state.revidert.contains(year - 1) {
+                return say(["Bokettersynet for \(year - 1) er avsluttet uten merknader.", "Neste bokettersyn er 1. januar \(year + 1)."])
+            }
+            return say(["Bokettersynet for \(year) starter 1. januar \(year + 1)."])
+        }
+        if state.auditTriedOn == today { return say(["Vi fortsetter i morgen."]) }
+        return say(person.tekst + ["Bokettersynet for \(auditYear) gjelder alle klientene dine."], then: .choice(prompt: "Starte bokettersynet?", yes: .audit(year: auditYear)))
     }
 
     private mutating func talkToFagkontor(_ person: TownPerson) -> TownAction {
         guard let ref = person.fagkontor else { return say(person.tekst) }
         if badges.contains(TownTrials.badgeKey(ref)) { return say(["Du har alt merket."]) }
+        if !TownTrials.fagkontorReady(ref, regions: regions) { return say(person.tekst + ["Kontoret er under bygging."]) }
         if TownTrials.fagkontorOpen(ref, regions: regions, damage: damage) {
             return say(person.tekst, then: .choice(prompt: "Vil du prøve?", yes: .fagkontor(ref)))
         }
-        let progress = ref.temaer.map { tema in
-            "GYM \(damage[tema] ?? 0)/\(regions.first { $0.tema == tema }?.damageTarget ?? 0)"
+        // A topic with no visible puzzles has no gym to show.
+        let progress = ref.temaer.compactMap { tema -> String? in
+            guard let region = regions.first(where: { $0.tema == tema }), !region.isEmpty else { return nil }
+            return "GYM \(damage[tema] ?? 0)/\(region.damageTarget)"
         }
         return say(person.tekst + [progress.joined(separator: "\n")])
     }
@@ -204,9 +279,19 @@ public struct TownFlow: Hashable, Sendable {
         case .counter: return selectCounter()
         case .choice: return choose()
         // The dialog already shows the row in full; A reads on through it.
-        case .fristnav, .portfolio: turnPage(); return .none
+        case .bag: return selectBag()
+        case .cards: return selectCard()
+        case .fristnav: return rows.indices.contains(cursor) && rows[cursor].id == Self.travelRowId ? openTravel() : turnPageOnly()
+        case .travel: return selectTravel()
+        case .portfolio: return turnPageOnly()
+        case .archive: return selectArchive()
         case .walking, .dialog: return .none
         }
+    }
+
+    private mutating func turnPageOnly() -> TownAction {
+        turnPage()
+        return .none
     }
 
     private mutating func openMenu() {
@@ -220,8 +305,9 @@ public struct TownFlow: Hashable, Sendable {
         switch cursor {
         case 0: return openFristnav()
         case 1: return openPortfolio()
-        case 2: walk(); return .openCollection
-        case 3: walk(); return .openTraining
+        case 2: openBag(); return .none
+        case 3: walk(); return .openCollection
+        case 4: walk(); return .openTraining
         default: walk(); return .save
         }
     }
@@ -236,12 +322,22 @@ public struct TownFlow: Hashable, Sendable {
             walk()
             return .sleep
         case .trial(let client):
+            guard !state.portfolioFull else { return say(["Porteføljen er full."]) }
             guard state.contracts > 0 else { return say(["Du har ingen oppdragsavtale."]) }
             walk()
             return .startTrial(client: client)
         case .fagkontor(let ref):
             walk()
             return .startFagkontor(ref)
+        case .kundesak(let client, let puzzle):
+            walk()
+            return .startCase(client: client, puzzle: puzzle)
+        case .sandbox(let caseId):
+            walk()
+            return .openSandbox(caseId: caseId)
+        case .audit(let year):
+            walk()
+            return .startAudit(year: year)
         }
     }
 
@@ -307,7 +403,7 @@ public struct TownFlow: Hashable, Sendable {
     }
 
     /// Tab in a list: the next page, round to the first.
-    private mutating func turnPage() {
+    mutating func turnPage() {
         page = hasMorePages ? page + 1 : 0
     }
 

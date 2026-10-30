@@ -4,7 +4,7 @@
   "bransje": "butikk",
   "selskapsform": "AS",
   "mvaRegistrert": true,
-  "ansatte": 3,
+  "ansatte": 0,
   "mvaTermin": "tomaanedlig",
   "sted": { "kart": "sentrum", "x": 2, "y": 2 },
   "oppgaver": ["mva-quiz-001"],
@@ -14,7 +14,8 @@
     "drift": ["Vi har hatt en travel uke."],
     "haug": ["Her er bilagene dine."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Fristen gikk ut. Det ble dyrt."]
+    "glippetFrist": ["Fristen gikk ut. Det ble dyrt."],
+    "oppdagetFeil": ["Revisoren min fant noe rart i bøkene!"]
   },
   "startklient": true,
   "status": "godkjent"

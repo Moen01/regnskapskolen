@@ -58,4 +58,26 @@ final class ContentValidatorTests: XCTestCase {
         XCTAssertTrue(ContentValidator.validate(try puzzle("mva") { set(&$0, "fasit", .object(["behandling": .string("30"), "fradrag": .bool(true)])) }, library: Self.library).contains { $0.contains("behandling") })
         XCTAssertTrue(ContentValidator.validate(try puzzle("klassifiser") { set(&$0, "kategorier", .array([.string("Eiendel")])) }, library: Self.library).contains { $0.contains("kategori") })
     }
+
+    func testTownNamesNoRealAgency() {
+        let town = Self.library.town
+        var texts: [String] = []
+        for map in town.kart {
+            texts.append(map.navn)
+            for p in map.folk {
+                texts += p.tekst
+                texts += (p.kontrollorer ?? []).map(\.navn)
+                if let sensor = p.sensor { texts.append(sensor.navn) }
+            }
+        }
+        for client in town.klienter {
+            let l = client.replikker
+            texts.append(client.navn)
+            for group in [l.hilsen, l.drift, l.haug, l.tomHaug, l.glippetFrist, l.oppdagetFeil] { texts += group }
+        }
+        XCTAssertFalse(texts.isEmpty)
+        for word in ["skatteetaten", "altinn", "brønnøysund", "regnskapsregisteret"] {
+            XCTAssertFalse(texts.contains { $0.lowercased().contains(word) }, "tekst nevner «\(word)»")
+        }
+    }
 }

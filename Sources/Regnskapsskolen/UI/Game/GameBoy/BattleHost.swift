@@ -20,6 +20,14 @@ struct BattleHost {
     let setAttempt: (PuzzleAttempt) -> Void
     /// The stage to show instead of the encounter's own; nil keeps `stageBefore`.
     var stage: () -> Stage? = { nil }
+    /// What tells one encounter from the next; nil falls back to the puzzle id. A host that can
+    /// show the same puzzle twice in a row gives its own, or the screen keeps the old battle.
+    var key: () -> String? = { nil }
+    /// The name above the HP bar: the client's in most games, the trust of the audit in the town.
+    var hpLabel = "KUNDEN"
+
+    /// The key the screen restarts on: a new key gives a fresh flow, a flash and a slide-in.
+    var encounterKey: String? { key() ?? encounter()?.puzzle.id }
 
     @MainActor
     static func adventure(_ store: AppStore) -> BattleHost {
@@ -41,6 +49,7 @@ struct BattleHost {
 
     /// A bilag or a correction at a client: no HP (a bilag cannot flee, FLYKT just leaves the desk),
     /// and the stage the bilag had before booking, since Kit shows every bilag as fresh.
+    /// Keyed on the run's step, since a correction can bring the same puzzle twice.
     @MainActor
     static func bilag(_ store: AppStore) -> BattleHost {
         BattleHost(
@@ -57,7 +66,17 @@ struct BattleHost {
             next: { store.proceedBilag() },
             library: { store.library },
             setAttempt: { store.townSession?.attempt = $0 },
-            stage: { store.bilagStage })
+            stage: { store.bilagStage },
+            key: { store.bilagRun.map { "\($0.step)" } })
+    }
+
+    /// A customer case: the same `BilagRun` as a bilag, but its verdict is told and the creature
+    /// keeps the encounter's own stage. No HP: FLYKT leaves the case open for another day.
+    @MainActor
+    static func kundesak(_ store: AppStore) -> BattleHost {
+        var host = bilag(store)
+        host.stage = { nil }
+        return host
     }
 
     /// A client's trial or a fagkontor: a `RegionRun` with the client's HP, scored by `TrialScore`.
@@ -77,5 +96,28 @@ struct BattleHost {
             next: { store.proceedTownRun() },
             library: { store.library },
             setAttempt: { store.townSession?.attempt = $0 })
+    }
+
+    /// The bokettersyn: one trust meter over the open errors and the examiners. FLYKT ends the
+    /// audit as a fail; the stage is the encounter's own (an error carries its box from before).
+    /// Keyed on the run's step, since an error and an examiner can share a puzzle.
+    @MainActor
+    static func audit(_ store: AppStore) -> BattleHost {
+        BattleHost(
+            encounter: { store.auditRun?.current },
+            session: { store.townSession },
+            outcome: {
+                guard case .result(let outcome) = store.auditRun?.phase else { return nil }
+                return outcome
+            },
+            hp: { store.auditRun?.hp },
+            choose: { store.auditRun?.choose($0) },
+            attack: { store.answerAudit() },
+            flee: { store.finishAudit() },
+            next: { store.proceedAudit() },
+            library: { store.library },
+            setAttempt: { store.townSession?.attempt = $0 },
+            key: { store.auditRun.map { "\($0.step)" } },
+            hpLabel: "TILLIT")
     }
 }

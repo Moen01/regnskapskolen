@@ -1,0 +1,24 @@
+{
+  "id": "havna",
+  "navn": "Havna",
+  "bydel": "havna",
+  "fullmakt": "havna",
+  "rekkefolge": 2,
+  "ankomst": { "x": 4, "y": 6 },
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#,,,,,,,,#",
+    "#,......,#",
+    "#,......,#",
+    "#,......,#",
+    "#,,,,,,,,#",
+    "#,,,,,,,,#",
+    "####D#####"
+  ],
+  "dorer": [{ "x": 4, "y": 7, "til": "sentrum", "tilX": 7, "tilY": 4 }],
+  "folk": [
+    { "id": "folk-havna", "rolle": "folk", "x": 6, "y": 2, "tekst": ["Her lukter det tang."] }
+  ]
+}

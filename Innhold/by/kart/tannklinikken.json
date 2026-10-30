@@ -1,0 +1,24 @@
+{
+  "id": "tannklinikken",
+  "navn": "Tannklinikken",
+  "bydel": "bryggen",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "bryggen", "tilX": 4, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-smil-tannklinikk", "rolle": "klient", "x": 4, "y": 2, "klient": "smil-tannklinikk", "tekst": [] },
+    { "id": "folk-pasient-smil", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Jeg har time klokka ti."] }
+  ]
+}

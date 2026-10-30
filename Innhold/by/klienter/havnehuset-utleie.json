@@ -1,0 +1,20 @@
+{
+  "id": "havnehuset-utleie",
+  "navn": "Havnehuset Utleie AS",
+  "bransje": "eiendom",
+  "selskapsform": "AS",
+  "mvaRegistrert": false,
+  "ansatte": 0,
+  "sted": { "kart": "utleie", "x": 4, "y": 2 },
+  "oppgaver": ["periodisering-postering-001", "periodisering-postering-004", "periodisering-postering-003", "periodisering-regnut-001", "korrigering-postering-002", "reskontro-regnut-002", "arsoppgjor-sorter-001"],
+  "provesak": ["periodisering-quiz-001", "mva-quiz-004", "korrigering-quiz-001"],
+  "replikker": {
+    "hilsen": ["God dag. Jeg eier huset ved havnen."],
+    "drift": ["Vi leier ut kontorer, ikke registrert for mva."],
+    "haug": ["Leiekontraktene og regningene ligger her."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det er leit."],
+    "oppdagetFeil": ["En leietaker fant en feil på fakturaen."]
+  },
+  "status": "utkast"
+}

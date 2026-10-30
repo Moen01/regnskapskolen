@@ -59,6 +59,8 @@ final class AppStore {
     var town: TownFlow?
     var bilagRun: BilagRun?
     var townRun: RegionRun?
+    /// The bokettersyn at Avgiftskontoret: the audited year's open errors, then the examiners.
+    var auditRun: AuditRun?
     var trialScore = TrialScore()
     var showTraining = false
     /// The input for the town's current encounter, and what the town run is for.
@@ -74,6 +76,10 @@ final class AppStore {
     var townNotice: [String] = []
     /// A run started by a town action is under way; its action is spent when the player is back in town.
     var townActionPending = false
+    /// An encounter used the last energy: the run ends after its outcome and the player wakes at the office.
+    var townCollapsed = false
+    /// A section the town asks for, such as the sandbox from a sandbox entrance; the screen moves there and clears it.
+    var pendingSection: AppSection?
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
     /// The last summary came from the weekly challenge, so it shows the shareable code.

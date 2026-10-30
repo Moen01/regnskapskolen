@@ -1,0 +1,24 @@
+{
+  "id": "lonnskontoret",
+  "navn": "Lønnskontoret",
+  "bydel": "industri",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "industri", "tilX": 4, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "fagkontor-lonn", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "lonn", "navn": "Lønnskontoret", "temaer": ["lonn"]}, "tekst": ["Jeg leder Lønnskontoret. Her prøves trekk, arbeidsgiveravgift og feriepenger."] },
+    { "id": "folk-lonn", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Lønningsdagen er den beste dagen."] }
+  ]
+}

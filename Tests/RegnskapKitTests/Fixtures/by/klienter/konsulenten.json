@@ -6,14 +6,15 @@
   "mvaRegistrert": false,
   "ansatte": 0,
   "sted": { "kart": "sentrum", "x": 6, "y": 2 },
-  "oppgaver": ["grunnlag-quiz-010"],
-  "provesak": ["grunnlag-quiz-010", "grunnlag-web-quiz-01", "grunnlag-web-quiz-03"],
+  "oppgaver": ["grunnlag-web-quiz-01"],
+  "provesak": ["grunnlag-web-quiz-02", "grunnlag-web-quiz-01", "grunnlag-web-quiz-03"],
   "replikker": {
     "hilsen": ["God dag. Jeg trenger hjelp."],
     "drift": ["Det er rolig om dagen."],
     "haug": ["Dette er månedens bilag."],
     "tomHaug": ["Ingen bilag denne måneden."],
-    "glippetFrist": ["Vi glapp fristen."]
+    "glippetFrist": ["Vi glapp fristen."],
+    "oppdagetFeil": ["Noe stemmer ikke i bøkene!"]
   },
   "status": "utkast"
 }

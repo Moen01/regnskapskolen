@@ -1,6 +1,7 @@
 {
   "id": "verkstedet",
   "navn": "Motor & Mek",
+  "bydel": "sentrum",
   "bredde": 10,
   "hoyde": 8,
   "ruter": [

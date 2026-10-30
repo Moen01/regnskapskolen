@@ -1,0 +1,44 @@
+{
+  "id": "kafeen",
+  "navn": "Kafé Fjord AS",
+  "bransje": "butikk",
+  "selskapsform": "AS",
+  "mvaRegistrert": false,
+  "ansatte": 3,
+  "sted": {
+    "kart": "sentrum",
+    "x": 8,
+    "y": 3
+  },
+  "oppgaver": [
+    "mva-quiz-004"
+  ],
+  "provesak": [
+    "mva-quiz-004",
+    "mva-quiz-002",
+    "mva-quiz-003"
+  ],
+  "replikker": {
+    "hilsen": [
+      "Hei! Kaffen er på."
+    ],
+    "drift": [
+      "Vi har hatt en travel uke."
+    ],
+    "haug": [
+      "Her er bilagene dine."
+    ],
+    "tomHaug": [
+      "Ingen bilag denne måneden."
+    ],
+    "glippetFrist": [
+      "Fristen gikk ut. Det ble dyrt."
+    ],
+    "oppdagetFeil": [
+      "Revisoren min fant noe rart i bøkene!"
+    ]
+  },
+  "startklient": false,
+  "status": "godkjent",
+  "lonnsdag": 20
+}

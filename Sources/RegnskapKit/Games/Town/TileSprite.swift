@@ -1,9 +1,10 @@
 import Foundation
 
 /// Pixel art for the town, drawn as 16 × 16 string literals (one character per pixel, `0`-`3`).
-/// Tiles fill the whole square, and slot 0 there means the screen's lightest colour. Person and
-/// player sprites use slot 0 as transparent, so the floor shows through. Slots: 1 outline,
-/// 2 body, 3 eye.
+/// Each thing has its own four-colour palette in the app, as on the Game Boy Color. Tiles fill
+/// the whole square, so slot 0 there is a colour of the tile. Person and player sprites use
+/// slot 0 as transparent, so the floor shows through. Slots: 1 outline (and hair and eyes),
+/// 2 body (clothes), 3 detail (skin).
 public enum TileSprite {
     public static func sprite(for tile: Tile) -> PixelSprite {
         switch tile {
@@ -18,6 +19,10 @@ public enum TileSprite {
     }
 
     public static func person(_ role: PersonRole, facing: Facing) -> PixelSprite {
+        if role == .kaffe { return coffeeMachine }
+        if role == .funn { return paperPile }
+        if role == .arkiv { return pc }
+        if role == .sandkasse { return folder }
         let base = switch facing {
         case .down: personDown
         case .up: personUp
@@ -27,11 +32,12 @@ public enum TileSprite {
         // Only the front and side views show a tie or glasses; from behind every role looks alike.
         guard facing != .up else { return base }
         var pixels = base.pixels
-        switch role {
-        case .sjef:
+        // The audit officer wears both: glasses like a fagkontor and a tie like the sjef.
+        if role == .sjef || role == .bokettersyn {
             let column = facing == .down ? [7, 8] : [facing == .left ? 5 : 10]
             for x in column { for y in 8...10 { pixels[y][x] = 1 } }
-        case .fagkontor:
+        }
+        if role == .fagkontor || role == .bokettersyn {
             let columns = switch facing {
             case .left: [4, 5, 6]
             case .right: [9, 10, 11]
@@ -39,8 +45,6 @@ public enum TileSprite {
             }
             for x in columns { pixels[4][x] = 1 }
             if facing == .down { pixels[4][7] = 1 }
-        default:
-            break
         }
         return PixelSprite(pixels: pixels)
     }
@@ -232,11 +236,54 @@ public enum TileSprite {
         "0000000000000000",
     ])
 
+    /// The office PC that opens the archive: a screen on a stand, with a keyboard in front.
+    public static let pc = parse([
+        "0000000000000000",
+        "0001111111111000",
+        "0001222222221000",
+        "0001233333321000",
+        "0001233333321000",
+        "0001233333321000",
+        "0001222222221000",
+        "0001111111111000",
+        "0000001221000000",
+        "0000001221000000",
+        "0000111111110000",
+        "0001222222221000",
+        "0012323232322100",
+        "0011111111111100",
+        "0000000000000000",
+        "0000000000000000",
+    ])
+
+    /// A case folder (perm) with a tab and a label, lying on the floor.
+    public static let folder = parse([
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+        "0011110000000000",
+        "0123321111111100",
+        "0122222222222210",
+        "0123333333333210",
+        "0122222222222210",
+        "0123333223333210",
+        "0122222222222210",
+        "0123333333333210",
+        "0122222222222210",
+        "0111111111111110",
+        "0000000000000000",
+        "0000000000000000",
+        "0000000000000000",
+    ])
+
     /// What stands in a sign's or the sofa's square instead of a person; nil for everyone else.
     public static func object(_ role: PersonRole) -> PixelSprite? {
         switch role {
         case .skilt: sign
         case .seng: sofa
+        case .kaffe: coffeeMachine
+        case .arkiv: pc
+        case .sandkasse: folder
         default: nil
         }
     }
@@ -256,6 +303,25 @@ public enum TileSprite {
         "0000000110000000",
         "0000000110000000",
         "0000001111000000",
+        "0000000000000000",
+        "0000000000000000",
+    ])
+
+    private static let coffeeMachine = parse([
+        "0000000000000000",
+        "0001111111111000",
+        "0012222222222100",
+        "0012333333332100",
+        "0012322222232100",
+        "0012333333332100",
+        "0012222222222100",
+        "0012211221122100",
+        "0012211221122100",
+        "0012233333322100",
+        "0012233333322100",
+        "0012233113322100",
+        "0012233333322100",
+        "0011111111111100",
         "0000000000000000",
         "0000000000000000",
     ])
@@ -285,9 +351,9 @@ public enum TileSprite {
         "................",
         ".....111111.....",
         "....11111111....",
-        "....12222221....",
-        "....12322321....",
-        "....12222221....",
+        "....13333331....",
+        "....13133131....",
+        "....13333331....",
         ".....111111.....",
         "....11222211....",
         "...1122222211...",
@@ -323,10 +389,10 @@ public enum TileSprite {
         "................",
         ".....111111.....",
         "....11111111....",
-        "....11222211....",
-        "....13222211....",
-        "....12222211....",
-        ".....122211.....",
+        "....11333311....",
+        "....13133311....",
+        "....13333311....",
+        ".....133311.....",
         ".....112211.....",
         "....1122221.....",
         "....1222221.....",
@@ -344,10 +410,10 @@ public enum TileSprite {
         ".....111111.....",
         "....11111111....",
         "...1111111111...",
-        "....12222221....",
-        "....12322321....",
-        "....12222221....",
-        ".....122221.....",
+        "....13333331....",
+        "....13133131....",
+        "....13333331....",
+        ".....133331.....",
         "....11111111....",
         "...1121111211...",
         "...1211111121...",
@@ -374,10 +440,10 @@ public enum TileSprite {
         ".....111111.....",
         "....11111111....",
         "...1111111111...",
-        "....11222211....",
-        "....13222211....",
-        "....12222211....",
-        ".....122211.....",
+        "....11333311....",
+        "....13133311....",
+        "....13333311....",
+        ".....133311.....",
         ".....111111.....",
         "....1121111.....",
         "....1211121.....",

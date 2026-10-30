@@ -1,0 +1,24 @@
+{
+  "id": "periodekontoret",
+  "navn": "Periodekontoret",
+  "bydel": "havna",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "havna", "tilX": 18, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "fagkontor-periodisering", "rolle": "fagkontor", "x": 4, "y": 2, "fagkontor": {"id": "periodisering", "navn": "Periodekontoret", "temaer": ["periodisering", "perioder-frister"]}, "tekst": ["Jeg leder Periodekontoret. Her flytter vi kostnader og inntekter til riktig måned."] },
+    { "id": "folk-periode", "rolle": "folk", "x": 7, "y": 5, "tekst": ["Fristene kommer fortere enn du tror."] }
+  ]
+}

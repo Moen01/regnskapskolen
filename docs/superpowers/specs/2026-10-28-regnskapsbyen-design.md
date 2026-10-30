@@ -29,7 +29,7 @@ Du er ny regnskapsfører på et lite kontor i byen Hovedbok. Sjefen gir deg din 
 ## Mål
 
 1. **En by man går i.** Et rutekart (tiles à 16 × 16 px) inne i Game Boy-rammen. Skjermen viser 10 × 9 ruter (160 × 144, samme skall som fase 1). Piltaster flytter regnskapsføreren én rute om gangen (4 bilder per steg, 0,25 s), med kollisjon mot vegger, vann og folk. Dører fører inn til et innendørskart. A snakker med den du står vendt mot eller leser et skilt. B går tilbake fra menyer. Enter på ingenting åpner hovedmenyen (FRISTNAV · PORTEFØLJE · SAMLING · BAG · LAGRE).
-   **All tekst holder seg inne i boksen.** Hver tekst på skjermen (replikker, skilt, navn, Fristnav-rader, menyer) går gjennom `TextWrap.lines` med boksens antall tegn (18 i dialogboksen). Ord brytes aldri midt i, bortsett fra ord som er lengre enn en hel linje; de deles med bindestrek. Ingen tekst tegnes utenfor boksens kant, og ingen linje kuttes uten at hele teksten kan leses i dialogboksen. Tester i Kit dekker det (se Oppbygning).
+   **All tekst holder seg inne i boksen.** Hver tekst på skjermen (replikker, skilt, navn, Fristnav-rader, menyer) går gjennom `TextWrap.lines` med boksens antall tegn (36 i dialogboksen siden fase 2b, 18 før). Ord brytes aldri midt i, bortsett fra ord som er lengre enn en hel linje; de deles med bindestrek. Ingen tekst tegnes utenfor boksens kant, og ingen linje kuttes uten at hele teksten kan leses i dialogboksen. Tester i Kit dekker det (se Oppbygning).
 1b. **Gå fra bygg til bygg og finn klientene.** Byen er full av bygg med skilt: restaurant, legekontor, nettbutikk, verksted, butikk, utleiegård. Inne i hvert bygg står eieren. A på eieren gir en samtale der eieren forteller om driften sin med egne ord («Vi har servering i salen og take-away i disken.»). Det er bransjens fallgruve, fortalt slik en klient ville sagt det. Etter samtalen ligger et **behovskort** for klienten i porteføljen: bransje, mva-status, ansatte, hvilke frister klienten får, og hvilke regelkort som gjelder. Å forstå klienten er første steg; prøvesaken (mål 8) er det andre. Noen bygg er låst (lys av, «Stengt for i dag») til bydelen er åpnet. Bygg uten klient (banken, kafeen, kontoret ditt) har andre ting: sandkasse-casene, kaffe, lagring.
 2. **Hovedbok har fire bydeler med to fagkontor hver.** De 12 temaene i `temaer.json` fordeles på 8 fagkontor:
    | Bydel | Fagkontor | Temaer |
@@ -76,7 +76,7 @@ Du er ny regnskapsfører på et lite kontor i byen Hovedbok. Sjefen gir deg din 
 - **Phaser, TypeScript, Vite eller Tiled.** Utkastet anbefalte en nettleserversjon. Appen er en macOS-app i Swift med et Game Boy-skall som alt er bygget (fase 1), og spillogikken ligger i `RegnskapKit`, der den alt testes med XCTest. Det er den samme idéen som utkastet ville ha (regnskapsreglene skilt fra spillmotoren), og vi har den alt. Et nytt språk og fire nye avhengigheter ville gitt to kodebaser for de samme reglene. Kartfilene er vår egen enkle JSON i stedet for Tiled.
 - **Kontering som konto + mva-kode + periode i ett svar.** God idé, men svarpanelet for `postering` sjekker i dag konto, side og beløp. Mva-kode og periode per linje er en endring i innholdskontrakten og `PostingChecker`, og får en egen spec.
 - Ekte pikselkunst for byen i første versjon. Tiles tegnes i kode (gulv, vegg, dør, vann, papirhaug, tak, skranke) i fire farger, som spritene i fase 1. PNG-tiles kan komme senere uten å endre kartfilene.
-- Game Boy Advance-oppløsning (240 × 160) og farger per bydel. Vi beholder 160 × 144 og DMG-paletten fra fase 1; se Åpne spørsmål.
+- Game Boy Advance-oppløsning (240 × 160) og farger per bydel. Vi beholder 160 × 144; fargene er per ting (Game Boy Color) siden fase 2b, se Beslutninger punkt 1.
 - Lyd, musikk, flerspiller, server, mobil, nettleser.
 - Nye oppgavetyper. Alt som spilles, er eksisterende oppgaver og sandkasse-caser.
 - Ekte etater, banker, systemer eller personer i byen. Navnene er oppdiktet (Avgiftskontoret, Registerhuset, Hovedbok Sparebank). Bokettersyn er et begrep, ikke en figur fra Skatteetaten.
@@ -127,8 +127,8 @@ Du er ny regnskapsfører på et lite kontor i byen Hovedbok. Sjefen gir deg din 
 
 1. **2a: MVP.** Sentrum med seks bygg man kan gå inn i: kontoret, banken, restaurant, legekontor, nettbutikk og verksted. Fire klienter i fire bransjer. Restauranten får du av sjefen ved start; de tre andre finner du ved å gå rundt, snakke med eieren (behovskortet) og vinne prøvesaken. Restauranten og legekontoret har full papirhaug (20 bilag til sammen); nettbutikken og verkstedet har prøvesak og noen få bilag. Én frist: mva-meldingen. Månedslukking og åpne feil. Ett fagkontor (MVA). Lagring. Ferdig når man kan spille én termin fra 1. januar til fristen 10. april, finne alle fire klientene og se en egen feil komme tilbake. Det er også testen på om det er gøy: blir det ikke det, stopper vi her.
 2. **2b: Resten av fristene.** A-melding, forskuddstrekk, AGA, energi, sove, klienten som oppdager feil.
-3. **2c: Bydeler og fagkontor.** De tre andre bydelene, alle åtte fagkontor, fullmakter, prøvesaker for nye klienter, arkivet.
-4. **2d: Bokettersynet.** Avgiftskontoret, gjennomgang av åpne feil, de fem kampene, nytt regnskapsår.
+3. **2c: Bydeler og fagkontor (ferdig, se [planen](../plans/2026-10-30-rubin-2c.md)).** De tre andre bydelene, alle åtte fagkontor, fullmakter, prøvesaker for nye klienter, arkivet.
+4. **2d: Bokettersynet (ferdig, se [planen](../plans/2026-10-30-rubin-2d.md)).** Avgiftskontoret, gjennomgang av åpne feil, de fem kampene, nytt regnskapsår.
 
 Hver fase er en egen plan og en egen PR mot `staging`.
 
@@ -141,10 +141,11 @@ Hver fase er en egen plan og en egen PR mot `staging`.
 
 ## Beslutninger (Andreas, 28.10.2026)
 
-1. **Oppløsning:** 160 × 144 og DMG-grønt fra fase 1. Krav: alle ord holder seg inne i boksen (mål 1). GBA-oppløsning kan bli en egen fase 3 sammen med ekte tiles.
+1. **Oppløsning:** 160 × 144, Game Boy Color-farger per ting, dialog 36 × 6 (fra fase 2b, Task 11; erstatter DMG-grønt og 3 × 18 fra fase 1). Alle farger står i `GBTheme`. Krav: alle ord holder seg inne i boksen (mål 1). GBA-oppløsning kan bli en egen fase 3 sammen med ekte tiles.
 2. **Kalenderens tempo:** 12 handlinger per dag.
 3. **Navnet i appen:** Dojo-spillet beholder «Debet eller kredit?»; fanen heter «Rubin-utgaven», med «Debet & Kredit» som tittelskjerm.
 4. **Utforsking:** man går fra bygg til bygg og finner klienter fra forskjellige bransjer (mål 1b). Er med alt i MVP.
+5. **Bokettersynet:** gjelder regnskapsåret som er omme og kan tas fra 1. januar; ett forsøk per spilldag.
 
 Utkastets egne spørsmål er besvart av repoet: spillet er en del av Regnskapsskolen (offentlig repo, ingen Catacloud-kode), språket er norsk bokmål (CLAUDE.md), og plattformen er macOS.
 
