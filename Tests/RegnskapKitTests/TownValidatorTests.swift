@@ -196,10 +196,16 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(try withCase(client: "butikken", puzzle: nil), id: "kart:sentrum", contains: "ingen oppgave")
     }
 
-    func testRejectsVatCaseForUnregisteredClient() throws {
-        let all = messages(try withCase(client: "kafeen", puzzle: "mva-behandling-001"))
-        XCTAssertTrue(all.contains { $0.hasPrefix("kart:sentrum") && $0.contains("ikke mva-registrert") }, all.joined(separator: "\n"))
-        XCTAssertEqual(messages(try withCase(client: "butikken", puzzle: "mva-quiz-001")), [])
+    func testRejectsVatCaseByItsType() throws {
+        // A case is sak or quiz, so a VAT task is caught by the type rule alone.
+        assertOneProblem(try withCase(client: "kafeen", puzzle: "mva-behandling-001"), id: "kart:sentrum", contains: "ikke sak eller quiz")
+        XCTAssertEqual(messages(try withCase(client: "butikken", puzzle: "mva-quiz-004")), [])
+    }
+
+    func testRejectsCaseFromTheClientsPileOrTrial() throws {
+        // A case shows its verdict; the same puzzle as a bilag or in the trial would give it away.
+        assertOneProblem(try withCase(client: "butikken", puzzle: "mva-quiz-001"), id: "kart:sentrum", contains: "bilag eller prøvesak")
+        assertOneProblem(try withCase(client: "butikken", puzzle: "mva-quiz-002"), id: "kart:sentrum", contains: "bilag eller prøvesak")
     }
 
     // Rule 7

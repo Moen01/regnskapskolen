@@ -158,7 +158,7 @@ final class TownDiscoveryTests: XCTestCase {
         XCTAssertEqual(g.key(.a), .fixDiscovered(client: "kafeen"))
     }
 
-    func testDiscoveryTextsNameTheClientAndTitleAndWrapAtEighteenColumns() {
+    func testDiscoveryTextsNameTheClientAndTitleAndWrapToTheDialogBox() {
         let e = error(on: day(1, 3))
         let long = "En tittel med et ordsomeraltforlangtforenlinje"
         let texts = TownFlow.discoveryTexts([e], content: Self.town, title: { $0 == e.puzzleId ? long : nil })

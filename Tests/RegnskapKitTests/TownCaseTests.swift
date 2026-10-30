@@ -138,7 +138,7 @@ final class TownCaseTests: XCTestCase {
         }
     }
 
-    func testCaseScriptLinesFitEighteen() throws {
+    func testCaseScriptLinesFitTheDialogBox() throws {
         let p = try puzzle()
         for name in ["KAFÉ", "NETTBUTIKKEN", "LEGEKONTORET"] {
             let e = Encounter(puzzle: p, stageBefore: .vill, moves: [], isGymLeader: false, context: .kundesak(client: client, name: name))
