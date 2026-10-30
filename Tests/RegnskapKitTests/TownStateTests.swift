@@ -100,4 +100,42 @@ final class TownStateTests: XCTestCase {
         state.payrollFrom = day(1, 21)
         XCTAssertTrue(state.counts(trekk, client: client))
     }
+
+    func testMaskedProgressHidesTheWrongBooking() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let pool = library.pool(includeDrafts: true)
+        let target = try XCTUnwrap(pool.first)
+        let other = try XCTUnwrap(pool.first { $0.tema == target.tema && $0.id != target.id })
+        func caught(_ progress: LearnerProgress) -> Int {
+            Regions.build(topics: library.topics, pool: pool, progress: progress).first { $0.tema == target.tema }!.caught
+        }
+        let jan = MonthKey(year: 2026, month: 1)
+        var state = TownState.new(content: Self.town, year: 2026)
+        let id = try XCTUnwrap(state.clients.keys.sorted().first)
+
+        // Never seen before the wrong booking: it must still look uncaught afterwards.
+        let before = LearnerProgress()
+        state.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: false), boxBefore: 0, client: id)
+        var after = before
+        after.puzzles[target.id] = PuzzleProgress(box: 1, attempts: 1, correct: 0)
+        XCTAssertEqual(caught(after), caught(before) + 1, "the raw progress gives the error away")
+        XCTAssertEqual(caught(state.masked(after)), caught(before))
+
+        // Seen before in box 3: the mask puts it back in box 3.
+        var state2 = TownState.new(content: Self.town, year: 2026)
+        state2.clients[id]?.book(BookedBilag(puzzleId: target.id, month: jan, day: day(1, 5), correct: false), boxBefore: 3, client: id)
+        var progress = LearnerProgress()
+        progress.puzzles[target.id] = PuzzleProgress(box: 1, attempts: 2, correct: 1)
+        progress.puzzles[other.id] = PuzzleProgress(box: 2, attempts: 1, correct: 1)
+        let masked = state2.masked(progress)
+        XCTAssertEqual(masked.puzzles[target.id]?.box, 3)
+        XCTAssertEqual(masked.puzzles[other.id], progress.puzzles[other.id])
+    }
+
+    func testMaskedProgressIsUnchangedWithoutOpenErrors() throws {
+        let state = TownState.new(content: Self.town, year: 2026)
+        var progress = LearnerProgress()
+        progress.puzzles["a"] = PuzzleProgress(box: 2, attempts: 3, correct: 2)
+        XCTAssertEqual(state.masked(progress), progress)
+    }
 }

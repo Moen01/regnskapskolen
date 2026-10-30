@@ -98,6 +98,23 @@ public struct TownState: Hashable, Codable, Sendable {
             .boxBefore
     }
 
+    /// A copy of the progress where every puzzle with an open error sits in the box it had before
+    /// the wrong booking, so region counts and totals do not tell whether a bilag was right.
+    /// A puzzle with no entry stays without one when that box is 0: it reads as uncaught, as before.
+    public func masked(_ progress: LearnerProgress) -> LearnerProgress {
+        var result = progress
+        let ids = Set(clients.values.flatMap(\.openErrors).map(\.puzzleId))
+        for id in ids {
+            guard let box = maskedBox(id) else { continue }
+            if result.puzzles[id] != nil {
+                result.puzzles[id]?.box = box
+            } else if box > 0 {
+                result.puzzles[id] = PuzzleProgress(box: box)
+            }
+        }
+        return result
+    }
+
     /// Whether the deadline counts for the client: it falls on or after the day the client was won
     /// and, for payroll, on or after `payrollFrom`. The counter, Fristnav, missed deadlines and the
     /// sleep stops all ask this one question.
