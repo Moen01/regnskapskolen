@@ -82,6 +82,10 @@ extension AppStore {
     /// A cleared case gives its town credit once (a closed month or a rule card). The lines wait in
     /// `townNotice` until the town opens. The sandbox journal itself is left as it is.
     func creditSandboxIfCleared() {
+        // A flow that is not walking may hold a dialog whose action still has to run (a closed
+        // month pays its damage and spends the action); a rebuild would drop it. The credit is
+        // stored only when it pays, so the next sandbox save or `openTown` tries again.
+        guard town == nil || town?.phase == .walking else { return }
         guard let library, let activeCase, progress.game.town != nil, !sandbox.entries.isEmpty else { return }
         let cleared = activeCase.kontoutskrift != nil
             ? bankCheck?.done == true
