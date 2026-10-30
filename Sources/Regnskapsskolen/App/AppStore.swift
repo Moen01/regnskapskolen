@@ -74,6 +74,8 @@ final class AppStore {
     var townNotice: [String] = []
     /// A run started by a town action is under way; its action is spent when the player is back in town.
     var townActionPending = false
+    /// An encounter used the last energy: the run ends after its outcome and the player wakes at the office.
+    var townCollapsed = false
     /// The open lightning round is this week's challenge (no clock, result saved per week).
     var weeklyRound = false
     /// The last summary came from the weekly challenge, so it shows the shareable code.

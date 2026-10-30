@@ -158,6 +158,24 @@ final class TownDiscoveryTests: XCTestCase {
         XCTAssertEqual(g.key(.a), .fixDiscovered(client: "kafeen"))
     }
 
+    func testDiscoveryTextsNameTheClientAndTitleAndWrapAtEighteenColumns() {
+        let e = error(on: day(1, 3))
+        let long = "En tittel med et ordsomeraltforlangtforenlinje"
+        let texts = TownFlow.discoveryTexts([e], content: Self.town, title: { $0 == e.puzzleId ? long : nil })
+        let client = Self.town.client("kafeen")!
+        XCTAssertEqual(texts, ["\(client.navn): \(long)"] + client.replikker.oppdagetFeil)
+        let lines = TownFlow.paged(texts).flatMap { $0 }
+        XCTAssertTrue(lines.allSatisfy { $0.count <= TownFlow.columns }, "\(lines)")
+        // No title known: the id stands in, so the line is never empty.
+        XCTAssertEqual(TownFlow.discoveryTexts([e], content: Self.town, title: { _ in nil }).first, "\(client.navn): \(e.puzzleId)")
+    }
+
+    func testCollapseTextsTellTheDayOfWaking() {
+        let texts = TownFlow.collapseTexts(wokeOn: day(4, 11))
+        XCTAssertEqual(texts, ["Du sovnet av utmattelse.", "Du våknet på kontoret 11.04."])
+        XCTAssertTrue(TownFlow.paged(texts).flatMap { $0 }.allSatisfy { $0.count <= TownFlow.columns })
+    }
+
     func testFixDiscoveredCostsAnAction() {
         XCTAssertTrue(TownAction.fixDiscovered(client: "kafeen").spendsAction)
     }

@@ -153,7 +153,8 @@ extension TownFlow {
         return nil
     }
 
-    /// Open errors in the month send the player to correct them; a clean month closes here.
+    /// Open errors in the month send the player to correct them; a clean month closes here and
+    /// returns `.closedMonth` once its dialog is read.
     mutating func selectCounter() -> TownAction {
         guard counterTasks.indices.contains(cursor) else { return .none }
         switch counterTasks[cursor] {
@@ -167,7 +168,8 @@ extension TownFlow {
             }
             state.clients[id]?.closeIfClean(month, pool: pool)
             let name = content.client(id)?.navn ?? id
-            return say(["\(name): \(Self.monthNames[month.month - 1]) er lukket."])
+            // The close costs an action like a correction does; the app spends it when the dialog ends.
+            return say(["\(name): \(Self.monthNames[month.month - 1]) er lukket."], then: .action(.closedMonth(client: id, month: month)))
         case let .deliver(id, kind):
             walk()
             return .deliver(client: id, kind: kind)

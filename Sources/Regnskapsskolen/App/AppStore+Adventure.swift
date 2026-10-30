@@ -3,10 +3,18 @@ import RegnskapKit
 
 // Paragrafjakten: the map's regions, a run in one of them, and the encounter in front of the learner.
 extension AppStore {
-    var regions: [Region] { Regions.build(topics: library?.topics ?? [], pool: pool, progress: progress) }
+    /// The progress as the screens may show it: a bilag booked wrong in town sits in the box it had
+    /// before, so no count, stage or unlock tells whether it was right. Only the boxes are masked:
+    /// never show attempts, correct counts, `lastSeen` or `due` from this copy.
+    var maskedProgress: LearnerProgress { progress.game.town?.masked(progress) ?? progress }
+    /// Built from the masked progress: the map, the collection and the town's fagkontor all count from it.
+    var regions: [Region] { Regions.build(topics: library?.topics ?? [], pool: pool, progress: maskedProgress) }
     var currentRegion: Region? { selectedRegion.flatMap { tema in regions.first { $0.tema == tema } } }
-    /// Puzzles in the pool the learner has caught (box 1 or higher).
-    var collectionTotal: Int { pool.filter { (progress.puzzles[$0.id]?.box ?? 0) >= 1 }.count }
+    /// Puzzles in the pool the learner has caught (box 1 or higher), counted from the masked boxes.
+    var collectionTotal: Int {
+        let shown = maskedProgress
+        return pool.filter { (shown.puzzles[$0.id]?.box ?? 0) >= 1 }.count
+    }
 
     func openRegion(_ tema: String) {
         selectedRegion = tema

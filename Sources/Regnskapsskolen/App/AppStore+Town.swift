@@ -39,58 +39,54 @@ extension AppStore {
         let action = flow.key(key)
         town = flow
         // Copying out is always safe; only writing *into* the flow must wait until it walks again.
-        // A talk or a clean close changes the clients without an action: save it now. Steps are
-        // saved at doors and LAGRE, not on every square.
-        let clientsChanged = flow.state.clients != progress.game.town?.clients
+        // A talk, a clean close, a cup from the machine or one drunk from the bag change the state
+        // without an action: save it now. Steps are saved at doors and LAGRE, not on every square.
+        let old = progress.game.town
+        let changed = flow.state.clients != old?.clients || flow.state.coffee != old?.coffee || flow.state.energy != old?.energy
         progress.game.town = flow.state
-        if clientsChanged { saveProgress() }
+        if changed { saveProgress() }
         perform(action)
     }
 
     // MARK: Actions
 
+    /// A start that fails (an empty pile, no case to show, a full portfolio) costs nothing: only a
+    /// run that begins, a delivery and a clean close spend an action.
     private func perform(_ action: TownAction) {
         switch action {
         case .none:
-            return
+            break
         case .walked:
             townSteps += 1
-            return
         case .enteredDoor, .save:
             saveProgress()
-            return
         case .openTraining:
             saveProgress()
             showTraining = true
-            return
         case .openCollection:
             showCollection = true
-            return
         case .sleep:
             sleepInTown()
-            return
         case .startTrial where activeClientCount >= TownRules.portfolioSize:
             showTown(["Porteføljen er full."])
-            return
         case .deliver(let id, let kind):
             deliver(id, kind: kind)
-            return
-        case .startCase:
-            // Wired to a BilagRun in the case task; until then nothing starts and no action is spent.
-            return
-        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor:
-            break
-        }
-        // The action happens first and costs its time when the player is back in town (`showTown`),
-        // so a bilag booked with the day's last action still gets that day's date.
-        townActionPending = true
-        switch action {
-        case .startBilag(let id): startBilag(id)
-        case .startCorrection(let id, let month): startCorrection(id, month: month)
-        case .fixDiscovered(let id): startCorrection(id, month: nil)
-        case .startTrial(let id): startTrial(id)
-        case .startFagkontor(let ref): startFagkontor(ref)
-        default: break
+        case .closedMonth:
+            // Kit closed the month and told it; the close costs its action like a correction.
+            townActionPending = true
+            showTown()
+        case .startBilag(let id):
+            startBilag(id)
+        case .startCorrection(let id, let month):
+            startCorrection(id, month: month)
+        case .fixDiscovered(let id):
+            startCorrection(id, month: nil)
+        case .startTrial(let id):
+            startTrial(id)
+        case .startFagkontor(let ref):
+            startFagkontor(ref)
+        case .startCase(let id, let puzzle):
+            startCustomerCase(id, puzzle: puzzle)
         }
     }
 
@@ -105,6 +101,18 @@ extension AppStore {
         let missed = progress.game.town?.spendAction(content: library.town, deadlines: library.deadlines, pool: poolIds) ?? []
         townNotice += missedLines(missed) + discoveryLines()
         saveProgress()
+    }
+
+    /// The last energy went on an encounter: the player wakes at the office the next morning. The
+    /// collapse takes the rest of the day, so the run's own action is not spent on top of it.
+    private func collapseInTown() -> [String] {
+        townCollapsed = false
+        townActionPending = false
+        guard let library, var state = progress.game.town else { return [] }
+        let missed = state.collapse(content: library.town, deadlines: library.deadlines, pool: poolIds)
+        progress.game.town = state
+        saveProgress()
+        return TownFlow.collapseTexts(wokeOn: state.calendar.today) + missedLines(missed) + discoveryLines()
     }
 
     private func sleepInTown() {
@@ -133,13 +141,11 @@ extension AppStore {
         showTown(["\(what) er levert for \(clientName(id))."])
     }
 
-    /// What a client says when it finds an old error: its own line and the task title, never the answer.
+    /// The errors the clients found on the new day, told with the task title, never the answer.
+    /// Call it after every change of day, or the next one tells them late.
     private func discoveryLines() -> [String] {
         guard let library, let found = progress.game.town?.takeDiscoveries() else { return [] }
-        return found.flatMap { error in
-            ["\(clientName(error.client)): \(library.puzzle(id: error.puzzleId)?.tittel ?? error.puzzleId)"]
-                + (library.town.client(error.client)?.replikker.oppdagetFeil ?? [])
-        }
+        return TownFlow.discoveryTexts(found, content: library.town) { library.puzzle(id: $0)?.tittel }
     }
 
     /// The client's own line about a missed deadline, after its name and the deadline.
@@ -151,11 +157,13 @@ extension AppStore {
 
     private func clientName(_ id: String) -> String { library?.town.client(id)?.navn ?? id }
 
-    /// Back to walking: the flow is rebuilt, and anything to tell (a notice from before a run, then `texts`) is shown.
+    /// Back to walking: the flow is rebuilt, and anything to tell (a notice from before a run, then
+    /// `texts`, then a collapse) is shown. Every way out of a run ends here, FLYKT too.
     private func showTown(_ texts: [String] = []) {
+        let collapse = townCollapsed ? collapseInTown() : []
         spendPendingAction()
         refreshTown()
-        let all = townNotice + texts
+        let all = townNotice + texts + collapse
         townNotice = []
         if !all.isEmpty { town?.tell(all) }
     }
@@ -189,6 +197,17 @@ extension AppStore {
                        kind: .correction, errors: errors, bransjeCards: cards.own, otherCards: cards.other, seed: townSeed))
     }
 
+    /// A customer case: one puzzle a person in town asks about. Its verdict is told, like a correction's.
+    private func startCustomerCase(_ id: String, puzzle: String) {
+        guard let library, let client = library.town.client(id), poolIds.contains(puzzle), let found = library.puzzle(id: puzzle) else {
+            showTown()
+            return
+        }
+        let cards = ruleCards(for: client)
+        begin(BilagRun(client: client, puzzles: [found], kind: .kundesak(puzzle: puzzle), errors: [],
+                       bransjeCards: cards.own, otherCards: cards.other, seed: townSeed))
+    }
+
     /// The industry's own cards (and its topics' cards) give the moves; the rest are the decoys.
     private func ruleCards(for client: TownClient) -> (own: [RuleCard], other: [RuleCard]) {
         let all = library?.rules ?? []
@@ -198,7 +217,10 @@ extension AppStore {
         return (own, all.filter { !ownIds.contains($0.id) })
     }
 
+    /// A run with an encounter costs its action when the player is back in town (`showTown`), so a
+    /// bilag booked with the day's last action still gets that day's date. An empty run costs nothing.
     private func begin(_ run: BilagRun) {
+        if run.current != nil { townActionPending = true }
         bilagRun = run
         showBilagEncounter()
         if run.phase == .finished { finishBilag() }
@@ -214,7 +236,7 @@ extension AppStore {
             return
         }
         let id = encounter.puzzle.id
-        bilagStage = Stage.of(box: progress.game.town?.maskedBox(id) ?? progress.puzzles[id]?.box)
+        bilagStage = Stage.of(box: maskedProgress.puzzles[id]?.box)
     }
 
     /// The learner pressed «Sjekk» on a bilag: the scheduler hears it now, the ledger books it, the
@@ -239,10 +261,17 @@ extension AppStore {
         }
         // R7: BilagRun gives damage only for the day's first answer to the puzzle.
         if damage > 0 { progress.game.regionDamage[puzzle.tema, default: 0] += damage }
+        spendEncounterEnergy()
         saveProgress()
     }
 
+    /// Every answered encounter costs the same energy, right or wrong, so the bar never tells the verdict.
+    private func spendEncounterEnergy() {
+        if progress.game.town?.spendEncounter() == true { townCollapsed = true }
+    }
+
     func proceedBilag() {
+        guard !townCollapsed else { return finishBilag() }
         guard var run = bilagRun else { return }
         run.proceed()
         bilagRun = run
@@ -276,7 +305,7 @@ extension AppStore {
             showTown()
             return
         }
-        let region = TownTrials.trialRegion(for: client, pool: pool, progress: progress)
+        let region = TownTrials.trialRegion(for: client, pool: pool, progress: maskedProgress)
         guard region.puzzles.count >= TownRules.trialWinsNeeded else {
             showTown(["Prøvesaken er ikke klar ennå."])
             return
@@ -285,7 +314,7 @@ extension AppStore {
     }
 
     private func startFagkontor(_ ref: FagkontorRef) {
-        guard let library, let region = TownTrials.fagkontorRegion(ref, pool: pool, progress: progress) else {
+        guard let library, let region = TownTrials.fagkontorRegion(ref, pool: pool, progress: maskedProgress) else {
             showTown(["\(ref.navn) har for få saker ennå."])
             return
         }
@@ -294,9 +323,12 @@ extension AppStore {
 
     private func startTownRun(_ region: Region, goal: TownRunGoal, context: EncounterContext, cards: [RuleCard]) {
         let ownIds = Set(cards.map(\.id))
-        var run = RegionRun(region: region, progress: progress, today: todayKey, regionCards: cards,
+        // The masked progress picks and shows the creatures, so a stage never tells a booking's verdict.
+        let shown = maskedProgress
+        var run = RegionRun(region: region, progress: shown, today: todayKey, regionCards: cards,
                             otherCards: (library?.rules ?? []).filter { !ownIds.contains($0.id) }, seed: townSeed, context: context)
-        run.nextEncounter(progress: progress, today: todayKey)
+        run.nextEncounter(progress: shown, today: todayKey)
+        if run.current != nil { townActionPending = true }
         townRun = run
         townRunGoal = goal
         trialScore = TrialScore()
@@ -307,17 +339,19 @@ extension AppStore {
     /// Judges a trial or fagkontor answer. The scheduler hears it; the topic's damage does not.
     func answerTownRun() {
         guard var run = townRun, let session = townSession, session.attempt.isAnswered,
-              let (outcome, result) = run.answer(session.attempt, progress: progress, today: todayKey) else { return }
+              let (outcome, result) = run.answer(session.attempt, progress: maskedProgress, today: todayKey) else { return }
         townRun = run
         record(result, countXP: false)
         trialScore.add(outcome)
+        spendEncounterEnergy()
         saveProgress()
     }
 
     func proceedTownRun() {
+        guard !townCollapsed else { return finishTownRun() }
         guard var run = townRun else { return }
         run.proceed()
-        run.nextEncounter(progress: progress, today: todayKey)
+        run.nextEncounter(progress: maskedProgress, today: todayKey)
         townRun = run
         townSession = run.current.map { PuzzleSession(puzzle: $0.puzzle) }
         if run.phase == .finished { finishTownRun() }

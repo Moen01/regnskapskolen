@@ -210,7 +210,9 @@ final class TownFlowTests: XCTestCase {
         XCTAssertEqual(g.key(.a), .none)
         XCTAssertEqual(g.state.clients["butikken"]!.closedMonths, [jan])
         XCTAssertEqual(g.phase, .dialog)
-        XCTAssertEqual(readDialog(&g), .none)
+        // The close costs an action like a correction: the app spends it when the dialog ends.
+        XCTAssertEqual(readDialog(&g), .closedMonth(client: "butikken", month: jan))
+        XCTAssertTrue(TownAction.closedMonth(client: "butikken", month: jan).spendsAction)
         XCTAssertEqual(g.phase, .walking)
 
         // An open error sends the player to correct it instead.

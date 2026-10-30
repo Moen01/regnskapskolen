@@ -19,6 +19,8 @@ public enum TownAction: Hashable, Sendable {
     case startFagkontor(FagkontorRef)
     /// A customer case from a person in town.
     case startCase(client: String, puzzle: String)
+    /// A clean month was closed at the counter; the player has read the dialog that says so.
+    case closedMonth(client: String, month: MonthKey)
     case deliver(client: String, kind: DeadlineKind)
     case sleep
     case save

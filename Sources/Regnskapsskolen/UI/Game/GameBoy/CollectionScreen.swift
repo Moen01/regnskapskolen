@@ -48,8 +48,7 @@ struct CollectionScreen: View {
 
     /// A bilag booked wrong in town shows its stage from before, so the collection does not give the error away.
     private func shownStage(_ id: String) -> Stage {
-        let box = store.progress.puzzles[id]?.box
-        return Stage.of(box: store.progress.game.town?.maskedBox(id) ?? box)
+        Stage.of(box: store.maskedProgress.puzzles[id]?.box)
     }
 
     private var pages: [[String]] {

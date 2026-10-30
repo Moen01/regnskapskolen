@@ -84,7 +84,8 @@ enum Screenshots {
     }
 
     /// The town in fixed states on fixed days, so the shots are the same on every run: Sentrum,
-    /// the counter with a month to close and a term to deliver, and Fristnav three days before the term.
+    /// the counter with a month to close and a term to deliver, Fristnav three days before the term,
+    /// the menu with date and energy, the bag, and a customer case as its battle opens.
     @MainActor
     static func snapTown(store: AppStore, navigation: Navigation, folder: URL) async {
         guard let library = store.library else { return }
@@ -127,6 +128,28 @@ enum Screenshots {
         store.townKey(.a)
         store.townKey(.a)
         await shot("spill-fristnav.png")
+
+        // The menu with the date and energy box, then the bag with two cups from the machine.
+        stage(map: "kontoret", x: 3, y: 3, facing: .left, day: DayKey(year: 2026, month: 4, day: 10)) { state in
+            state.energy = 85
+            state.coffee = 2
+        }
+        store.townKey(.a)
+        await shot("spill-meny.png")
+        store.townKey(.down)
+        store.townKey(.down)
+        store.townKey(.a)
+        await shot("spill-bag.png")
+
+        // A customer case: the doctor's office asks, JA starts the case, and the battle opens with its question.
+        stage(map: "sentrum", x: 23, y: 6, facing: .up, day: DayKey(year: 2026, month: 1, day: 5)) { state in
+            state.clients["legekontoret-bryggen"]?.status = .active
+        }
+        store.townKey(.a)
+        for _ in 0..<20 where store.town?.phase == .dialog { store.townKey(.a) }
+        store.townKey(.a)
+        await shot("spill-kundesak.png")
+        store.finishBilag()
         store.town = nil
         store.progress.game.town = nil
     }

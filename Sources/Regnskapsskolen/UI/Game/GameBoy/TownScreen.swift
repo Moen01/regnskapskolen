@@ -2,7 +2,7 @@ import RegnskapKit
 import SwiftUI
 
 /// Rubin's overworld on the handheld: the map around the player, the people, and over it the
-/// dialog, the menu, Fristnav, the portfolio, the counter or a JA/NEI choice. `TownFlow` owns the
+/// dialog, the menu, Fristnav, the portfolio, the bag, the counter or a JA/NEI choice. `TownFlow` owns the
 /// phases; this view draws them and sends every key to the store.
 struct TownScreen: View {
     @Environment(AppStore.self) private var store
@@ -30,7 +30,7 @@ struct TownScreen: View {
         case .dialog:
             dialog(flow, marker: true)
         case .menu:
-            TownDateBox(day: flow.state.calendar.today)
+            TownDateBox(day: flow.state.calendar.today, energy: flow.state.energy)
             TownListBox(title: nil, rows: flow.rows, cursor: flow.cursor, x: 64, width: 96, onClick: { click($0, flow) })
             dialog(flow, marker: false)
         case .fristnav, .portfolio, .bag, .counter:
@@ -174,18 +174,24 @@ private struct TownMapView: View {
     }
 }
 
-/// The game's date top left while the menu is open.
+/// The game's date and the player's energy top left while the menu is open. Two lines: «10.04 E 85»
+/// on one would not fit beside the menu.
 private struct TownDateBox: View {
+    @Environment(\.gbScale) private var scale
     let day: DayKey
+    let energy: Int
 
     var body: some View {
-        GBBox(x: 4, y: 4, width: 56, height: 22, padding: 7) {
-            GBText(String(format: "%02d.%02d", day.day, day.month))
+        GBBox(x: 4, y: 4, width: 56, height: 32, padding: 7) {
+            VStack(alignment: .leading, spacing: 2 * scale) {
+                GBText(String(format: "%02d.%02d", day.day, day.month))
+                GBText("E \(energy)")
+            }
         }
     }
 }
 
-/// A list over the map: the menu (no title), Fristnav, the portfolio or the counter.
+/// A list over the map: the menu (no title), Fristnav, the portfolio, the bag or the counter.
 private struct TownListBox: View {
     @Environment(\.gbScale) private var scale
     let title: String?

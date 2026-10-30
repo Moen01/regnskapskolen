@@ -7,7 +7,7 @@ extension TownAction {
     public var spendsAction: Bool {
         switch self {
         case .none, .walked, .enteredDoor, .save, .openTraining, .openCollection, .sleep: false
-        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .startCase, .deliver: true
+        case .startBilag, .startCorrection, .fixDiscovered, .startTrial, .startFagkontor, .startCase, .closedMonth, .deliver: true
         }
     }
 }
@@ -147,5 +147,20 @@ extension TownFlow {
     /// Only call it while walking: it replaces whatever list is open.
     public mutating func tell(_ texts: [String]) {
         say(texts)
+    }
+
+    /// What a client says when it finds an old error: its name and the task's title, then its own
+    /// line. Never the answer: what was wrong is for the player to find at the counter.
+    /// `title` looks up a puzzle's title; the id stands in when it has none.
+    public static func discoveryTexts(_ found: [OpenError], content: TownContent, title: (String) -> String?) -> [String] {
+        found.flatMap { error in
+            let client = content.client(error.client)
+            return ["\(client?.navn ?? error.client): \(title(error.puzzleId) ?? error.puzzleId)"] + (client?.replikker.oppdagetFeil ?? [])
+        }
+    }
+
+    /// What a collapse tells before the deadlines it let pass: where and on which day the player woke.
+    public static func collapseTexts(wokeOn day: DayKey) -> [String] {
+        ["Du sovnet av utmattelse.", String(format: "Du våknet på kontoret %02d.%02d.", day.day, day.month)]
     }
 }

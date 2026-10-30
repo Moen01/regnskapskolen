@@ -16,8 +16,8 @@ struct GameHubView: View {
                              onHub: { store.lastSummary = nil })
         } else if store.showCollection {
             CollectionScreen()
-        } else if store.bilagRun?.current != nil {
-            BattleScreen(host: .bilag(store))
+        } else if let run = store.bilagRun, run.current != nil {
+            BattleScreen(host: Self.isCase(run) ? .kundesak(store) : .bilag(store))
         } else if store.townRun?.current != nil {
             BattleScreen(host: .townTrial(store))
         } else if store.showTraining {
@@ -41,6 +41,10 @@ struct GameHubView: View {
         }
     }
 
+    private static func isCase(_ run: BilagRun) -> Bool {
+        if case .kundesak = run.kind { return true }
+        return false
+    }
 }
 
 /// One game on the hub: what it is, the record, an optional setting, and the button that starts it.

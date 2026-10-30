@@ -60,6 +60,15 @@ struct BattleHost {
             stage: { store.bilagStage })
     }
 
+    /// A customer case: the same `BilagRun` as a bilag, but its verdict is told and the creature
+    /// keeps the encounter's own stage. No HP: FLYKT leaves the case open for another day.
+    @MainActor
+    static func kundesak(_ store: AppStore) -> BattleHost {
+        var host = bilag(store)
+        host.stage = { nil }
+        return host
+    }
+
     /// A client's trial or a fagkontor: a `RegionRun` with the client's HP, scored by `TrialScore`.
     @MainActor
     static func townTrial(_ store: AppStore) -> BattleHost {
