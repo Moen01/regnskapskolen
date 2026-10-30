@@ -12,12 +12,12 @@
     "#,,,,,,,,,,,,,,,,,,,,,,#",
     "#,^^^^^^,^^^^^^,^^^^^^,#",
     "#,^^^^^^,^^^^^^,^^^^^^,#",
-    "#,##D###,######,######,#",
+    "#,##D###,##D###,######,#",
     "D......................#",
     "#......................#",
     "#.^^^^^^.^^^^^^........#",
     "#.^^^^^^.^^^^^^........#",
-    "#.##D###.######........#",
+    "#.##D###.##D###........#",
     "#......................#",
     "#......................#",
     "#,,,,,,,,,,,,,,,,,,,,,,#",
@@ -30,13 +30,19 @@
   "dorer": [
     { "x": 0, "y": 5, "til": "sentrum", "tilX": 28, "tilY": 10 },
     { "x": 4, "y": 4, "til": "lonnskontoret", "tilX": 4, "tilY": 6 },
-    { "x": 4, "y": 9, "til": "avskrivningskontoret", "tilX": 4, "tilY": 6 }
+    { "x": 4, "y": 9, "til": "avskrivningskontoret", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 4, "til": "byggvare", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 9, "til": "sveis", "tilX": 4, "tilY": 6 }
   ],
   "folk": [
     { "id": "skilt-lonn", "rolle": "skilt", "x": 5, "y": 5, "tekst": ["Lønnskontoret"] },
     { "id": "skilt-avskrivning", "rolle": "skilt", "x": 5, "y": 10, "tekst": ["Avskrivningskontor"] },
     { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 1, "y": 4, "tekst": ["Til Sentrum. Porten står i vest."] },
     { "id": "funn-industri", "rolle": "funn", "x": 19, "y": 8, "gir": "feriepenger", "tekst": ["En bunke lønnsslipper ligger igjen her. Øverst ligger et regelkort om feriepenger."] },
-    { "id": "folk-industri", "rolle": "folk", "x": 20, "y": 12, "tekst": ["Maskinene går dag og natt."] }
+    { "id": "folk-industri", "rolle": "folk", "x": 20, "y": 12, "tekst": ["Maskinene går dag og natt."] },
+    { "id": "skilt-byggvare", "rolle": "skilt", "x": 12, "y": 5, "tekst": ["Byggvare Handel"] },
+    { "id": "kundesak-byggvare-handel", "rolle": "kundesak", "x": 10, "y": 5, "klient": "byggvare-handel", "oppgave": "bilag-quiz-010", "tekst": ["Hei! Jeg fikk en faktura på 12 000 kr og betalte med kontanter. Er det greit?"] },
+    { "id": "skilt-sveis", "rolle": "skilt", "x": 12, "y": 10, "tekst": ["Stål & Sveis"] },
+    { "id": "kundesak-stal-sveis", "rolle": "kundesak", "x": 10, "y": 10, "klient": "stal-sveis", "oppgave": "avskrivning-quiz-001", "tekst": ["Hei! Jeg kjøpte en bærbar PC til 25 000 kr uten mva. Hvordan skal den føres?"] }
   ]
 }

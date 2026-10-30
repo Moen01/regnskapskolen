@@ -1,0 +1,24 @@
+{
+  "id": "sveis",
+  "navn": "Sveiseverkstedet",
+  "bydel": "industri",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "industri", "tilX": 11, "tilY": 10 }
+  ],
+  "folk": [
+    { "id": "klient-stal-sveis", "rolle": "klient", "x": 4, "y": 2, "klient": "stal-sveis", "tekst": [] },
+    { "id": "folk-sveiser", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Visiret ligger på benken."] }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "kaigrossisten",
+  "navn": "Kaigrossisten AS",
+  "bransje": "engros",
+  "selskapsform": "AS",
+  "mvaRegistrert": true,
+  "ansatte": 2,
+  "lonnsdag": 10,
+  "mvaTermin": "tomaanedlig",
+  "sted": { "kart": "grossisten", "x": 4, "y": 2 },
+  "oppgaver": ["reskontro-postering-002", "reskontro-regnut-002", "reskontro-finnfeil-001", "reskontro-postering-001", "reskontro-regnut-001", "mva-postering-002", "lonn-postering-001", "mva-behandling-005"],
+  "provesak": ["reskontro-quiz-002", "mva-behandling-008", "reskontro-quiz-001"],
+  "replikker": {
+    "hilsen": ["Velkommen til kaia. Vi selger varer til butikkene."],
+    "drift": ["Noen butikker betaler aldri."],
+    "haug": ["Fakturaene ligger i kassen ved porten."],
+    "tomHaug": ["Ingen bilag denne måneden."],
+    "glippetFrist": ["Fristen gikk ut. Det passer dårlig."],
+    "oppdagetFeil": ["Vi fant en gammel feil i fakturaene."]
+  },
+  "status": "utkast"
+}

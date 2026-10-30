@@ -211,6 +211,13 @@ final class TownValidatorTests: XCTestCase {
         assertOneProblem(try withCase(client: "butikken", puzzle: "mva-quiz-002"), id: "kart:sentrum", contains: "bilag eller prøvesak")
     }
 
+    // Rule 15
+    func testRejectsVatTopicQuizAsCaseForUnregisteredClient() throws {
+        // The key of a VAT quiz assumes a registered company.
+        assertOneProblem(try withCase(client: "konsulenten", puzzle: "mva-quiz-002"), id: "kart:sentrum", contains: "ikke mva-registrert")
+        XCTAssertEqual(messages(try withCase(client: "butikken", puzzle: "mva-quiz-004")), [])
+    }
+
     // Rule 14a
     func testRejectsFunnWithUnknownCard() throws {
         func withFunn(_ gir: String?) throws -> TownContent {

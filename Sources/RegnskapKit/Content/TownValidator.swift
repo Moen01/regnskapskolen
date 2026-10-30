@@ -129,7 +129,7 @@ extension ContentValidator {
 
     /// Rule 11: a customer case names an existing client and an existing `sak` or `quiz` puzzle
     /// that is not in the client's `oppgaver` or `provesak`. A VAT task is never a case (its type is
-    /// `mva`), so rule 6 needs no check of its own here.
+    /// `mva`), but a quiz on the VAT topic can be one (rule 15).
     private static func validateCase(_ person: TownPerson, in town: TownContent, library: ContentLibrary) -> [String] {
         var out: [String] = []
         let client = person.klient.flatMap { town.client($0) }
@@ -146,6 +146,10 @@ extension ContentValidator {
         // A case tells its verdict; as one of the client's bilag or trial puzzles it would give that verdict away.
         if let client, client.oppgaver.contains(id) || client.provesak.contains(id) {
             out.append("kundesaken «\(person.id)» har oppgaven «\(id)», som klienten også har som bilag eller prøvesak")
+        }
+        // Rule 15: the key of a VAT-topic quiz assumes a registered company.
+        if let client, !client.mvaRegistrert, puzzle.tema == "mva", puzzle.kind == .quiz || puzzle.kind == .sak {
+            out.append("kundesaken «\(person.id)» har oppgaven «\(id)» om mva, men klienten «\(client.id)» er ikke mva-registrert")
         }
         return out
     }

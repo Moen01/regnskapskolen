@@ -12,12 +12,12 @@
     "#,,,,,,,,,,,,,,,,,,,,,,#",
     "#,^^^^^^,^^^^^^,^^^^^^,#",
     "#,^^^^^^,^^^^^^,^^^^^^,#",
-    "#,######,######,##D###,#",
+    "#,####D#,##D###,##D###,#",
     "#......................D",
     "#......................#",
     "#........^^^^^^.^^^^^^.#",
     "#........^^^^^^.^^^^^^.#",
-    "#........######.##D###.#",
+    "#........##D###.##D###.#",
     "#......................#",
     "#......................#",
     "#......................#",
@@ -30,13 +30,22 @@
   "dorer": [
     { "x": 23, "y": 5, "til": "sentrum", "tilX": 1, "tilY": 5 },
     { "x": 18, "y": 4, "til": "banken", "tilX": 4, "tilY": 6 },
-    { "x": 18, "y": 9, "til": "periodekontoret", "tilX": 4, "tilY": 6 }
+    { "x": 18, "y": 9, "til": "periodekontoret", "tilX": 4, "tilY": 6 },
+    { "x": 6, "y": 4, "til": "grossisten", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 4, "til": "utleie", "tilX": 4, "tilY": 6 },
+    { "x": 11, "y": 9, "til": "fjordfrakt", "tilX": 4, "tilY": 6 }
   ],
   "folk": [
     { "id": "skilt-bank", "rolle": "skilt", "x": 19, "y": 5, "tekst": ["Bankkontoret"] },
     { "id": "skilt-periode", "rolle": "skilt", "x": 19, "y": 10, "tekst": ["Periodekontoret"] },
     { "id": "skilt-til-sentrum", "rolle": "skilt", "x": 22, "y": 4, "tekst": ["Til Sentrum. Porten står i øst."] },
     { "id": "funn-havna", "rolle": "funn", "x": 4, "y": 8, "gir": "periodisering-regnskapsloven", "tekst": ["Noen har lagt igjen en bunke papirer. Øverst ligger et regelkort om periodisering."] },
-    { "id": "folk-havna", "rolle": "folk", "x": 12, "y": 11, "tekst": ["Her lukter det tang og diesel."] }
+    { "id": "folk-havna", "rolle": "folk", "x": 12, "y": 11, "tekst": ["Her lukter det tang og diesel."] },
+    { "id": "skilt-grossisten", "rolle": "skilt", "x": 5, "y": 6, "tekst": ["Kaigrossisten"] },
+    { "id": "kundesak-kaigrossisten", "rolle": "kundesak", "x": 5, "y": 5, "klient": "kaigrossisten", "oppgave": "reskontro-sak-001", "tekst": ["Hei! Vi har fått en melding fra en kunde. Hva gjør vi nå?"] },
+    { "id": "skilt-utleie", "rolle": "skilt", "x": 12, "y": 5, "tekst": ["Havnehuset Utleie"] },
+    { "id": "kundesak-havnehuset-utleie", "rolle": "kundesak", "x": 10, "y": 5, "klient": "havnehuset-utleie", "oppgave": "reskontro-quiz-001", "tekst": ["Hei! En leietaker har ikke betalt på fire måneder. Kan vi gjøre noe i regnskapet?"] },
+    { "id": "skilt-fjordfrakt", "rolle": "skilt", "x": 10, "y": 11, "tekst": ["Fjordfrakt"] },
+    { "id": "kundesak-fjordfrakt", "rolle": "kundesak", "x": 10, "y": 10, "klient": "fjordfrakt", "oppgave": "mva-quiz-002", "tekst": ["Hei! Vi starter en ny virksomhet med avgiftspliktige tjenester. Når må vi registrere oss?"] }
   ]
 }

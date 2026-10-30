@@ -1,0 +1,24 @@
+{
+  "id": "grossisten",
+  "navn": "Grossisten",
+  "bydel": "havna",
+  "bredde": 10,
+  "hoyde": 8,
+  "ruter": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#========#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "####D#####"
+  ],
+  "dorer": [
+    { "x": 4, "y": 7, "til": "havna", "tilX": 6, "tilY": 5 }
+  ],
+  "folk": [
+    { "id": "klient-kaigrossisten", "rolle": "klient", "x": 4, "y": 2, "klient": "kaigrossisten", "tekst": [] },
+    { "id": "folk-lagerarbeider", "rolle": "folk", "x": 1, "y": 5, "tekst": ["Pallene skal ut før lunsj."] }
+  ]
+}

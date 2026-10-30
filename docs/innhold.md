@@ -292,7 +292,7 @@ Bydeler og porter: et kart med `bydel` lik sin egen id er en bydel. Den har `rek
 | `kundesak` | En klient som står utenfor bygget sitt og spør om en sak. Spilleren svarer, og dommen vises. | `klient`: klient-id; `oppgave`: id til en godkjent `sak`- eller `quiz`-oppgave |
 | `skilt`, `folk` | Sier `tekst`. | |
 
-En `kundesak`-oppgave er av typen `sak` eller `quiz` og må ikke stå i klientens `oppgaver` eller `provesak`. Validatoren sjekker begge deler. En oppgave av typen `mva` kan derfor aldri bli en kundesak. `tekst` er klienten som spør, uten svaret. Ingen kundesak står på selve døra eller sperrer den eneste veien.
+En `kundesak`-oppgave er av typen `sak` eller `quiz` og må ikke stå i klientens `oppgaver` eller `provesak`. Validatoren sjekker begge deler. En oppgave av typen `mva` kan derfor aldri bli en kundesak. Er klienten ikke mva-registrert, kan kundesaken heller ikke ha `tema` lik `mva` (heller ikke en quiz), for fasiten antar et registrert selskap. `tekst` er klienten som spør, uten svaret. Ingen kundesak står på selve døra eller sperrer den eneste veien.
 
 Alle kart må kunne nås fra `kontoret` gjennom dører. Hold klientene nær: ingen klientdør mer enn 20 steg fra kontorets dør i samme bydel.
 
