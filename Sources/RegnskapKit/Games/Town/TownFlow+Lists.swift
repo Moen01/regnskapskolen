@@ -263,7 +263,7 @@ extension TownFlow {
         if !clientState.discoveredErrors(pool: pool).isEmpty {
             add(.fixDiscovered(client: client.id), "RETT FEIL", full: "Rett feilene \(client.navn) fant")
         }
-        if let month = firstOpenMonth(clientState),
+        if let month = clientState.firstOpenMonth(start: state.start, today: today),
            Ledger.canClose(month, client: client, start: state.start, state: clientState, today: today, pool: pool) {
             add(.close(client: client.id, month: month), "LUKK \(Self.monthAbbreviations[month.month - 1])",
                 full: "Lukk \(Self.monthNames[month.month - 1]) for \(client.navn)")
@@ -277,16 +277,6 @@ extension TownFlow {
             }
         }
         return out
-    }
-
-    /// The earliest month from the client's books start that has ended and is not closed.
-    private func firstOpenMonth(_ clientState: ClientState) -> MonthKey? {
-        var month = clientState.booksFrom(start: state.start)
-        while month < MonthKey(today) {
-            if !clientState.closedMonths.contains(month) { return month }
-            month = month.next
-        }
-        return nil
     }
 
     /// Open errors in the month send the player to correct them; a clean month closes here and

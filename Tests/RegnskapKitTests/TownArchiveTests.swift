@@ -37,7 +37,7 @@ final class TownArchiveTests: XCTestCase {
     func testParkNeedsCleanBooks() {
         var s = state()
         s.clients["butikken"]!.book(bilag(jan), boxBefore: 0, client: "butikken")
-        XCTAssertFalse(s.clients["butikken"]!.canPark, "a booked month that is open")
+        XCTAssertFalse(s.clients["butikken"]!.canPark(start: s.start, today: s.calendar.today), "a booked month that is open")
         XCTAssertFalse(s.park("butikken"))
         XCTAssertEqual(s.clients["butikken"]!.status, .active)
         s.clients["butikken"]!.closedMonths = [jan]
@@ -49,6 +49,18 @@ final class TownArchiveTests: XCTestCase {
         wrong.clients["butikken"]!.closedMonths = [jan]
         wrong.clients["butikken"]!.openErrors = [OpenError(puzzleId: "mva-quiz-001", client: "butikken", month: jan, day: jan.first, boxBefore: 0)]
         XCTAssertFalse(wrong.park("butikken"), "an open error")
+    }
+
+    /// An ended month that is still open blocks the archive too, booked or not: otherwise a park
+    /// and an unpark the same day would close it for free.
+    func testParkNeedsEveryEndedMonthClosed() {
+        var s = state(today: day(3, 10))
+        s.clients["butikken"]!.book(bilag(jan), boxBefore: 0, client: "butikken")
+        s.clients["butikken"]!.closedMonths = [jan]
+        XCTAssertFalse(s.park("butikken"), "February has ended and is open")
+        XCTAssertEqual(s.clients["butikken"]!.status, .active)
+        s.clients["butikken"]!.closedMonths = [jan, MonthKey(year: 2026, month: 2)]
+        XCTAssertTrue(s.park("butikken"), "March is not over yet")
     }
 
     func testParkedClientHasNoPileDeadlinesOrDiscoveries() {
@@ -72,16 +84,17 @@ final class TownArchiveTests: XCTestCase {
 
     func testUnparkSkipsTheMonthsAway() {
         var s = state(today: day(3, 10))
+        let feb = MonthKey(year: 2026, month: 2)
         s.clients["butikken"]!.book(bilag(jan), boxBefore: 0, client: "butikken")
-        s.clients["butikken"]!.closedMonths = [jan]
+        s.clients["butikken"]!.closedMonths = [jan, feb]
         XCTAssertTrue(s.park("butikken"))
         s.calendar = TownCalendar(start: day(6, 12))
         XCTAssertTrue(s.unpark("butikken", on: day(6, 12)))
         let client = s.clients["butikken"]!
         XCTAssertEqual(client.status, .active)
         XCTAssertEqual(client.activeFrom, day(6, 12))
-        for m in 3...5 { XCTAssertTrue(client.closedMonths.contains(MonthKey(year: 2026, month: m)), "month \(m)") }
-        XCTAssertFalse(client.closedMonths.contains(MonthKey(year: 2026, month: 6)))
+        XCTAssertEqual(client.closedMonths, Set((1...5).map { MonthKey(year: 2026, month: $0) }),
+                       "January and February closed by the player, March to May away; June is open")
         let mva = DeadlinePlanner.deadlines(for: Self.town.client("butikken")!, year: 2026, deadlines: Self.library.deadlines)
             .first { $0.day == day(6, 10) }
         XCTAssertNotNil(mva, "the term due 10.06 exists")

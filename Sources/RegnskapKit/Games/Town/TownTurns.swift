@@ -29,10 +29,11 @@ extension TownState {
         clients.values.filter { $0.status == .active }.count >= TownRules.portfolioSize
     }
 
-    /// Puts an active client with clean books in the archive.
+    /// Puts an active client with clean books and every ended month closed in the archive.
     @discardableResult
     public mutating func park(_ client: String) -> Bool {
-        guard clients[client]?.status == .active, clients[client]?.canPark == true else { return false }
+        guard let state = clients[client], state.status == .active,
+              state.canPark(start: start, today: calendar.today) else { return false }
         clients[client]?.status = .parked
         return true
     }

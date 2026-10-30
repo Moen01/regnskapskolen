@@ -65,10 +65,22 @@ extension ClientState {
         if satisfaction == 0 { status = .archived }
     }
 
-    /// Whether the client can go to the archive: no open error and every booked month closed, so
-    /// no verdict is left to reveal (Review Focus 4).
-    public var canPark: Bool {
+    /// Whether the client can go to the archive: no open error, every booked month closed, so no
+    /// verdict is left to reveal (Review Focus 4), and every ended month closed, so a park and an
+    /// unpark cannot close a month the player never kept.
+    public func canPark(start: MonthKey, today: DayKey) -> Bool {
         openErrors.isEmpty && booked.allSatisfy { closedMonths.contains($0.month) }
+            && firstOpenMonth(start: start, today: today) == nil
+    }
+
+    /// The earliest month from the client's books start that has ended and is not closed.
+    public func firstOpenMonth(start: MonthKey, today: DayKey) -> MonthKey? {
+        var month = booksFrom(start: start)
+        while month < MonthKey(today) {
+            if !closedMonths.contains(month) { return month }
+            month = month.next
+        }
+        return nil
     }
 
     /// The client is back (taken from the archive, or won back after it quit) from `day`. The months
