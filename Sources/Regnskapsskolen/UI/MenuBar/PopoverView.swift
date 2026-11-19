@@ -49,5 +49,10 @@ struct PopoverView: View {
         .padding(16)
         .frame(width: 340, height: 360, alignment: .top)
         .themedScreenBackground()
+        .overlay {
+            if theme.celebrationsEnabled, let celebration = store.pendingCelebration {
+                CelebrationOverlay(celebration: celebration) { store.pendingCelebration = nil }
+            }
+        }
     }
 }

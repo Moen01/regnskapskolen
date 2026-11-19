@@ -4,6 +4,7 @@ import SwiftUI
 struct MainView: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
+    @Environment(\.appTheme) private var theme
 
     /// Spill is hidden until the learner turns it on in Innstillinger; screenshots show every screen.
     private var sections: [AppSection] {
@@ -59,6 +60,15 @@ struct MainView: View {
         .overlay(alignment: .bottom) {
             if let notice = store.contentNotice ?? store.loadError, store.library != nil {
                 Text(notice).font(.caption).padding(8).background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8)).padding()
+            }
+        }
+        .overlay {
+            // A celebration earned inside the game or on the puzzle screen waits here until the learner
+            // is back on a plain screen, so it never covers the Game Boy UI or the explanation.
+            if theme.celebrationsEnabled, navigation.section != .game, store.openPuzzle == nil,
+               let celebration = store.pendingCelebration {
+                CelebrationOverlay(celebration: celebration) { store.pendingCelebration = nil }
+                    .animation(.easeOut(duration: 0.3), value: store.pendingCelebration)
             }
         }
     }
