@@ -119,9 +119,19 @@ extension View {
 
 private struct ThemedScreenBackground: ViewModifier {
     @Environment(\.appTheme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var appeared = false
+
     func body(content: Content) -> some View {
         if theme.isPlayful {
-            content.background(theme.screenBackground)
+            content
+                .background(theme.screenBackground)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 8)
+                .onAppear {
+                    if reduceMotion { appeared = true }
+                    else { withAnimation(.easeOut(duration: 0.3)) { appeared = true } }
+                }
         } else {
             content
         }
@@ -130,16 +140,22 @@ private struct ThemedScreenBackground: ViewModifier {
 
 private struct ThemedCard: ViewModifier {
     @Environment(\.appTheme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var hovering = false
     let standardRadius: CGFloat
 
     func body(content: Content) -> some View {
         if theme.isPlayful {
             // Keep small chips small; real cards take the theme's 20 pt radius.
             let radius = standardRadius < 10 ? standardRadius : theme.cardCornerRadius
+            let lift = hovering && !reduceMotion
             content
                 .background(theme.cardBackground, in: RoundedRectangle(cornerRadius: radius))
-                .shadow(color: .black.opacity(0.04), radius: 3, y: 1)
-                .shadow(color: .black.opacity(0.04), radius: 24, y: 6)
+                .shadow(color: .black.opacity(0.04), radius: lift ? 16 : 3, y: lift ? 6 : 1)
+                .shadow(color: .black.opacity(0.04), radius: lift ? 30 : 24, y: lift ? 10 : 6)
+                .offset(y: lift ? -2 : 0)
+                .animation(.easeOut(duration: 0.15), value: hovering)
+                .onHover { hovering = $0 }
         } else {
             content.background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: standardRadius))
         }

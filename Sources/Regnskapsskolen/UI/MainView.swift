@@ -51,6 +51,7 @@ struct MainView: View {
 
     var body: some View {
         @Bindable var navigation = navigation
+        ZStack {
         NavigationSplitView {
             sidebar
                 .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
@@ -99,9 +100,10 @@ struct MainView: View {
                     .padding()
             }
         }
-        .overlay {
-            // A celebration earned inside the game or on the puzzle screen waits here until the learner
-            // is back on a plain screen, so it never covers the Game Boy UI or the explanation.
+
+            // A celebration earned inside the game or on the puzzle screen waits as a full-window layer
+            // until the learner is back on a plain screen, so it never covers the Game Boy UI or the
+            // explanation. It sits beside the split view, not inside it, so it covers the sidebar too.
             if theme.celebrationsEnabled, navigation.section != .game, store.openPuzzle == nil,
                let celebration = store.pendingCelebration {
                 CelebrationOverlay(celebration: celebration) { store.pendingCelebration = nil }

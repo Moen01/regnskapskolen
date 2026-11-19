@@ -88,17 +88,28 @@ struct TopicRow: View {
 /// Share of a topic's puzzles in box 3 or higher.
 struct MasteryBar: View {
     @Environment(\.appTheme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let value: Double
+    @State private var shown = false
 
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Capsule().fill(.quaternary)
-                Capsule().fill(theme.isPlayful ? theme.accent : .skole).frame(width: max(0, geometry.size.width * value))
+                Capsule().fill(theme.isPlayful ? theme.accent : .skole)
+                    .frame(width: max(0, geometry.size.width * (shown ? value : 0)))
             }
         }
         .frame(height: 6)
         .accessibilityLabel("Mestring \(Int(value * 100)) prosent")
+        .onAppear {
+            // The bar springs up to its level only in the playful theme; elsewhere it is simply filled.
+            if theme.isPlayful && !reduceMotion {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.75)) { shown = true }
+            } else {
+                shown = true
+            }
+        }
     }
 }
 

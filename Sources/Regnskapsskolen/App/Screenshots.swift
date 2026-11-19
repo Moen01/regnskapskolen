@@ -80,6 +80,29 @@ enum Screenshots {
         await snap(PopoverView().environment(store).environment(navigation), size: NSSize(width: 340, height: 360), to: folder.appendingPathComponent("popover.png"))
         navigation.showOnboarding = true
         await snap(OnboardingView().environment(store).environment(navigation), size: NSSize(width: 560, height: 520), to: folder.appendingPathComponent("onboarding.png"))
+        navigation.showOnboarding = false
+
+        // The playful theme on the key non-game screens, plus a celebration, by injecting the theme
+        // directly (the screenshot host does not build the window chrome that `rootTheme` reads).
+        let playful = AppTheme.playful(dark: false)
+        store.settings.playfulTheme = true
+        func snapPlayful(_ section: AppSection, _ name: String) async {
+            navigation.section = section
+            store.openPuzzle = nil
+            await snap(MainView().environment(\.appTheme, playful).environment(store).environment(navigation), size: NSSize(width: 1200, height: 800), to: folder.appendingPathComponent(name))
+        }
+        for (section, name) in [(AppSection.today, "today-lekent.png"), (.practice, "practice-lekent.png"), (.stats, "stats-lekent.png"), (.rules, "rules-lekent.png"), (.settings, "settings-lekent.png")] {
+            await snapPlayful(section, name)
+        }
+        navigation.section = .today
+        store.openPuzzle = nil
+        // The celebration is a full-window overlay the off-screen host cannot composite over a
+        // NavigationSplitView, so it is rendered on its own warm backdrop here.
+        await snap(ZStack { Color(hex: 0xF7F5F2); CelebrationOverlay(celebration: .streakMilestone(7)) {} }.environment(\.appTheme, playful).environment(store).environment(navigation), size: NSSize(width: 700, height: 560), to: folder.appendingPathComponent("feiring-lekent.png"))
+        await snap(PopoverView().environment(\.appTheme, playful).environment(store).environment(navigation), size: NSSize(width: 340, height: 360), to: folder.appendingPathComponent("popover-lekent.png"))
+        navigation.showOnboarding = true
+        await snap(OnboardingView().environment(\.appTheme, playful).environment(store).environment(navigation), size: NSSize(width: 560, height: 520), to: folder.appendingPathComponent("onboarding-lekent.png"))
+        store.settings.playfulTheme = false
         print("Skrev skjermbilder til \(folder.path)")
     }
 
