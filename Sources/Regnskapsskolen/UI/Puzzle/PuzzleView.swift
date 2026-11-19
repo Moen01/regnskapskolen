@@ -50,6 +50,7 @@ struct PuzzleView: View {
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
         }
+        .themedScreenBackground()
     }
 
     @ViewBuilder
@@ -76,7 +77,7 @@ struct PuzzleView: View {
 
     private var buttons: some View {
         HStack(spacing: 10) {
-            Button("Sjekk", action: check).keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.skole).disabled(finished)
+            Button("Sjekk", action: check).keyboardShortcut(.defaultAction).themedPrimaryButton().disabled(finished)
             Button("Vis fasit", action: reveal).disabled(!session.canReveal || finished)
             if store.claudeStatus.isReady {
                 if let verdict = session.verdict, !verdict.correct, !session.revealed {
@@ -86,7 +87,7 @@ struct PuzzleView: View {
             }
             Spacer()
             if let onNext, finished {
-                Button("Neste", action: onNext).keyboardShortcut(.return, modifiers: .command).buttonStyle(.borderedProminent).tint(.skole)
+                Button("Neste", action: onNext).keyboardShortcut(.return, modifiers: .command).themedPrimaryButton()
             }
         }
     }

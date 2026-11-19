@@ -133,7 +133,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         popover = NSPopover()
         popover.behavior = .transient
         popover.contentSize = NSSize(width: 340, height: 360)
-        popover.contentViewController = NSHostingController(rootView: PopoverView().environment(store).environment(navigation))
+        popover.contentViewController = NSHostingController(rootView: PopoverView().rootTheme().environment(store).environment(navigation))
     }
 
     func togglePopover() {
@@ -156,7 +156,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             w.title = "Regnskapsskolen"
             w.isReleasedWhenClosed = false
             w.minSize = NSSize(width: 820, height: 560)
-            w.contentViewController = NSHostingController(rootView: MainView().environment(store).environment(navigation))
+            w.contentViewController = NSHostingController(rootView: MainView().rootTheme().environment(store).environment(navigation))
             w.setFrameAutosaveName("main")
             w.center()
             w.delegate = self

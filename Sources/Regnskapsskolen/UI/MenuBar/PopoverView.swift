@@ -4,11 +4,13 @@ import SwiftUI
 struct PopoverView: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
+    @Environment(\.appTheme) private var theme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Regnskapsskolen").font(.headline)
+            HStack(spacing: 8) {
+                if theme.isPlayful { AccountantFigure(pose: .standing, size: 34) }
+                Text("Regnskapsskolen").font(.headline).themedHeading()
                 Spacer()
                 Label("\(store.streak)", systemImage: "flame").foregroundStyle(.orange)
             }
@@ -39,12 +41,18 @@ struct PopoverView: View {
             HStack {
                 Button(store.remainingToday > 0 ? "Åpne dagens oppgaver" : "Åpne Regnskapsskolen") {
                     AppDelegate.shared?.showMainWindow(section: .today)
-                }.buttonStyle(.borderedProminent).tint(.skole)
+                }.themedPrimaryButton()
                 Spacer()
                 Button("Avslutt") { NSApp.terminate(nil) }
             }
         }
         .padding(16)
         .frame(width: 340, height: 360, alignment: .top)
+        .themedScreenBackground()
+        .overlay {
+            if theme.celebrationsEnabled, let celebration = store.pendingCelebration {
+                CelebrationOverlay(celebration: celebration) { store.pendingCelebration = nil }
+            }
+        }
     }
 }
