@@ -4,11 +4,13 @@ import SwiftUI
 struct PopoverView: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
+    @Environment(\.appTheme) private var theme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Regnskapsskolen").font(.headline)
+            HStack(spacing: 8) {
+                if theme.isPlayful { AccountantFigure(pose: .standing, size: 34) }
+                Text("Regnskapsskolen").font(.headline).themedHeading()
                 Spacer()
                 Label("\(store.streak)", systemImage: "flame").foregroundStyle(.orange)
             }
