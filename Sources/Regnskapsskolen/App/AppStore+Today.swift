@@ -54,8 +54,14 @@ extension AppStore {
                 newBadges += Badges.award(.puzzleAnswered(kind: puzzle.kind, correctFirstTry: result.correctFirstTry), on: todayKey, progress: &progress)
             }
         }
-        if !wasDone, progress.days[todayKey.string]?.done == true {
+        let isDone = progress.days[todayKey.string]?.done == true
+        if !wasDone, isDone {
             newBadges += Badges.award(.dayCompleted(streak: streak), on: todayKey, progress: &progress)
+        }
+        // A non-nil result means the day just flipped to done; keep an unshown celebration if a
+        // later same-day answer produces nil.
+        if let celebration = Celebrations.forDayTransition(wasDone: wasDone, isDone: isDone, streak: streak) {
+            pendingCelebration = celebration
         }
         saveProgress()
         updateBadge?()
