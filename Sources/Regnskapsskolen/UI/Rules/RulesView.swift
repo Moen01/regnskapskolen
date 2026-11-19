@@ -36,6 +36,7 @@ struct RulesView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .themedScreenBackground()
         .onAppear { if selected == nil { selected = cards.first?.id } }
     }
 }
@@ -89,7 +90,7 @@ struct MarkdownBlocksView: View {
                         }
                     }
                     .padding(10)
-                    .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+                    .themedCard(cornerRadius: 8)
                 }
             }
         }

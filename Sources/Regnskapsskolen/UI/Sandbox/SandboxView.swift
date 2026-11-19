@@ -30,6 +30,7 @@ struct SandboxView: View {
                 ReportsView().frame(width: max(320, geometry.size.width * 0.36)).clipped()
             }
         }
+        .themedScreenBackground()
         .onChange(of: store.sandbox) { store.saveSandbox() }
         .confirmationDialog("Tømme journalen?", isPresented: $confirmClear, titleVisibility: .visible) {
             Button("Tøm journalen", role: .destructive) { store.clearSandbox() }
@@ -79,7 +80,7 @@ struct SandboxView: View {
                             }
                             .padding(8)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 6))
+                            .themedCard(cornerRadius: 6)
                         }
                         if let rates = sandboxCase.valutakurser {
                             Text("Kurser i casen").font(.subheadline.weight(.semibold)).padding(.top, 4)

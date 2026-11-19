@@ -36,6 +36,8 @@ struct StatsView: View {
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .themedScreenBackground()
     }
 }
 
@@ -53,7 +55,7 @@ struct StatTile: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+        .themedCard(cornerRadius: 10)
     }
 }
 

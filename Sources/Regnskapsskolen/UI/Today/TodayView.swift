@@ -30,6 +30,8 @@ struct TodayView: View {
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .themedScreenBackground()
     }
 
     private func state(_ puzzle: Puzzle) -> PuzzleCard.State {
@@ -57,7 +59,7 @@ struct PuzzleCard: View {
             Image(systemName: "chevron.right").foregroundStyle(.tertiary)
         }
         .padding(12)
-        .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+        .themedCard(cornerRadius: 10)
         .contentShape(Rectangle())
     }
 

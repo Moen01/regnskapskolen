@@ -39,12 +39,13 @@ struct PopoverView: View {
             HStack {
                 Button(store.remainingToday > 0 ? "Åpne dagens oppgaver" : "Åpne Regnskapsskolen") {
                     AppDelegate.shared?.showMainWindow(section: .today)
-                }.buttonStyle(.borderedProminent).tint(.skole)
+                }.themedPrimaryButton()
                 Spacer()
                 Button("Avslutt") { NSApp.terminate(nil) }
             }
         }
         .padding(16)
         .frame(width: 340, height: 360, alignment: .top)
+        .themedScreenBackground()
     }
 }
