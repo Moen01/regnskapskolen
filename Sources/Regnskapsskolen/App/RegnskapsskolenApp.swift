@@ -8,6 +8,7 @@ struct RegnskapsskolenApp: App {
         // The status item and the main window are AppKit-managed; this scene gives ⌘, a home.
         Settings {
             SettingsView()
+                .rootTheme()
                 .environment(delegate.store)
                 .environment(delegate.navigation)
                 .frame(width: 640, height: 560)
