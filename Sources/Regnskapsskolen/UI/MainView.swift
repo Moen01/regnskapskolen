@@ -11,23 +11,56 @@ struct MainView: View {
         AppSection.allCases.filter { $0 != .game || store.settings.showGame || AppStore.isScreenshotRun }
     }
 
-    var body: some View {
+    /// Standard theme keeps the system `List`; the playful theme draws warm rows with an accent selection.
+    @ViewBuilder private var sidebar: some View {
         @Bindable var navigation = navigation
-        NavigationSplitView {
+        if theme.isPlayful {
+            ScrollView {
+                VStack(spacing: 4) {
+                    ForEach(sections) { section in
+                        Button { navigation.section = section } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: section.symbol).frame(width: 22)
+                                Text(section.title)
+                                Spacer()
+                                if section == .today, store.remainingToday > 0 {
+                                    Text("\(store.remainingToday)").font(.caption.weight(.semibold)).foregroundStyle(.white)
+                                        .padding(.horizontal, 7).padding(.vertical, 1).background(theme.accent, in: Capsule())
+                                }
+                            }
+                            .padding(.horizontal, 12).padding(.vertical, 8)
+                            .background(navigation.section == section ? theme.accent.opacity(0.16) : .clear, in: RoundedRectangle(cornerRadius: 9))
+                            .foregroundStyle(navigation.section == section ? theme.accent : theme.primaryText)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(8)
+            }
+            .themedScreenBackground()
+        } else {
             // Rows take their selection tag from the ForEach id, so the id must be the AppSection
             // itself: with the default String id the AppSection binding never matches a row.
             List(sections, id: \.self, selection: $navigation.section) { section in
                 Label(section.title, systemImage: section.symbol)
                     .badge(section == .today ? store.remainingToday : 0)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
-            .safeAreaInset(edge: .bottom) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Label("\(store.streak) dager på rad", systemImage: "flame").font(.caption)
-                    Text(store.claudeStatus.isReady ? "Claude er klar" : store.claudeStatus.text).font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    var body: some View {
+        @Bindable var navigation = navigation
+        NavigationSplitView {
+            sidebar
+                .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
+                .safeAreaInset(edge: .bottom) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Label("\(store.streak) dager på rad", systemImage: "flame").font(.caption)
+                        Text(store.claudeStatus.isReady ? "Claude er klar" : store.claudeStatus.text).font(.caption2).foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(10)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading).padding(10)
-            }
         } detail: {
             Group {
                 if let error = store.loadError, store.library == nil {
@@ -59,7 +92,11 @@ struct MainView: View {
         .sheet(isPresented: $navigation.showOnboarding) { OnboardingView() }
         .overlay(alignment: .bottom) {
             if let notice = store.contentNotice ?? store.loadError, store.library != nil {
-                Text(notice).font(.caption).padding(8).background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8)).padding()
+                Text(notice).font(.caption).foregroundStyle(theme.isPlayful ? theme.primaryText : .primary)
+                    .padding(10)
+                    .background(theme.isPlayful ? AnyShapeStyle(theme.cardBackground) : AnyShapeStyle(.thinMaterial), in: RoundedRectangle(cornerRadius: theme.isPlayful ? 14 : 8))
+                    .shadow(color: .black.opacity(theme.isPlayful ? 0.1 : 0), radius: 10, y: 3)
+                    .padding()
             }
         }
         .overlay {

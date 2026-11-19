@@ -5,13 +5,14 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(AppStore.self) private var store
     @Environment(Navigation.self) private var navigation
+    @Environment(\.appTheme) private var theme
     @State private var step = 0
 
     var body: some View {
         @Bindable var settings = store.settings
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 6) {
-                ForEach(0..<3, id: \.self) { i in Capsule().fill(i <= step ? Color.skole : Color.gray.opacity(0.2)).frame(height: 4) }
+                ForEach(0..<3, id: \.self) { i in Capsule().fill(i <= step ? (theme.isPlayful ? theme.accent : Color.skole) : Color.gray.opacity(0.2)).frame(height: 4) }
             }
             Group {
                 switch step {
@@ -40,14 +41,15 @@ struct OnboardingView: View {
                 if step > 0 { Button("Tilbake") { step -= 1 } }
                 Spacer()
                 if step < 2 {
-                    Button("Neste") { step += 1 }.keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.skole)
+                    Button("Neste") { step += 1 }.keyboardShortcut(.defaultAction).themedPrimaryButton()
                 } else {
-                    Button("Ferdig", action: finish).keyboardShortcut(.defaultAction).buttonStyle(.borderedProminent).tint(.skole)
+                    Button("Ferdig", action: finish).keyboardShortcut(.defaultAction).themedPrimaryButton()
                 }
             }
         }
         .padding(24)
         .frame(width: 560, height: 520)
+        .themedScreenBackground()
         .onAppear { Task { await store.checkClaude() } }
     }
 
