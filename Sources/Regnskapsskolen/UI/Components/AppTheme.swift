@@ -125,6 +125,7 @@ private struct ThemedScreenBackground: ViewModifier {
     func body(content: Content) -> some View {
         if theme.isPlayful {
             content
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .background(theme.screenBackground)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 8)

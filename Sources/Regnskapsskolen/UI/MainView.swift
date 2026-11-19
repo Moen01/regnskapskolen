@@ -94,9 +94,9 @@ struct MainView: View {
         .overlay(alignment: .bottom) {
             if let notice = store.contentNotice ?? store.loadError, store.library != nil {
                 Text(notice).font(.caption).foregroundStyle(theme.isPlayful ? theme.primaryText : .primary)
-                    .padding(10)
+                    .padding(theme.isPlayful ? 10 : 8)
                     .background(theme.isPlayful ? AnyShapeStyle(theme.cardBackground) : AnyShapeStyle(.thinMaterial), in: RoundedRectangle(cornerRadius: theme.isPlayful ? 14 : 8))
-                    .shadow(color: .black.opacity(theme.isPlayful ? 0.1 : 0), radius: 10, y: 3)
+                    .shadow(color: theme.isPlayful ? .black.opacity(0.1) : .clear, radius: theme.isPlayful ? 10 : 0, y: theme.isPlayful ? 3 : 0)
                     .padding()
             }
         }

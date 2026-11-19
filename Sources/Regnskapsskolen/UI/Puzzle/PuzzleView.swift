@@ -50,7 +50,6 @@ struct PuzzleView: View {
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .themedScreenBackground()
     }
 
