@@ -3,12 +3,19 @@ import SwiftUI
 
 /// The check's outcome in the ladder's words.
 struct VerdictView: View {
+    @Environment(\.appTheme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let verdict: Verdict
+    @State private var popped = false
+
+    /// A right answer in the playful theme pops in; elsewhere, or with Reduce Motion, it just appears.
+    private var animates: Bool { verdict.correct && theme.isPlayful && !reduceMotion }
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: verdict.correct ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundStyle(verdict.correct ? Color.ok : Color.bad)
+                .scaleEffect(animates && !popped ? 0.1 : 1)
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(verdict.messages, id: \.self) { Text($0) }
             }
@@ -16,6 +23,11 @@ struct VerdictView: View {
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background((verdict.correct ? Color.ok : Color.bad).opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+        .scaleEffect(animates && !popped ? 0.94 : 1)
+        .onAppear {
+            guard animates else { return }
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.55)) { popped = true }
+        }
     }
 }
 

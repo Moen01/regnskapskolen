@@ -4,6 +4,7 @@ import SwiftUI
 /// Regler: the rule cards, searchable, with the Markdown body and the source link.
 struct RulesView: View {
     @Environment(AppStore.self) private var store
+    @Environment(\.appTheme) private var theme
     @State private var selected: String?
     @State private var query = ""
 
@@ -32,10 +33,14 @@ struct RulesView: View {
             if let selected, let card = (store.library?.rules ?? []).first(where: { $0.id == selected }) {
                 RuleCardView(card: card)
             } else {
-                ContentUnavailableView("Velg en regel", systemImage: "book.closed", description: Text("Korte kort om lovene oppgavene bygger på."))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 16) {
+                    if theme.isPlayful { AccountantFigure(pose: .standing, size: 96) }
+                    ContentUnavailableView("Velg en regel", systemImage: "book.closed", description: Text("Korte kort om lovene oppgavene bygger på."))
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .themedScreenBackground()
         .onAppear { if selected == nil { selected = cards.first?.id } }
     }
 }
@@ -89,7 +94,7 @@ struct MarkdownBlocksView: View {
                         }
                     }
                     .padding(10)
-                    .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+                    .themedCard(cornerRadius: 8)
                 }
             }
         }

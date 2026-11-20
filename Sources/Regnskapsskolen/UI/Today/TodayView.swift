@@ -4,6 +4,7 @@ import SwiftUI
 /// The day's set as cards; a card opens its puzzle in the detail pane.
 struct TodayView: View {
     @Environment(AppStore.self) private var store
+    @Environment(\.appTheme) private var theme
 
     var body: some View {
         ScrollView {
@@ -23,13 +24,17 @@ struct TodayView: View {
                             .buttonStyle(.plain)
                     }
                     if store.remainingToday == 0 {
-                        Label("Dagens oppgaver er gjort. Godt jobbet!", systemImage: "checkmark.seal.fill").foregroundStyle(Color.ok)
+                        HStack(spacing: 12) {
+                            if theme.isPlayful { AccountantFigure(pose: .standing, size: 72) }
+                            Label("Dagens oppgaver er gjort. Godt jobbet!", systemImage: "checkmark.seal.fill").foregroundStyle(theme.isPlayful ? theme.successText : .ok)
+                        }
                     }
                 }
             }
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
         }
+        .themedScreenBackground()
     }
 
     private func state(_ puzzle: Puzzle) -> PuzzleCard.State {
@@ -57,7 +62,7 @@ struct PuzzleCard: View {
             Image(systemName: "chevron.right").foregroundStyle(.tertiary)
         }
         .padding(12)
-        .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+        .themedCard(cornerRadius: 10)
         .contentShape(Rectangle())
     }
 

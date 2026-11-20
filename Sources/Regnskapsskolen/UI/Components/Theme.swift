@@ -18,11 +18,14 @@ enum Clipboard {
 }
 
 struct Pill: View {
+    @Environment(\.appTheme) private var theme
     let text: String
     var color: Color = .secondary
     var body: some View {
+        // The brand-green default follows the theme's accent; explicit status colors stay as passed.
+        let shown = theme.isPlayful && color == .skole ? theme.accent : color
         Text(text).font(.caption).padding(.horizontal, 8).padding(.vertical, 3)
-            .background(color.opacity(0.12), in: Capsule()).foregroundStyle(color)
+            .background(shown.opacity(0.12), in: Capsule()).foregroundStyle(shown)
     }
 }
 
@@ -31,7 +34,7 @@ struct SectionHeader: View {
     var subtitle: String? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.title2.weight(.semibold))
+            Text(title).font(.title2.weight(.semibold)).themedHeading()
             if let subtitle { Text(subtitle).foregroundStyle(.secondary) }
         }
     }

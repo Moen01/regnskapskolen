@@ -28,6 +28,10 @@ final class AppStore {
     var openPuzzle: Puzzle?
     var openFromToday = false
 
+    /// A celebration earned by the last answer, shown once the learner is on a non-game screen.
+    /// Nil at launch, so a celebration never fires without an answer this session.
+    var pendingCelebration: Celebration?
+
     /// Set by the delegate: refreshes the status item's badge.
     @ObservationIgnored var updateBadge: (() -> Void)?
 
