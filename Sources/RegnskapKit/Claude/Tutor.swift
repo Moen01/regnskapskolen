@@ -77,6 +77,28 @@ public final class Tutor: @unchecked Sendable {
         Lag én ny oppgave av samme type (\(puzzle.kind.rawValue)) i temaet «\(puzzle.tema)» med vanskelighet \(level): et sjeldnere tilfelle, en felle en erfaren regnskapsfører kan gå i, eller en regel med unntak. Bruk id «\(puzzle.tema)-gen-\(Int(Date().timeIntervalSince1970))». Sett status «utkast». Svar bare med JSON etter skjemaet.
         """
         let reply = try await runner.run(ClaudeRequest(system: system("forfatter", tema: puzzle.tema), prompt: prompt, schema: PuzzleSchema.schema(for: puzzle.kind), model: model, resume: nil, persist: false))
+        return try acceptGenerated(reply)
+    }
+
+    /// A brand-new puzzle of a kind the topic already uses, validated; saved as a draft by the caller.
+    public func newPuzzle(tema: String, kind: PuzzleKind, vanskelighet: Int = 3) async throws -> Puzzle {
+        // The first hand-written puzzle of the kind shows the format best; approved ones before drafts.
+        let example = library.puzzles(tema: tema)
+            .filter { $0.kind == kind && !$0.generert }
+            .sorted { ($0.status == .godkjent ? 0 : 1, $0.id) < (($1.status == .godkjent ? 0 : 1), $1.id) }
+            .first
+        let exampleBlock = example.map {
+            "\n\n## Eksempel på formatet (lag noe nytt, ikke en omskriving)\n```json\n\(String(decoding: (try? $0.encoded()) ?? Data(), as: UTF8.self))\n```"
+        } ?? ""
+        let prompt = """
+        Lag én ny oppgave av typen \(kind.rawValue) («\(kind.navn)») i temaet «\(tema)» med vanskelighet \(vanskelighet): en realistisk situasjon fra et lite norsk selskap, med konkrete beløp i kroner og datoer i 2026. Bruk id «\(tema)-gen-\(Int(Date().timeIntervalSince1970))». Sett status «utkast». Svar bare med JSON etter skjemaet.\(exampleBlock)
+        """
+        let reply = try await runner.run(ClaudeRequest(system: system("forfatter", tema: tema), prompt: prompt, schema: PuzzleSchema.schema(for: kind), model: model, resume: nil, persist: false))
+        return try acceptGenerated(reply)
+    }
+
+    /// Decodes Claude's structured output, forces draft status, and rejects anything the validator flags.
+    private func acceptGenerated(_ reply: ClaudeReply) throws -> Puzzle {
         guard let structured = reply.structured else { throw ClaudeError.badOutput }
         var generated: Puzzle
         do { generated = try Puzzle.decode(structured.data) } catch { throw ClaudeError.invalidPuzzle([ContentLibrary.describe(error)]) }

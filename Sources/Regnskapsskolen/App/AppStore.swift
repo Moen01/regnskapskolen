@@ -23,6 +23,8 @@ final class AppStore {
     var tutor: Tutor?
     var tutorBusy = false
     var tutorError: String?
+    /// Where a batch generation stands, such as «Quiz (2 av 4)»; nil outside a batch.
+    var tutorProgress: String?
 
     /// The puzzle open in the detail pane, and whether it came from the day's set.
     var openPuzzle: Puzzle?
