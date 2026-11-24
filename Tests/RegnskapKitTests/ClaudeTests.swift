@@ -102,6 +102,42 @@ final class ClaudeTests: XCTestCase {
         XCTAssertEqual(puzzle.id, "mva-quiz-001-gen")
     }
 
+    func testNewPuzzleForcesDraftAndSendsKindSchemaAndExample() async throws {
+        var good = try JSONDecoder().decode(JSONValue.self, from: try Self.library.puzzle(id: "mva-quiz-001")!.encoded())
+        var o = good.object!; o["id"] = .string("mva-gen-test"); good = .object(o)
+        let envelope = JSONValue.object(["type": .string("result"), "is_error": .bool(false), "result": .string("{}"), "session_id": .string("s"), "structured_output": good])
+        let fake = FakeProcesses(reply: ProcessResult(exitCode: 0, stdout: envelope.data, stderr: Data()))
+        let tutor = Tutor(library: Self.library, runner: ClaudeRunner(processes: fake), model: "haiku")
+        let puzzle = try await tutor.newPuzzle(tema: "mva", kind: .quiz)
+        XCTAssertEqual(puzzle.status, .utkast)
+        XCTAssertTrue(puzzle.generert)
+        XCTAssertEqual(puzzle.id, "mva-gen-test")
+        let args = fake.calls.last!
+        XCTAssertTrue(args.contains("--json-schema"), "the kind's schema rides along")
+        let prompt = args[args.firstIndex(of: "-p")! + 1]
+        XCTAssertTrue(prompt.contains("quiz"))
+        XCTAssertTrue(prompt.contains("«mva»"))
+        XCTAssertTrue(prompt.contains("mva-quiz-001"), "the prompt shows the first hand-written puzzle of the kind as the format example")
+        let system = args[args.firstIndex(of: "--system-prompt")! + 1]
+        XCTAssertTrue(system.contains("## " + Self.library.rules(tema: "mva").first!.tittel), "the topic's cards ride along")
+    }
+
+    func testNewPuzzleRejectsAnUnbalancedPosting() async {
+        let bad: [String: Any] = ["id": "gen-2", "type": "postering", "tema": "mva", "vanskelighet": 3, "tittel": "x", "oppgave": "x", "forklaring": "x",
+                                  "lov": [["lov": "merverdiavgiftsloven", "paragraf": "§ 3-1", "tekst": "x"]],
+                                  "kontoer": [["nr": "1920", "navn": "Bank"], ["nr": "3000", "navn": "Salg"]],
+                                  "fasit": [["konto": "1920", "side": "D", "belop": 100], ["konto": "3000", "side": "K", "belop": 90]]]
+        let envelope: [String: Any] = ["type": "result", "is_error": false, "result": "{}", "session_id": "s", "structured_output": bad]
+        let data = try! JSONSerialization.data(withJSONObject: envelope)
+        let tutor = Tutor(library: Self.library, runner: ClaudeRunner(processes: FakeProcesses(reply: ProcessResult(exitCode: 0, stdout: data, stderr: Data()))), model: "haiku")
+        do {
+            _ = try await tutor.newPuzzle(tema: "mva", kind: .postering)
+            XCTFail("expected invalidPuzzle")
+        } catch ClaudeError.invalidPuzzle(let problems) {
+            XCTAssertTrue(problems.contains { $0.contains("balanserer ikke") }, problems.joined(separator: "; "))
+        } catch { XCTFail("\(error)") }
+    }
+
     func testPromptsExistAndSchemaCoversEveryKind() {
         for name in ["veileder", "forfatter", "sandkasse"] {
             XCTAssertNotNil(Tutor.prompt(named: name, root: ContentLocator.repoContent), name)

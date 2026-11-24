@@ -38,6 +38,21 @@ final class SchedulerTests: XCTestCase {
         XCTAssertTrue(Scheduler.isFirstAnswer(of: id, on: day.adding(days: 1), progress: progress))
     }
 
+    func testExtendDayAddsThePuzzleToTheStoredSet() {
+        var progress = LearnerProgress()
+        let set = Scheduler.startDay(day, count: 2, pool: pool, progress: &progress)
+        XCTAssertEqual(progress.days[day.string]?.remaining, 2)
+        let extra = pool.first { p in !set.contains { $0.id == p.id } }!
+        Scheduler.extendDay(day, with: extra, progress: &progress)
+        XCTAssertEqual(progress.days[day.string]?.set.count, 3)
+        XCTAssertEqual(progress.days[day.string]?.remaining, 3)
+        Scheduler.extendDay(day, with: extra, progress: &progress)
+        XCTAssertEqual(progress.days[day.string]?.set.count, 3, "no duplicates")
+        var fresh = LearnerProgress()
+        Scheduler.extendDay(day, with: extra, progress: &fresh)
+        XCTAssertEqual(fresh.days[day.string]?.set, [extra.id], "a day with no record yet gets one")
+    }
+
     func testDueFollowsIntervals() {
         var progress = LearnerProgress()
         let id = pool[0].id

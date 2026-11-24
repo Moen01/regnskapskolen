@@ -139,9 +139,10 @@ public final class ContentLibrary: @unchecked Sendable {
 
     public var approved: [Puzzle] { puzzles.filter { $0.status == .godkjent } }
 
-    /// What the scheduler may pick from, read as one consistent snapshot.
+    /// What the scheduler may pick from, read as one consistent snapshot. Generated puzzles are
+    /// always in: the learner asked Claude for them, and the lists mark them as drafts.
     public func pool(includeDrafts: Bool) -> [Puzzle] {
-        lock.withLock { (includeDrafts ? state.puzzles : state.puzzles.filter { $0.status == .godkjent }) + (includeDrafts ? state.generatedInMemory : []) }
+        lock.withLock { (includeDrafts ? state.puzzles : state.puzzles.filter { $0.status == .godkjent || $0.generert }) + state.generatedInMemory }
     }
 
     public func puzzle(id: String) -> Puzzle? { lock.withLock { state.byId[id] ?? state.generatedInMemory.first { $0.id == id } } }
@@ -151,6 +152,13 @@ public final class ContentLibrary: @unchecked Sendable {
     }
 
     public func topic(_ id: String) -> Topic? { topics.first { $0.id == id } }
+
+    /// The puzzle kinds the topic's own content already uses, in the fixed kind order.
+    /// Generated puzzles do not count: they must follow the pattern, not widen it.
+    public func kinds(tema: String) -> [PuzzleKind] {
+        let present = Set(puzzles(tema: tema).filter { !$0.generert }.map(\.kind))
+        return PuzzleKind.allCases.filter(present.contains)
+    }
 
     public func rules(tema: String) -> [RuleCard] { rules.filter { $0.tema == tema } }
 
