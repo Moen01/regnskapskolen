@@ -30,6 +30,17 @@ struct TodayView: View {
                         }
                     }
                 }
+                if store.claudeStatus.isReady {
+                    Button {
+                        generate()
+                    } label: {
+                        Label("Generer en ny oppgave", systemImage: "sparkles")
+                    }
+                    .controlSize(.small)
+                    .disabled(store.tutorBusy)
+                    if store.tutorBusy { HStack(spacing: 6) { ProgressView().controlSize(.small); Text("Claude skriver en ny oppgave…").font(.caption) } }
+                    if let error = store.tutorError { Text(error).font(.caption).foregroundStyle(Color.bad) }
+                }
             }
             .padding(20)
             .frame(maxWidth: 820, alignment: .leading)
@@ -41,6 +52,8 @@ struct TodayView: View {
         guard store.isCompletedToday(puzzle) else { return .ny }
         return (store.state(of: puzzle)?.box ?? 0) > 0 ? .riktig : .feil
     }
+
+    private func generate() { Task { await store.generateForToday() } }
 }
 
 struct PuzzleCard: View {

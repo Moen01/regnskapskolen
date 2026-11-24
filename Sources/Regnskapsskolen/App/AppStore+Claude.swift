@@ -18,10 +18,53 @@ extension AppStore {
     /// A harder puzzle, saved as a draft and opened at once.
     func harder(than puzzle: Puzzle) async -> Puzzle? {
         guard let made = await tutorCall({ try await $0.harder(than: puzzle) }) else { return nil }
-        var saved = made
-        if let contentRoot, let url = try? TutorFiles.save(made, contentRoot: contentRoot) { saved.sourceURL = url }
-        library?.addGenerated(saved)
+        let saved = saveGenerated(made)
         open(saved, fromToday: false)
+        return saved
+    }
+
+    /// One new puzzle per kind the topic already uses, each saved as a draft.
+    /// A kind that fails is reported and the rest still run; a missing CLI stops the batch.
+    func generateNew(tema: String) async -> [Puzzle] {
+        guard let tutor, let library else { tutorError = "Innholdet er ikke lastet."; return [] }
+        guard !tutorBusy else { tutorError = "Claude jobber allerede med noe. Vent litt."; return [] }
+        let kinds = library.kinds(tema: tema)
+        let wanted = kinds.isEmpty ? PuzzleKind.allCases : kinds
+        tutor.model = settings.claudeModel
+        tutorBusy = true
+        tutorError = nil
+        defer { tutorBusy = false; tutorProgress = nil }
+        var made: [Puzzle] = []
+        var failed: [String] = []
+        for (index, kind) in wanted.enumerated() {
+            tutorProgress = "\(kind.navn) (\(index + 1) av \(wanted.count))"
+            do {
+                made.append(saveGenerated(try await tutor.newPuzzle(tema: tema, kind: kind)))
+            } catch {
+                failed.append("\(kind.navn): \(describe(error))")
+                if case ClaudeError.notInstalled = error { break }
+                if case ClaudeError.notSignedIn = error { break }
+            }
+        }
+        if !failed.isEmpty { tutorError = failed.joined(separator: " · ") }
+        return made
+    }
+
+    /// A fresh puzzle for the weakest topic, added to today's set so it counts toward the day.
+    func generateForToday() async -> Puzzle? {
+        guard let library, let topic = library.topics.min(by: { mastery($0.id) < mastery($1.id) }) else {
+            tutorError = "Innholdet er ikke lastet."
+            return nil
+        }
+        // The kind the topic has fewest puzzles of, so generation fills the thin spots first.
+        let counts = Dictionary(grouping: library.puzzles(tema: topic.id).filter { !$0.generert }, by: \.kind)
+        let kind = library.kinds(tema: topic.id).min { (counts[$0]?.count ?? 0) < (counts[$1]?.count ?? 0) } ?? .quiz
+        guard let made = await tutorCall({ try await $0.newPuzzle(tema: topic.id, kind: kind) }) else { return nil }
+        let saved = saveGenerated(made)
+        Scheduler.extendDay(todayKey, with: saved, progress: &progress)
+        today.append(saved)
+        saveProgress()
+        updateBadge?()
         return saved
     }
 
@@ -29,6 +72,14 @@ extension AppStore {
         guard let made = await tutorCall({ try await $0.makeCase(tema: tema) }) else { return nil }
         if let contentRoot { _ = try? TutorFiles.save(made, contentRoot: contentRoot) }
         return made
+    }
+
+    /// Writes the puzzle to the generert folder and keeps it in memory until the next reload.
+    private func saveGenerated(_ puzzle: Puzzle) -> Puzzle {
+        var saved = puzzle
+        if let contentRoot, let url = try? TutorFiles.save(puzzle, contentRoot: contentRoot) { saved.sourceURL = url }
+        library?.addGenerated(saved)
+        return saved
     }
 
     private func tutorCall<T: Sendable>(_ work: @Sendable (Tutor) async throws -> T) async -> T? {
@@ -41,11 +92,16 @@ extension AppStore {
         do {
             return try await work(tutor)
         } catch {
-            tutorError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
-            if case ClaudeError.notSignedIn = error { claudeStatus = .notSignedIn }
-            if case ClaudeError.notInstalled = error { claudeStatus = .missing }
+            tutorError = describe(error)
             return nil
         }
+    }
+
+    /// One line for the error pane; a missing or signed-out CLI also updates the status banner.
+    private func describe(_ error: Error) -> String {
+        if case ClaudeError.notSignedIn = error { claudeStatus = .notSignedIn }
+        if case ClaudeError.notInstalled = error { claudeStatus = .missing }
+        return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
     }
 }
 

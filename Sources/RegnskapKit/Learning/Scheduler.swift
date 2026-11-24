@@ -34,6 +34,14 @@ public enum Scheduler {
         }
     }
 
+    /// Adds a puzzle to the day's stored set, so a freshly generated puzzle counts toward the day.
+    public static func extendDay(_ day: DayKey, with puzzle: Puzzle, progress: inout LearnerProgress) {
+        var record = progress.days[day.string] ?? DayRecord(day: day, set: [])
+        guard !record.set.contains(puzzle.id) else { return }
+        record.set.append(puzzle.id)
+        progress.days[day.string] = record
+    }
+
     /// The day's set: the stored one when the day already has one, else a new one that is stored.
     public static func startDay(_ day: DayKey, count: Int, pool: [Puzzle], progress: inout LearnerProgress) -> [Puzzle] {
         let byId = Dictionary(pool.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })

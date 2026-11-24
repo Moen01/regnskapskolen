@@ -48,12 +48,31 @@ final class ContentLibraryTests: XCTestCase {
         draft.id = "utkast-1"
         draft.status = .utkast
         try draft.encoded().write(to: extra.appendingPathComponent("utkast-1.json"))
+        draft.id = "utkast-2"
+        try draft.encoded().write(to: root.appendingPathComponent("oppgaver/x/utkast-2.json"))
         try FileManager.default.copyItem(at: ContentLocator.repoContent.appendingPathComponent("oppgaver/grunnlag/grunnlag-001.json"), to: root.appendingPathComponent("oppgaver/x/g.json"))
         let library = try ContentLibrary(root: root, extraPuzzleRoots: [extra])
-        XCTAssertEqual(library.puzzles.count, 2)
-        XCTAssertEqual(library.pool(includeDrafts: false).map(\.id), ["grunnlag-001"])
-        XCTAssertEqual(Set(library.pool(includeDrafts: true).map(\.id)), ["grunnlag-001", "utkast-1"])
+        XCTAssertEqual(library.puzzles.count, 3)
+        // Generated drafts stay in the pool: the learner asked Claude for them. Hand-flagged drafts stay hidden.
+        XCTAssertEqual(Set(library.pool(includeDrafts: false).map(\.id)), ["grunnlag-001", "utkast-1"])
+        XCTAssertEqual(Set(library.pool(includeDrafts: true).map(\.id)), ["grunnlag-001", "utkast-1", "utkast-2"])
         XCTAssertEqual(library.puzzle(id: "utkast-1")?.generert, true)
+        XCTAssertEqual(library.puzzle(id: "utkast-2")?.generert, false)
+    }
+
+    func testKindsFollowTheFixedOrderAndIgnoreGeneratedPuzzles() throws {
+        let library = try ContentLibrary(root: ContentLocator.repoContent)
+        let kinds = library.kinds(tema: "mva")
+        XCTAssertTrue(kinds.contains(.quiz))
+        XCTAssertTrue(kinds.contains(.postering))
+        XCTAssertEqual(kinds, PuzzleKind.allCases.filter(kinds.contains), "fixed order, no duplicates")
+        XCTAssertFalse(kinds.contains(.frist), "mva has no frist puzzles in the repo; the rest of the test builds on that")
+        var extra = try Puzzle.load(url: ContentLocator.repoContent.appendingPathComponent("oppgaver/lonn/lonn-frist-aga-001.json"))
+        extra.id = "mva-gen-frist-test"
+        extra.tema = "mva"
+        extra.generert = true
+        library.generatedInMemory = [extra]
+        XCTAssertFalse(library.kinds(tema: "mva").contains(.frist), "a generated puzzle does not widen the topic's pattern")
     }
 
     func testDuplicateIdIsALoadError() throws {
@@ -93,13 +112,15 @@ final class ContentLibraryTests: XCTestCase {
         generated.status = .utkast
         library.generatedInMemory = [generated]
 
-        XCTAssertEqual(library.pool(includeDrafts: false).map(\.id), [])
+        XCTAssertEqual(library.pool(includeDrafts: false).map(\.id), ["generert-1"], "a puzzle Claude just wrote is visible at once")
         XCTAssertEqual(library.pool(includeDrafts: true).map(\.id), ["generert-1"])
         XCTAssertEqual(library.puzzle(id: "generert-1")?.status, .utkast)
 
-        try generated.encoded().write(to: root.appendingPathComponent("oppgaver/x/generert-1.json"))
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("oppgaver/generert"), withIntermediateDirectories: true)
+        try generated.encoded().write(to: root.appendingPathComponent("oppgaver/generert/generert-1.json"))
         try library.reload()
         XCTAssertTrue(library.generatedInMemory.isEmpty)
+        XCTAssertEqual(library.pool(includeDrafts: false).map(\.id), ["generert-1"], "still visible once its file has landed")
         XCTAssertEqual(library.pool(includeDrafts: true).map(\.id), ["generert-1"])
         XCTAssertNotNil(library.puzzle(id: "generert-1"))
     }

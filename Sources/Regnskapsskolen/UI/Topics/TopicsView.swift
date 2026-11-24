@@ -30,14 +30,26 @@ struct TopicsView: View {
 
     private func puzzles(_ tema: String) -> [Puzzle] { store.library?.puzzles(tema: tema, includeDrafts: store.settings.showDrafts) ?? [] }
     private func seen(_ tema: String) -> Int { puzzles(tema).filter { store.state(of: $0) != nil }.count }
+    private func generate(_ tema: String) { Task { await store.generateNew(tema: tema) } }
 
     private func puzzleList(_ topic: Topic) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 SectionHeader(title: topic.navn, subtitle: topic.maal)
+                Button {
+                    generate(topic.id)
+                } label: {
+                    Label("Generer nye oppgaver", systemImage: "sparkles")
+                }
+                .controlSize(.small)
+                .disabled(!store.claudeStatus.isReady || store.tutorBusy)
+                if store.tutorBusy, let progress = store.tutorProgress {
+                    HStack(spacing: 6) { ProgressView().controlSize(.small); Text("Claude skriver oppgaver… \(progress)").font(.caption) }
+                }
+                if let error = store.tutorError { Text(error).font(.caption).foregroundStyle(Color.bad) }
                 let list = puzzles(topic.id)
                 if list.isEmpty {
-                    Text("Ingen oppgaver i dette temaet ennå. Be Claude om noen med /ny-oppgave \(topic.id).").foregroundStyle(.secondary)
+                    Text("Ingen oppgaver i dette temaet ennå. Generer noen, eller be Claude med /ny-oppgave \(topic.id).").foregroundStyle(.secondary)
                 }
                 ForEach(list) { puzzle in
                     Button { store.open(puzzle, fromToday: false) } label: {
